@@ -330,3 +330,48 @@ body.arena-mode .standard-desc { display: none; }
 /* DRAG & DROP RULES */
 .ex-card.dragged { opacity: 0.4; border: 2px dashed var(--accent); box-shadow: none; transform: scale(0.95); transition: none; }
 .ex-card.drag-over { border-top: 5px solid var(--accent); margin-top: 15px; }
+
+/* ═══════════════════════════════════════════
+   MOBILE ARENA — FINAL OVERRIDE
+   (Must be LAST to beat desktop Arena rules)
+═══════════════════════════════════════════ */
+@media(max-width: 900px) {
+  body.arena-mode .sec-head { margin-top: 2vh; margin-bottom: 2vh; }
+  body.arena-mode .sec-right { position: fixed; top: 12px; right: 12px; z-index: 1000; }
+  body.arena-mode #btn-arena { font-size: 0.65rem; padding: 8px 14px; }
+
+  body.arena-mode .ex-grid { min-height: auto; padding-top: 1vh; margin-bottom: 30px; }
+  body.arena-mode .ex-card { padding: 20px !important; width: 100vw !important; max-width: 100% !important; border-radius: 0 !important; }
+  body.arena-mode .ex-card.arena-active { box-shadow: none; border: none; }
+
+  body.arena-mode .arena-split-view { grid-template-columns: 1fr !important; gap: 20px !important; min-height: auto !important; }
+  body.arena-mode .paste-zone { min-height: 220px !important; height: auto !important; }
+  body.arena-mode .paste-zone::after { display: none; }
+  body.arena-mode .paste-zone img { max-height: 35vh !important; width: 100% !important; height: auto !important; }
+
+  body.arena-mode .card-header { margin-bottom: 15px; padding-bottom: 15px; }
+  body.arena-mode .card-header .ex-name { font-size: 1.8rem !important; letter-spacing: 0 !important; }
+  body.arena-mode .card-header .ex-type { font-size: 0.7rem; padding: 6px 16px; }
+  body.arena-mode .card-header .ex-equip { font-size: 0.85rem !important; }
+
+  body.arena-mode .arena-details-panel { padding: 0 !important; }
+  body.arena-mode .ex-targets { margin-bottom: 20px; padding: 0 0 0 15px; }
+  body.arena-mode .ex-targets::before { display: none; }
+  body.arena-mode .target-en { font-size: 0.85rem !important; letter-spacing: 0.1em; }
+  body.arena-mode .target-ar { font-size: 1rem !important; }
+
+  body.arena-mode .ex-bilingual-desc { gap: 15px; }
+  body.arena-mode .ex-desc { font-size: 0.95rem !important; line-height: 1.6; }
+  body.arena-mode .ex-desc.ar-desc { font-size: 1.05rem !important; }
+  body.arena-mode .ex-desc li { margin-bottom: 8px; }
+
+  body.arena-mode .ex-focus { margin-top: 20px; padding: 15px 18px; font-size: 0.95rem; }
+
+  body.arena-mode .card-bottom { padding: 18px !important; flex-direction: column !important; gap: 20px; border-radius: 12px; }
+  body.arena-mode .metrics { gap: 30px !important; justify-content: center; }
+  body.arena-mode .metric-val { font-size: 2rem !important; }
+  body.arena-mode .metric-lbl { font-size: 0.8rem !important; }
+  body.arena-mode .card-actions { gap: 12px; width: 100%; flex-direction: column; }
+  body.arena-mode .yt-btn { font-size: 0.9rem !important; padding: 14px 20px !important; width: 100% !important; justify-content: center; border-radius: 10px; }
+  body.arena-mode .mark-btn { font-size: 1.1rem !important; padding: 16px 30px !important; width: 100% !important; border-radius: 10px; }
+}
