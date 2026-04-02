@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OLYMPUS // Daily Ritual</title>
+<meta name="description" content="Premium workout tracker — 2 month wedding prep hypertrophy program.">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ENVIRONMENT -->
+<div class="god-rays"></div>
+<canvas id="cv"></canvas>
+<div id="prog-glow"></div>
+
+<div class="toast" id="toast"></div>
+<div class="lightbox" id="lb"><img id="lb-img" src="" alt=""></div>
+
+<!-- CALENDAR MODAL -->
+<div class="modal-bg" id="cal-modal">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Chronicles &amp; Reflections<button class="modal-close" id="cal-close">×</button></div>
+    <div class="rank-badge">
+      <div class="rank-title" id="rank-title">Spartan Recruit</div>
+      <div class="rank-sub">Current Status of the Vessel</div>
+    </div>
+    <div class="cal-nav">
+      <button class="cal-nav-btn" id="cal-prev">← Prev</button>
+      <span class="cal-month" id="cal-label"></span>
+      <button class="cal-nav-btn" id="cal-next">Next →</button>
+    </div>
+    <div class="cal-grid">
+      <div class="cal-dow">S</div><div class="cal-dow">M</div><div class="cal-dow">T</div>
+      <div class="cal-dow">W</div><div class="cal-dow">T</div><div class="cal-dow">F</div><div class="cal-dow">S</div>
+    </div>
+    <div class="cal-grid" id="cal-days"></div>
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-val" id="st-total">0</div><div class="stat-lbl">Total Triumphs</div></div>
+      <div class="stat-item"><div class="stat-val" id="st-streak">0</div><div class="stat-lbl">Current Streak</div></div>
+      <div class="stat-item"><div class="stat-val" id="st-month">0</div><div class="stat-lbl">This Cycle</div></div>
+    </div>
+    <div class="sys-actions">
+      <button class="sys-btn" id="btn-export">⭳ Export Scrolls</button>
+      <button class="sys-btn" id="btn-import-trigger">⭱ Import Scrolls</button>
+      <input type="file" id="file-import" style="display:none;" accept=".json">
+    </div>
+  </div>
+</div>
+
+<!-- EDITOR MODAL -->
+<div class="modal-bg" id="ed-modal">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title"><span id="ed-title">Add Movement</span><button class="modal-close" id="ed-close">×</button></div>
+    <input type="hidden" id="ed-id">
+    <label class="field-label">Movement Nomenclature</label>
+    <input type="text" id="ed-name" class="field-input" placeholder="e.g. Atlas Stone Lift">
+    <div class="field-row">
+      <div><label class="field-label">Sets</label><input type="text" id="ed-sets" class="field-input" placeholder="3"></div>
+      <div><label class="field-label">Reps</label><input type="text" id="ed-reps" class="field-input" placeholder="8-12"></div>
+    </div>
+    <div class="field-row">
+      <div><label class="field-label">Classification</label>
+        <select id="ed-type" class="field-sel">
+          <option value="main">Main Core</option>
+          <option value="posture">Posture / Alignment</option>
+          <option value="abs">Core / Shield</option>
+          <option value="bonus">Bonus / Accessory</option>
+        </select>
+      </div>
+      <div><label class="field-label">Relics (Equipment)</label><input type="text" id="ed-equip" class="field-input" placeholder="Barbell, Bench"></div>
+    </div>
+    <label class="field-label">Divine Directives (One step per line)</label>
+    <textarea id="ed-desc" class="field-input" placeholder="Step 1...&#10;Step 2..."></textarea>
+    <button class="save-btn" id="btn-save-ex">Inscribe Movement</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo"><span class="logo-icon">⚡</span> OLYMPUS</div>
+  <div style="display:flex;align-items:center;flex-wrap:wrap;">
+    <div class="heatmap" id="heatmap" title="Last 7 Days Activity"></div>
+    <div class="header-right">
+      <div class="session-label" id="cur-date"></div>
+      <div id="session-clock">SESSION: 00m 00s</div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="oracle-quote reveal" id="oracle-quote" title="Seek another truth"></div>
+  <div class="day-nav" id="day-nav"></div>
+
+
+  <!-- Ambient Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="sec-head">
+    <div style="display:flex;align-items:center;gap:25px;">
+      <span class="day-title" id="day-title">—</span>
+      <span class="focus-badge" id="day-focus">—</span>
+    </div>
+    <div class="sec-right">
+      <button id="btn-arena" class="filter-btn hist-btn" style="color:var(--accent); border-color:var(--accent);">⚔️ The Arena</button>
+      <button id="btn-chronicles" class="filter-btn hist-btn">🏛️ Chronicles</button>
+      <button data-filter="all" class="filter-btn active">All</button>
+      <button data-filter="main" class="filter-btn">Main</button>
+      <button data-filter="posture" class="filter-btn">Posture</button>
+      <button data-filter="abs" class="filter-btn">Abs</button>
+      <button data-filter="bonus" class="filter-btn">Bonus</button>
+    </div>
+  </div>
+
+  <div class="ex-grid" id="ex-grid"></div>
+
+  <div id="rest-msg" class="rest-day" style="display:none;">
+    <div class="rest-icon">🧘</div>
+    <div class="rest-title">Elysian Stillness</div>
+    <p class="rest-sub">The gods, too, rested. Recovery is the silent forge where true strength is solidified.</p>
+  </div>
+
+  <div id="add-container"></div>
+  <div class="ornament reveal">✦ ◆ ✦ ◆ ✦</div>
+</div>
+
+<script src="core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
