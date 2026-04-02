@@ -1232,29 +1232,29 @@ const SEARCH_SVG = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M15
 
 const EX_IMG = {
   // SAT
-  ex6_1: 'img/shoulder_press.png', ex6_2: 'img/arnold_press.png', ex6_3: 'img/db_floor_press.png', 
-  ex6_4: 'img/pushup.png', ex6_5: 'img/lateral_raise.png', ex6_6: 'img/front_raise.png', 
-  ex6_7: 'img/ez_floor_press.png', ex6_8: 'img/side_bend.png', ex6_9: 'img/scapular_pushup.png',
+  ex6_1: 'img/shoulder_press.jpg', ex6_2: 'img/arnold_press.jpg', ex6_3: 'img/db_floor_press.jpg', 
+  ex6_4: 'img/pushup.jpg', ex6_5: 'img/lateral_raise.jpg', ex6_6: 'img/front_raise.jpg', 
+  ex6_7: 'img/ez_floor_press.jpg', ex6_8: 'img/side_bend.jpg', ex6_9: 'img/scapular_pushup.jpg',
   // SUN
-  ex0_1: 'img/barbell_row.png', ex0_2: 'img/dumbbell_row.png', ex0_3: 'img/shrug.png', 
-  ex0_4: 'img/reverse_fly.png', ex0_5: 'img/curl.png', ex0_6: 'img/curl.png', 
-  ex0_7: 'img/curl.png', ex0_8: 'img/abs.png', ex0_9: 'img/superman.png',
+  ex0_1: 'img/barbell_row.jpg', ex0_2: 'img/dumbbell_row.jpg', ex0_3: 'img/shrug.jpg', 
+  ex0_4: 'img/reverse_fly.jpg', ex0_5: 'img/curl.jpg', ex0_6: 'img/curl.jpg', 
+  ex0_7: 'img/curl.jpg', ex0_8: 'img/abs.jpg', ex0_9: 'img/superman.jpg',
   // MON
-  ex1_1: 'img/squat.png', ex1_2: 'img/squat.png', ex1_3: 'img/lunge.png', 
-  ex1_4: 'img/deadlift.png', ex1_5: 'img/step_up.png', ex1_6: 'img/squat.png', 
-  ex1_7: 'img/calf_raise.png', ex1_8: 'img/abs.png', ex1_9: 'img/neck_flexion.png',
+  ex1_1: 'img/squat.jpg', ex1_2: 'img/squat.jpg', ex1_3: 'img/lunge.jpg', 
+  ex1_4: 'img/deadlift.jpg', ex1_5: 'img/step_up.jpg', ex1_6: 'img/squat.jpg', 
+  ex1_7: 'img/calf_raise.jpg', ex1_8: 'img/abs.jpg', ex1_9: 'img/neck_flexion.jpg',
   // TUE
-  ex2_1: 'img/db_bench.png', ex2_2: 'img/incline_db_press.png', ex2_3: 'img/barbell_ohp.png', 
-  ex2_4: 'img/flyes.png', ex2_5: 'img/lateral_raise.png', ex2_6: 'img/skull_crusher.png', 
-  ex2_7: 'img/overhead_tricep.png', ex2_8: 'img/abs.png', ex2_9: 'img/wall_angel.png',
+  ex2_1: 'img/db_bench.jpg', ex2_2: 'img/incline_db_press.jpg', ex2_3: 'img/barbell_ohp.jpg', 
+  ex2_4: 'img/flyes.jpg', ex2_5: 'img/lateral_raise.jpg', ex2_6: 'img/skull_crusher.jpg', 
+  ex2_7: 'img/overhead_tricep.jpg', ex2_8: 'img/abs.jpg', ex2_9: 'img/wall_angel.jpg',
   // WED
-  ex3_1: 'img/deadlift.png', ex3_2: 'img/barbell_row.png', ex3_3: 'img/dumbbell_row.png', 
-  ex3_4: 'img/shrug.png', ex3_5: 'img/curl.png', ex3_6: 'img/curl.png', 
-  ex3_7: 'img/shrug.png', ex3_8: 'img/abs.png', ex3_9: 'img/reverse_fly.png',
+  ex3_1: 'img/deadlift.jpg', ex3_2: 'img/barbell_row.jpg', ex3_3: 'img/dumbbell_row.jpg', 
+  ex3_4: 'img/shrug.jpg', ex3_5: 'img/curl.jpg', ex3_6: 'img/curl.jpg', 
+  ex3_7: 'img/shrug.jpg', ex3_8: 'img/abs.jpg', ex3_9: 'img/reverse_fly.jpg',
   // THU
-  ex4_1: 'img/squat.png', ex4_2: 'img/lunge.png', ex4_3: 'img/deadlift.png', 
-  ex4_4: 'img/lunge.png', ex4_5: 'img/hip_thrust.png', ex4_6: 'img/lunge.png', 
-  ex4_7: 'img/calf_raise.png', ex4_8: 'img/abs.png', ex4_9: 'img/prone_neck.png'
+  ex4_1: 'img/squat.jpg', ex4_2: 'img/lunge.jpg', ex4_3: 'img/deadlift.jpg', 
+  ex4_4: 'img/lunge.jpg', ex4_5: 'img/hip_thrust.jpg', ex4_6: 'img/lunge.jpg', 
+  ex4_7: 'img/calf_raise.jpg', ex4_8: 'img/abs.jpg', ex4_9: 'img/prone_neck.jpg'
 };
 /* ═══════════════════════════════════════════
    UTILITIES
