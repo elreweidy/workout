@@ -10,6 +10,21 @@
 </head>
 <body>
 
+<!-- AUTH GATE -->
+<div id="auth-gate">
+  <div class="auth-box">
+    <div class="auth-icon">⚡</div>
+    <div class="auth-title">OLYMPUS</div>
+    <div class="auth-sub">Identify yourself, warrior</div>
+    <form id="auth-form" autocomplete="on">
+      <input type="text" id="auth-user" name="username" placeholder="Username" autocomplete="username" required>
+      <input type="password" id="auth-pass" name="password" placeholder="Password" autocomplete="current-password" required>
+      <button type="submit" id="auth-btn">Enter the Arena</button>
+      <div id="auth-error"></div>
+    </form>
+  </div>
+</div>
+
 <!-- ENVIRONMENT -->
 <div class="god-rays"></div>
 <canvas id="cv"></canvas>
@@ -127,6 +142,43 @@
   <div class="ornament reveal">✦ ◆ ✦ ◆ ✦</div>
 </div>
 
+<script>
+(function(){
+  const HASH = '594fe949f91170ccf983ecbc7e2347a7ac279fadeeebf98660401c0f2ca8e093';
+  const AUTH_KEY = 'oly_auth';
+  const gate = document.getElementById('auth-gate');
+
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  function unlock() {
+    gate.classList.add('auth-hidden');
+    setTimeout(() => gate.style.display = 'none', 600);
+  }
+
+  if (localStorage.getItem(AUTH_KEY) === HASH) {
+    unlock();
+  }
+
+  document.getElementById('auth-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const u = document.getElementById('auth-user').value.trim();
+    const p = document.getElementById('auth-pass').value;
+    const h = await sha256(u + ':' + p);
+    if (h === HASH) {
+      localStorage.setItem(AUTH_KEY, HASH);
+      unlock();
+    } else {
+      const err = document.getElementById('auth-error');
+      err.textContent = 'Access denied.';
+      document.getElementById('auth-box')?.classList.add('shake');
+      setTimeout(() => err.textContent = '', 2000);
+    }
+  });
+})();
+</script>
 <script src="core.js"></script>
 <script src="app.js"></script>
 </body>

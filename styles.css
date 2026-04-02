@@ -1,4 +1,21 @@
 /* ═══════════════════════════════════════════
+   AUTH GATE
+═══════════════════════════════════════════ */
+#auth-gate { position: fixed; inset: 0; z-index: 99999; background: #020604; display: flex; align-items: center; justify-content: center; transition: opacity 0.6s, transform 0.6s; }
+#auth-gate.auth-hidden { opacity: 0; transform: scale(1.05); pointer-events: none; }
+.auth-box { text-align: center; padding: 60px 50px; background: rgba(5,15,10,0.6); border: 1px solid rgba(92,198,200,0.15); border-radius: 20px; backdrop-filter: blur(40px); box-shadow: 0 50px 100px rgba(0,0,0,0.8); max-width: 420px; width: 90%; }
+.auth-icon { font-size: 3rem; margin-bottom: 15px; filter: drop-shadow(0 0 20px rgba(92,198,200,0.5)); }
+.auth-title { font-family: 'Cinzel Decorative', serif; font-size: 2.5rem; font-weight: 900; color: #fff; letter-spacing: 0.2em; margin-bottom: 8px; text-shadow: 0 0 30px rgba(92,198,200,0.3); }
+.auth-sub { font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(92,198,200,0.6); margin-bottom: 40px; }
+#auth-form { display: flex; flex-direction: column; gap: 16px; }
+#auth-form input { font-family: 'Cinzel', serif; font-size: 1rem; padding: 16px 22px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; letter-spacing: 0.1em; outline: none; transition: border-color 0.3s, box-shadow 0.3s; }
+#auth-form input:focus { border-color: rgba(92,198,200,0.5); box-shadow: 0 0 20px rgba(92,198,200,0.1); }
+#auth-form input::placeholder { color: rgba(255,255,255,0.25); letter-spacing: 0.15em; text-transform: uppercase; font-size: 0.75rem; }
+#auth-btn { font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; padding: 18px; background: linear-gradient(135deg, rgba(92,198,200,0.9), rgba(58,142,144,0.9)); border: none; border-radius: 10px; color: #020604; cursor: pointer; transition: all 0.4s; box-shadow: 0 10px 30px rgba(92,198,200,0.3); margin-top: 10px; }
+#auth-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(92,198,200,0.5); background: linear-gradient(135deg, #fff, rgba(92,198,200,0.9)); }
+#auth-error { font-family: 'Cinzel', serif; font-size: 0.8rem; color: #ff6b6b; letter-spacing: 0.15em; min-height: 1.2em; }
+
+/* ═══════════════════════════════════════════
    OLYMPUS DESIGN SYSTEM — TEAL EDITION
 ═══════════════════════════════════════════ */
 :root {
@@ -199,17 +216,53 @@ textarea.field-input { resize: vertical; min-height: 80px; }
 .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s cubic-bezier(0.25, 1, 0.5, 1), transform 0.7s cubic-bezier(0.25, 1, 0.5, 1); will-change: opacity, transform; }
 .reveal.vis { opacity: 1; transform: translateY(0); }
 
-/* RESPONSIVE */
+/* RESPONSIVE — TABLET */
+@media(max-width: 1200px) {
+  .ex-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* RESPONSIVE — MOBILE */
 @media(max-width: 900px) {
   html { font-size: 14px; }
-  .ex-grid { grid-template-columns: 1fr; }
+  .wrap { padding: 0 5%; }
+  .ex-grid { grid-template-columns: 1fr; gap: 20px; }
   header { padding: 15px 5%; flex-direction: column; gap: 15px; align-items: flex-start; }
   .header-right { align-items: flex-start; text-align: left; }
   .heatmap { margin-right: 0; margin-bottom: 10px; }
-  .sec-head { flex-direction: column; align-items: flex-start; }
+  .sec-head { flex-direction: column; align-items: flex-start; gap: 15px; }
   .stats-row { grid-template-columns: 1fr; }
   .summary-bar { grid-template-columns: repeat(2, 1fr); }
-  .day-nav { gap: 8px; }
+  .day-nav { gap: 8px; flex-wrap: wrap; }
+  .day-btn { padding: 10px 14px; font-size: 0.7rem; }
+  .day-title { font-size: 2rem; }
+  .oracle-quote { font-size: 1.2rem; margin: 30px auto 20px; }
+  .card-seq { font-size: 2rem; }
+  .ex-name { font-size: 1.3rem; }
+  .card-bottom { flex-direction: column; gap: 15px; align-items: stretch; }
+  .card-actions { justify-content: stretch; }
+  .mark-btn { width: 100%; text-align: center; }
+  .yt-btn { width: 100%; justify-content: center; }
+  .paste-zone img { max-height: 180px; }
+  .card-content { padding: 20px; }
+
+  /* ARENA MOBILE */
+  body.arena-mode .sec-right { position: fixed; top: 15px; right: 15px; }
+  body.arena-mode .ex-card { padding: 20px; width: 100vw; max-width: 100%; border-radius: 0; }
+  body.arena-mode .arena-split-view { grid-template-columns: 1fr; gap: 25px; min-height: auto; }
+  body.arena-mode .paste-zone { min-height: 250px; }
+  body.arena-mode .paste-zone img { max-height: 40vh; }
+  body.arena-mode .card-header .ex-name { font-size: 2rem; }
+  body.arena-mode .card-header .ex-equip { font-size: 0.9rem; }
+  body.arena-mode .target-en { font-size: 0.9rem; }
+  body.arena-mode .target-ar { font-size: 1.1rem; }
+  body.arena-mode .ex-desc { font-size: 1rem; }
+  body.arena-mode .ex-desc.ar-desc { font-size: 1.1rem; }
+  body.arena-mode .ex-focus { font-size: 1rem; padding: 18px; }
+  body.arena-mode .card-bottom { padding: 20px; flex-direction: column; }
+  body.arena-mode .metrics { gap: 30px; }
+  body.arena-mode .metric-val { font-size: 2.2rem !important; }
+  body.arena-mode .mark-btn { font-size: 1.1rem; padding: 18px 30px; width: 100%; }
+  body.arena-mode .yt-btn { font-size: 1rem; padding: 15px 25px; width: 100%; justify-content: center; }
 }
 
 /* ⚔️ THE ARENA (Cinematic Colosseum HUD) */

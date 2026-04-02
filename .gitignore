@@ -1,6 +1,7 @@
 # Helper scripts (not needed in production)
 enrich_routine.js
 compress_images.py
+.env
 
 # OS files
 .DS_Store
