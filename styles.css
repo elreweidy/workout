@@ -375,3 +375,21 @@ body.arena-mode .standard-desc { display: none; }
   body.arena-mode .yt-btn { font-size: 0.9rem !important; padding: 14px 20px !important; width: 100% !important; justify-content: center; border-radius: 10px; }
   body.arena-mode .mark-btn { font-size: 1.1rem !important; padding: 16px 30px !important; width: 100% !important; border-radius: 10px; }
 }
+/* PROFILE MODAL */
+.profile-btn { display: flex; align-items: center; gap: 15px; width: 100%; padding: 20px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; color: var(--white); cursor: pointer; text-align: left; transition: 0.2s; }
+.profile-btn:hover { background: rgba(92,198,200,0.1); border-color: rgba(92,198,200,0.3); }
+.profile-btn.active { background: rgba(92,198,200,0.15); border-color: var(--accent); }
+.profile-btn.active::after { content: '?'; color: var(--accent); font-size: 1.2rem; margin-left: auto; }
+.pf-icon { font-size: 2rem; }
+.pf-name { font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: bold; color: var(--accent); margin-bottom: 5px; }
+.pf-desc { font-size: 0.9rem; color: rgba(255,255,255,0.6); }
+/* CELEBRATION OVERLAY */
+.celebration-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+.celebration-overlay.show { opacity: 1; pointer-events: auto; }
+.celeb-text { font-family: 'Cinzel Decorative', serif; font-size: 4rem; color: var(--accent); text-shadow: 0 0 30px rgba(92,198,200,0.6); text-align: center; transform: scale(0.8); transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-bottom: 20px; }
+.celebration-overlay.show .celeb-text { transform: scale(1); }
+.celeb-sub { font-family: 'Inter', sans-serif; font-size: 1.2rem; color: var(--white); opacity: 0.8; letter-spacing: 0.2em; text-transform: uppercase; }
+
+@media(max-width: 900px) {
+  .celeb-text { font-size: 2.5rem; }
+}

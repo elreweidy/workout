@@ -35,12 +35,16 @@ const QUOTES = [
 ];
 
 /* ═══════════════════════════════════════════
-   WEDDING PREP — 2 MONTH HYPERTROPHY PPL
-   Equipment: Dumbbells, Barbell, EZ Bar, Bench, Bodyweight
-   Rules: Max 3 sets · No barbell on bench · No chest-supported
-   Structure: 7 exercises + 1 abs + 1 posture = 9 per day
+   PROFILE SYSTEM — Multiple Routine Support
+   Each profile: { id, name, icon, desc, routine: [...days], images: {...} }
 ═══════════════════════════════════════════ */
-const DEFAULT_ROUTINE = [
+const PROFILES = {
+  ppl: {
+    id: 'ppl',
+    name: 'Olympus PPL',
+    icon: '⚡',
+    desc: 'Push-Pull-Legs Hypertrophy',
+    routine: [
   {
     day: "Saturday",
     id: 6,
@@ -1223,39 +1227,43 @@ const DEFAULT_ROUTINE = [
     focus: "REST",
     "exercises": []
   }
-];
+],
+    images: {
+  ex6_1: 'img/shoulder_press.jpg', ex6_2: 'img/arnold_press.jpg', ex6_3: 'img/db_floor_press.jpg',
+  ex6_4: 'img/pushup.jpg', ex6_5: 'img/lateral_raise.jpg', ex6_6: 'img/front_raise.jpg',
+  ex6_7: 'img/ez_floor_press.jpg', ex6_8: 'img/side_bend.jpg', ex6_9: 'img/scapular_pushup.jpg',
+  ex0_1: 'img/barbell_row.jpg', ex0_2: 'img/dumbbell_row.jpg', ex0_3: 'img/shrug.jpg',
+  ex0_4: 'img/reverse_fly.jpg', ex0_5: 'img/curl.jpg', ex0_6: 'img/curl.jpg',
+  ex0_7: 'img/curl.jpg', ex0_8: 'img/abs.jpg', ex0_9: 'img/superman.jpg',
+  ex1_1: 'img/squat.jpg', ex1_2: 'img/squat.jpg', ex1_3: 'img/lunge.jpg',
+  ex1_4: 'img/deadlift.jpg', ex1_5: 'img/step_up.jpg', ex1_6: 'img/squat.jpg',
+  ex1_7: 'img/calf_raise.jpg', ex1_8: 'img/abs.jpg', ex1_9: 'img/neck_flexion.jpg',
+  ex2_1: 'img/db_bench.jpg', ex2_2: 'img/incline_db_press.jpg', ex2_3: 'img/barbell_ohp.jpg',
+  ex2_4: 'img/flyes.jpg', ex2_5: 'img/lateral_raise.jpg', ex2_6: 'img/skull_crusher.jpg',
+  ex2_7: 'img/overhead_tricep.jpg', ex2_8: 'img/abs.jpg', ex2_9: 'img/wall_angel.jpg',
+  ex3_1: 'img/deadlift.jpg', ex3_2: 'img/barbell_row.jpg', ex3_3: 'img/dumbbell_row.jpg',
+  ex3_4: 'img/shrug.jpg', ex3_5: 'img/curl.jpg', ex3_6: 'img/curl.jpg',
+  ex3_7: 'img/shrug.jpg', ex3_8: 'img/abs.jpg', ex3_9: 'img/reverse_fly.jpg',
+  ex4_1: 'img/squat.jpg', ex4_2: 'img/lunge.jpg', ex4_3: 'img/deadlift.jpg',
+  ex4_4: 'img/lunge.jpg', ex4_5: 'img/hip_thrust.jpg', ex4_6: 'img/lunge.jpg',
+  ex4_7: 'img/calf_raise.jpg', ex4_8: 'img/abs.jpg', ex4_9: 'img/prone_neck.jpg'
+    }
+  }
+};
+
+if (typeof CORE_FORTRESS_PROFILE !== 'undefined') {
+  PROFILES.core = CORE_FORTRESS_PROFILE;
+}
+
+// Backward compat
+const DEFAULT_ROUTINE = PROFILES.ppl.routine;
+const EX_IMG = PROFILES.ppl.images;
+const ACTIVE_PROFILE_KEY = 'oly_active_profile';
 
 const DAY_ORDER = [6, 0, 1, 2, 3, 4, 5];
 const SKEY = 'olympus_v11';
 const YT_SVG = '<svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>';
 const SEARCH_SVG = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>';
-
-const EX_IMG = {
-  // SAT
-  ex6_1: 'img/shoulder_press.jpg', ex6_2: 'img/arnold_press.jpg', ex6_3: 'img/db_floor_press.jpg', 
-  ex6_4: 'img/pushup.jpg', ex6_5: 'img/lateral_raise.jpg', ex6_6: 'img/front_raise.jpg', 
-  ex6_7: 'img/ez_floor_press.jpg', ex6_8: 'img/side_bend.jpg', ex6_9: 'img/scapular_pushup.jpg',
-  // SUN
-  ex0_1: 'img/barbell_row.jpg', ex0_2: 'img/dumbbell_row.jpg', ex0_3: 'img/shrug.jpg', 
-  ex0_4: 'img/reverse_fly.jpg', ex0_5: 'img/curl.jpg', ex0_6: 'img/curl.jpg', 
-  ex0_7: 'img/curl.jpg', ex0_8: 'img/abs.jpg', ex0_9: 'img/superman.jpg',
-  // MON
-  ex1_1: 'img/squat.jpg', ex1_2: 'img/squat.jpg', ex1_3: 'img/lunge.jpg', 
-  ex1_4: 'img/deadlift.jpg', ex1_5: 'img/step_up.jpg', ex1_6: 'img/squat.jpg', 
-  ex1_7: 'img/calf_raise.jpg', ex1_8: 'img/abs.jpg', ex1_9: 'img/neck_flexion.jpg',
-  // TUE
-  ex2_1: 'img/db_bench.jpg', ex2_2: 'img/incline_db_press.jpg', ex2_3: 'img/barbell_ohp.jpg', 
-  ex2_4: 'img/flyes.jpg', ex2_5: 'img/lateral_raise.jpg', ex2_6: 'img/skull_crusher.jpg', 
-  ex2_7: 'img/overhead_tricep.jpg', ex2_8: 'img/abs.jpg', ex2_9: 'img/wall_angel.jpg',
-  // WED
-  ex3_1: 'img/deadlift.jpg', ex3_2: 'img/barbell_row.jpg', ex3_3: 'img/dumbbell_row.jpg', 
-  ex3_4: 'img/shrug.jpg', ex3_5: 'img/curl.jpg', ex3_6: 'img/curl.jpg', 
-  ex3_7: 'img/shrug.jpg', ex3_8: 'img/abs.jpg', ex3_9: 'img/reverse_fly.jpg',
-  // THU
-  ex4_1: 'img/squat.jpg', ex4_2: 'img/lunge.jpg', ex4_3: 'img/deadlift.jpg', 
-  ex4_4: 'img/lunge.jpg', ex4_5: 'img/hip_thrust.jpg', ex4_6: 'img/lunge.jpg', 
-  ex4_7: 'img/calf_raise.jpg', ex4_8: 'img/abs.jpg', ex4_9: 'img/prone_neck.jpg'
-};
 /* ═══════════════════════════════════════════
    UTILITIES
 ═══════════════════════════════════════════ */

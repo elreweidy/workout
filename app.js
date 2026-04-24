@@ -52,7 +52,20 @@ const UI = (() => {
     $('st-streak').textContent = getStreak();
   };
 
-  return { toast, openLB, closeLB, openModal, closeModal, buildHeatmap, renderCal, getStreak, getWorkoutDates,
+  const buildProfileSwitcher = () => {
+    const list = $('profile-list'); if (!list) return;
+    list.innerHTML = '';
+    Object.values(PROFILES).forEach(p => {
+      const active = p.id === STATE.activeProfileId;
+      const btn = document.createElement('button');
+      btn.className = 'profile-btn' + (active ? ' active' : '');
+      btn.innerHTML = `<span class="pf-icon">${p.icon}</span><div class="pf-info"><div class="pf-name">${p.name}</div><div class="pf-desc">${p.desc}</div></div>`;
+      btn.onclick = () => { if (!active) App.switchProfile(p.id); };
+      list.appendChild(btn);
+    });
+  };
+
+  return { toast, openLB, closeLB, openModal, closeModal, buildHeatmap, renderCal, getStreak, getWorkoutDates, buildProfileSwitcher,
     calShift: d => { STATE.calDate.setMonth(STATE.calDate.getMonth() + d); renderCal(); SFX.tick(); }
   };
 })();
@@ -104,7 +117,8 @@ const App = (() => {
         : '<div class="ex-desc standard-desc">Focus on proper form.</div>';
 
       const userImg = LS.get('oly_img_' + ex.id);
-      const defaultImg = typeof EX_IMG !== 'undefined' ? EX_IMG[ex.id] : null;
+      const profileImages = PROFILES[STATE.activeProfileId]?.images || {};
+      const defaultImg = profileImages[ex.id] || null;
       const img = userImg || defaultImg;
       const searchUrl = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(ex.name + ' exercise male');
 
@@ -249,7 +263,7 @@ const App = (() => {
     const idx = day.exercises.findIndex(e => e.id === ex.id);
     if (idx > -1) day.exercises[idx] = ex;
     else { if (day.exercises.length >= 12) return UI.toast('Max limits reached.'); day.exercises.push(ex); }
-    LS.set(SKEY, JSON.stringify(STATE.routine));
+    LS.set(App.getCurSKey(), JSON.stringify(STATE.routine));
     UI.closeModal('ed-modal'); loadDay(STATE.selDay); SFX.tick(); UI.toast('Movement Inscribed');
   };
 
@@ -257,7 +271,7 @@ const App = (() => {
     if (!confirm('Banish this movement from the ritual?')) return;
     const day = STATE.routine.find(r => r.id === STATE.selDay);
     day.exercises = day.exercises.filter(e => e.id !== id);
-    LS.set(SKEY, JSON.stringify(STATE.routine));
+    LS.set(App.getCurSKey(), JSON.stringify(STATE.routine));
     loadDay(STATE.selDay); SFX.tick(); UI.toast('Movement Banished');
   };
 
@@ -276,8 +290,29 @@ const App = (() => {
        active.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
        UI.toast('THE ARENA IS CONQUERED!');
+       App.triggerCelebration();
        App.toggleArena();
     }
+  };
+
+  const triggerCelebration = () => {
+    const overlay = document.createElement('div');
+    overlay.className = 'celebration-overlay';
+    overlay.innerHTML = '<div class="celeb-text">SESSION COMPLETE</div><div class="celeb-sub">Olympus Smiles Upon You</div>';
+    document.body.appendChild(overlay);
+    setTimeout(() => overlay.classList.add('show'), 10);
+    
+    // Confetti effect using the existing canvas engine
+    for(let i=0; i<100; i++) {
+        setTimeout(() => FX.addRipple(Math.random() * window.innerWidth, Math.random() * window.innerHeight), i * 20);
+    }
+    SFX.conquer();
+    SFX.conquer(); // Play it twice for effect
+
+    setTimeout(() => {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.remove(), 1000);
+    }, 4000);
   };
 
   const toggleArena = () => {
@@ -290,13 +325,33 @@ const App = (() => {
   };
 
   return {
-    loadDay, buildNav, toggleDone, refreshZone, openEditor, saveEx, delEx, setFilter, updateProgress, toggleArena, updateArenaState,
+    loadDay, buildNav, toggleDone, refreshZone, openEditor, saveEx, delEx, setFilter, updateProgress, toggleArena, updateArenaState, triggerCelebration,
     cycleQuote: () => { const q = QUOTES[Math.floor(Math.random() * QUOTES.length)]; const el = $('oracle-quote'); el.style.opacity = 0; setTimeout(() => { el.innerHTML = '"' + q.t + '" <span class="oracle-author">— ' + q.a + '</span>'; el.style.opacity = 1; }, 300); },
 
+    getCurSKey: () => SKEY + '_' + STATE.activeProfileId,
+
+    switchProfile: id => {
+      if (!PROFILES[id]) return;
+      STATE.activeProfileId = id;
+      LS.set(ACTIVE_PROFILE_KEY, id);
+      const s = LS.get(App.getCurSKey());
+      STATE.routine = s ? JSON.parse(s) : JSON.parse(JSON.stringify(PROFILES[id].routine));
+      if (!s) LS.set(App.getCurSKey(), JSON.stringify(STATE.routine));
+      UI.buildProfileSwitcher();
+      App.buildNav();
+      App.loadDay(STATE.selDay);
+      UI.closeModal('profile-modal');
+      SFX.conquer();
+      UI.toast(`Switched to ${PROFILES[id].name}`);
+    },
+
     init: () => {
-      const s = LS.get(SKEY);
-      STATE.routine = s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULT_ROUTINE));
-      if (!s) LS.set(SKEY, JSON.stringify(STATE.routine));
+      STATE.activeProfileId = LS.get(ACTIVE_PROFILE_KEY) || 'ppl';
+      if (!PROFILES[STATE.activeProfileId]) STATE.activeProfileId = 'ppl';
+      
+      const s = LS.get(App.getCurSKey());
+      STATE.routine = s ? JSON.parse(s) : JSON.parse(JSON.stringify(PROFILES[STATE.activeProfileId].routine));
+      if (!s) LS.set(App.getCurSKey(), JSON.stringify(STATE.routine));
 
       $('cur-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
       App.cycleQuote();
@@ -390,6 +445,11 @@ const App = (() => {
 
       $('add-container').addEventListener('click', e => { if (e.target.closest('[data-action="add"]')) App.openEditor('add'); });
 
+      // Profile Switcher Events
+      $('btn-profiles').addEventListener('click', () => { UI.buildProfileSwitcher(); UI.openModal('profile-modal'); });
+      $('profile-close').addEventListener('click', () => UI.closeModal('profile-modal'));
+      $('profile-modal').addEventListener('click', e => { if (e.target === e.currentTarget) UI.closeModal('profile-modal'); });
+
       // Ctrl+V paste into hovered zone
       document.addEventListener('paste', e => {
         if (!STATE.hovZone) return; e.preventDefault();
@@ -414,6 +474,56 @@ const App = (() => {
       $('btn-export').addEventListener('click', () => DataSys.exportData());
       $('btn-import-trigger').addEventListener('click', () => $('file-import').click());
       $('file-import').addEventListener('change', e => DataSys.importData(e));
+
+      // Swipe Navigation for Arena
+      let touchStartX = 0;
+      document.addEventListener('touchstart', e => { if (document.body.classList.contains('arena-mode')) touchStartX = e.changedTouches[0].screenX; });
+      document.addEventListener('touchend', e => {
+        if (!document.body.classList.contains('arena-mode')) return;
+        const diff = e.changedTouches[0].screenX - touchStartX;
+        if (Math.abs(diff) > 100) {
+          const active = document.querySelector('.ex-card.arena-active');
+          if (!active) return;
+          const id = active.id.replace('card-', '');
+          if (diff < 0) {
+            // Swipe Left (Skip)
+            const next = active.nextElementSibling;
+            document.querySelectorAll('.ex-card').forEach(c => c.classList.remove('arena-active'));
+            if (next && !next.classList.contains('done')) {
+              next.classList.add('arena-active');
+              next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else App.updateArenaState();
+          } else {
+            // Swipe Right (Conquer)
+            App.toggleDone(id);
+          }
+        }
+      });
+
+      // Keyboard Shortcuts
+      document.addEventListener('keydown', e => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (e.key === 'a' || e.key === 'A') App.toggleArena();
+        if (e.key === 'Escape') {
+          if (document.body.classList.contains('arena-mode')) App.toggleArena();
+          document.querySelectorAll('.modal').forEach(m => UI.closeModal(m.id));
+          UI.closeLB();
+        }
+        if (e.key === 'ArrowRight' && !document.body.classList.contains('arena-mode')) {
+          let nextDay = STATE.selDay + 1; if (nextDay > 6) nextDay = 0;
+          App.loadDay(nextDay);
+          App.buildNav();
+        }
+        if (e.key === 'ArrowLeft' && !document.body.classList.contains('arena-mode')) {
+          let prevDay = STATE.selDay - 1; if (prevDay < 0) prevDay = 6;
+          App.loadDay(prevDay);
+          App.buildNav();
+        }
+        if (!isNaN(e.key) && parseInt(e.key) > 0 && document.body.classList.contains('arena-mode')) {
+           const active = document.querySelector('.ex-card.arena-active');
+           if (active) App.toggleDone(active.id.replace('card-', ''));
+        }
+      });
 
       document.querySelectorAll('.wrap > .reveal').forEach(el => observer.observe(el));
     }
