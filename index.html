@@ -146,11 +146,11 @@
 </div>
 
 <!-- PROFILE MODAL -->
-<div class="modal" id="profile-modal">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h2 id="profile-title" style="margin:0;">Select Routine</h2>
-      <button class="close-btn" id="profile-close">×</button>
+<div class="modal-bg" id="profile-modal">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">
+      <span id="profile-title">Select Routine</span>
+      <button class="modal-close" id="profile-close">×</button>
     </div>
     <div id="profile-list" style="display:flex; flex-direction:column; gap:15px; margin-top:20px;"></div>
   </div>

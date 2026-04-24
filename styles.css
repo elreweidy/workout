@@ -379,7 +379,7 @@ body.arena-mode .standard-desc { display: none; }
 .profile-btn { display: flex; align-items: center; gap: 15px; width: 100%; padding: 20px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; color: var(--white); cursor: pointer; text-align: left; transition: 0.2s; }
 .profile-btn:hover { background: rgba(92,198,200,0.1); border-color: rgba(92,198,200,0.3); }
 .profile-btn.active { background: rgba(92,198,200,0.15); border-color: var(--accent); }
-.profile-btn.active::after { content: '?'; color: var(--accent); font-size: 1.2rem; margin-left: auto; }
+.profile-btn.active::after { content: '✓'; color: var(--accent); font-size: 1.2rem; margin-left: auto; }
 .pf-icon { font-size: 2rem; }
 .pf-name { font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: bold; color: var(--accent); margin-bottom: 5px; }
 .pf-desc { font-size: 0.9rem; color: rgba(255,255,255,0.6); }
