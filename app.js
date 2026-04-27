@@ -11,11 +11,12 @@ const UI = (() => {
 
   const buildHeatmap = () => {
     const h = $('heatmap'); h.innerHTML = '';
+    const prefix = 'oly_done_' + (STATE.activeProfileId || 'ppl') + '_';
     for (let i = 6; i >= 0; i--) {
       const d = new Date(); d.setDate(d.getDate() - i);
       const ds = d.toISOString().split('T')[0];
       let lit = false;
-      for (let j = 0; j < localStorage.length; j++) { if (localStorage.key(j).startsWith('oly_done_' + ds)) { lit = true; break; } }
+      for (let j = 0; j < localStorage.length; j++) { if (localStorage.key(j).startsWith(prefix + ds)) { lit = true; break; } }
       h.innerHTML += '<div class="h-dot' + (lit ? ' lit' : '') + '" title="' + ds + '"></div>';
     }
   };
@@ -24,7 +25,8 @@ const UI = (() => {
 
   const getWorkoutDates = () => {
     const s = new Set();
-    for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith('oly_done_')) s.add(k.substring(9, 19)); }
+    const prefix = 'oly_done_' + (STATE.activeProfileId || 'ppl') + '_';
+    for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith(prefix)) s.add(k.substring(prefix.length, prefix.length + 10)); }
     return s;
   };
 
@@ -80,7 +82,7 @@ const App = (() => {
     const day = STATE.routine.find(r => r.id === STATE.selDay);
     if (!day || !day.exercises.length) return;
     const td = today();
-    const done = day.exercises.filter(e => LS.get('oly_done_' + td + '_' + e.id) === 'true').length;
+    const done = day.exercises.filter(e => LS.get('oly_done_' + STATE.activeProfileId + '_' + td + '_' + e.id) === 'true').length;
     $('prog-glow').style.width = (day.exercises.length ? (done / day.exercises.length) * 100 : 0) + '%';
   };
 
@@ -88,7 +90,7 @@ const App = (() => {
     const grid = $('ex-grid'); grid.innerHTML = '';
     
     // Sort based on drag-and-drop saved order
-    const savedOrder = LS.get('oly_order_' + STATE.selDay);
+    const savedOrder = LS.get('oly_order_' + STATE.activeProfileId + '_' + STATE.selDay);
     if (savedOrder) {
       try {
         const orderArr = JSON.parse(savedOrder);
@@ -106,7 +108,7 @@ const App = (() => {
     const td = today(), frag = document.createDocumentFragment();
 
     fList.forEach((ex, i) => {
-      const done = LS.get('oly_done_' + td + '_' + ex.id) === 'true';
+      const done = LS.get('oly_done_' + STATE.activeProfileId + '_' + td + '_' + ex.id) === 'true';
       const ytUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(ex.name + ' exercise proper form');
       
       const descHtmlEn = ex.descEn ? ex.descEn.map(d => '<li>' + d + '</li>').join('') : (ex.desc ? ex.desc.map(d => '<li>' + d + '</li>').join('') : '');
@@ -221,7 +223,7 @@ const App = (() => {
   };
 
   const toggleDone = id => {
-    const key = 'oly_done_' + today() + '_' + id;
+    const key = 'oly_done_' + STATE.activeProfileId + '_' + today() + '_' + id;
     const was = LS.get(key) === 'true';
     LS.set(key, String(!was));
     was ? SFX.tick() : SFX.conquer();
@@ -338,11 +340,20 @@ const App = (() => {
       STATE.routine = s ? JSON.parse(s) : JSON.parse(JSON.stringify(PROFILES[id].routine));
       if (!s) LS.set(App.getCurSKey(), JSON.stringify(STATE.routine));
       UI.buildProfileSwitcher();
+      App.updateProfileIndicator();
       App.buildNav();
       App.loadDay(STATE.selDay);
+      UI.buildHeatmap();
       UI.closeModal('profile-modal');
       SFX.conquer();
       UI.toast(`Switched to ${PROFILES[id].name}`);
+    },
+
+    updateProfileIndicator: () => {
+      const p = PROFILES[STATE.activeProfileId];
+      if (p && $('btn-profiles')) {
+        $('btn-profiles').innerHTML = p.icon + ' ' + p.name + ' ▾';
+      }
     },
 
     init: () => {
@@ -362,6 +373,7 @@ const App = (() => {
       }, 1000);
 
       App.buildNav(); UI.buildHeatmap(); App.loadDay(STATE.selDay); App.setFilter('all');
+      App.updateProfileIndicator();
       FX.init();
 
       // ═══ EVENT DELEGATION ═══
@@ -409,7 +421,7 @@ const App = (() => {
         draggedCard.classList.remove('dragged');
         draggedCard = null;
         const newOrder = Array.from($('ex-grid').querySelectorAll('.ex-card')).map(c => c.id.replace('card-', ''));
-        LS.set('oly_order_' + STATE.selDay, JSON.stringify(newOrder));
+        LS.set('oly_order_' + STATE.activeProfileId + '_' + STATE.selDay, JSON.stringify(newOrder));
         SFX.conquer();
       });
 
@@ -506,17 +518,19 @@ const App = (() => {
         if (e.key === 'a' || e.key === 'A') App.toggleArena();
         if (e.key === 'Escape') {
           if (document.body.classList.contains('arena-mode')) App.toggleArena();
-          document.querySelectorAll('.modal').forEach(m => UI.closeModal(m.id));
+          document.querySelectorAll('.modal-bg').forEach(m => UI.closeModal(m.id));
           UI.closeLB();
         }
         if (e.key === 'ArrowRight' && !document.body.classList.contains('arena-mode')) {
           let nextDay = STATE.selDay + 1; if (nextDay > 6) nextDay = 0;
-          App.loadDay(nextDay);
+          STATE.selDay = nextDay;
+          App.loadDay(STATE.selDay);
           App.buildNav();
         }
         if (e.key === 'ArrowLeft' && !document.body.classList.contains('arena-mode')) {
           let prevDay = STATE.selDay - 1; if (prevDay < 0) prevDay = 6;
-          App.loadDay(prevDay);
+          STATE.selDay = prevDay;
+          App.loadDay(STATE.selDay);
           App.buildNav();
         }
         if (!isNaN(e.key) && parseInt(e.key) > 0 && document.body.classList.contains('arena-mode')) {

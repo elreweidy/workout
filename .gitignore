@@ -1,7 +1,12 @@
 # Helper scripts (not needed in production)
 enrich_routine.js
 compress_images.py
+gen_icons.py
+cpu_trigger.py
 .env
+
+# Legacy
+olympus-tracker.html
 
 # OS files
 .DS_Store
