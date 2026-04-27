@@ -93,6 +93,49 @@ const CORE_FORTRESS_PROFILE = {
     }
   ],
   images: {
-    // We can reuse PPL images if names match or leave empty to prompt user.
+    "core6_1": "img/db_floor_press.jpg",
+    "core6_2": "img/shoulder_press.jpg",
+    "core6_3": "img/hollow_body.jpg",
+    "core6_4": "img/weighted_crunch.jpg",
+    "core6_5": "img/pushup.jpg",
+    "core6_6": "img/lateral_raise.jpg",
+    "core6_7": "img/scapular_pushup.jpg",
+
+    "core0_1": "img/barbell_row.jpg",
+    "core0_2": "img/dumbbell_row.jpg",
+    "core0_3": "img/russian_twist.jpg",
+    "core0_4": "img/side_plank.jpg",
+    "core0_5": "img/curl.jpg",
+    "core0_6": "img/reverse_fly.jpg",
+    "core0_7": "img/superman.jpg",
+
+    "core1_1": "img/goblet_squat.jpg",
+    "core1_2": "img/deadlift.jpg",
+    "core1_3": "img/hanging_leg_raise.jpg",
+    "core1_4": "img/mountain_climber.jpg",
+    "core1_5": "img/lunge.jpg",
+    "core1_6": "img/calf_raise.jpg",
+    "core1_7": "img/plank.jpg",
+
+    "core2_1": "img/incline_db_press.jpg",
+    "core2_2": "img/arnold_press.jpg",
+    "core2_3": "img/ab_wheel.jpg",
+    "core2_4": "img/v_ups.jpg",
+    "core2_5": "img/skull_crusher.jpg",
+    "core2_6": "img/wall_angel.jpg",
+
+    "core3_1": "img/pull_up.jpg",
+    "core3_2": "img/shrug.jpg",
+    "core3_3": "img/woodchopper.jpg",
+    "core3_4": "img/bicycle_crunch.jpg",
+    "core3_5": "img/curl.jpg",
+    "core3_6": "img/face_pull.jpg",
+
+    "core4_1": "img/bulgarian_split_squat.jpg",
+    "core4_2": "img/hip_thrust.jpg",
+    "core4_3": "img/l_sit.jpg",
+    "core4_4": "img/dead_bug.jpg",
+    "core4_5": "img/calf_raise.jpg",
+    "core4_6": "img/abs.jpg"
   }
 };
