@@ -2,87 +2,72 @@ const CORE_FORTRESS_PROFILE = {
   id: 'core',
   name: 'Core Fortress',
   icon: '🛡️',
-  desc: 'PPL with Intense Core Focus',
+  desc: 'Intense 6-Day Pure Core Split',
   routine: [
     {
       day: "Saturday",
       id: 6,
-      focus: "PUSH + UPPER CORE",
+      focus: "FLEXION & ANTI-EXTENSION",
       exercises: [
-        { id: "core6_1", type: "main", name: "Dumbbell Floor Press", sets: "3", reps: "10-12", equip: "Dumbbells", targetEn: "Chest", targetAr: "الصدر", descEn: ["Lie on floor, press up."], descAr: ["استلق على الأرض وادفع للأعلى."], focus: "Keep core tight." },
-        { id: "core6_2", type: "main", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "8-10", equip: "Dumbbells", targetEn: "Shoulders", targetAr: "الكتف", descEn: ["Press overhead."], descAr: ["ادفع للأعلى."], focus: "Don't arch lower back." },
-        { id: "core6_3", type: "abs", name: "Hollow Body Hold", sets: "3", reps: "45s", equip: "Bodyweight", targetEn: "Core (Transverse Abdominis)", targetAr: "عضلات البطن العميقة", descEn: ["Lie on back, arms and legs extended and slightly raised.", "Press lower back into the floor."], descAr: ["استلق على ظهرك، ارفع ذراعيك وساقيك قليلاً.", "اضغط بأسفل ظهرك على الأرض."], focus: "Keep lower back flat against the floor." },
-        { id: "core6_4", type: "abs", name: "Weighted Crunches", sets: "3", reps: "15-20", equip: "Dumbbell", targetEn: "Upper Abs", targetAr: "عضلات البطن العلوية", descEn: ["Hold dumbbell at chest, crunch up.", "Squeeze abs at the top."], descAr: ["احمل دمبل عند الصدر واطوِ بطنك.", "اعصر عضلات البطن في الأعلى."], focus: "Don't pull on your neck." },
-        { id: "core6_5", type: "main", name: "Push-Ups", sets: "3", reps: "Failure", equip: "Bodyweight", targetEn: "Chest & Core", targetAr: "الصدر والبطن", descEn: ["Keep body in a straight line.", "Engage core."], descAr: ["حافظ على جسمك في خط مستقيم.", "شد عضلات البطن."], focus: "Hollow out your core." },
-        { id: "core6_6", type: "main", name: "Lateral Raise", sets: "3", reps: "12-15", equip: "Dumbbells", targetEn: "Lateral Deltoids", targetAr: "الكتف الجانبي", descEn: ["Raise arms to sides."], descAr: ["ارفع ذراعيك للجانبين."], focus: "Lead with elbows." },
-        { id: "core6_7", type: "posture", name: "Scapular Push-Ups", sets: "2", reps: "15", equip: "Bodyweight", targetEn: "Serratus Anterior", targetAr: "المنشارية الأمامية", descEn: ["Plank position, retract and protract shoulder blades."], descAr: ["في وضعية البلانك، اقبض وابسط لوحي الكتف."], focus: "Keep arms straight." }
+        { id: "core6_1", type: "main", name: "Hollow Body Hold", sets: "4", reps: "45-60s", equip: "Bodyweight", targetEn: "Core (Transverse)", targetAr: "عضلات البطن العميقة", descEn: ["Lie on back, press lower back into floor.", "Extend arms and legs, hold."], descAr: ["استلق على ظهرك واضغط أسفله على الأرض.", "مد ذراعيك وساقيك وحافظ على الوضعية."], focus: "Never let lower back arch." },
+        { id: "core6_2", type: "abs", name: "Weighted Crunches", sets: "4", reps: "15-20", equip: "Dumbbell/Plate", targetEn: "Upper Abs", targetAr: "عضلات البطن العلوية", descEn: ["Hold weight at chest.", "Crunch up, squeezing abs hard."], descAr: ["احمل الوزن عند صدرك.", "اطوِ بطنك للأعلى واعصر العضلات."], focus: "Keep neck neutral." },
+        { id: "core6_3", type: "abs", name: "Reverse Crunches", sets: "3", reps: "15", equip: "Bodyweight", targetEn: "Lower Abs", targetAr: "عضلات البطن السفلية", descEn: ["Lie on back, bring knees toward chest.", "Lift pelvis slightly off floor."], descAr: ["استلق، اسحب ركبتيك نحو صدرك.", "ارفع حوضك قليلاً عن الأرض."], focus: "Control the descent." },
+        { id: "core6_4", type: "main", name: "Ab Wheel Rollouts", sets: "3", reps: "10-15", equip: "Ab Wheel", targetEn: "Total Core", targetAr: "البطن بالكامل", descEn: ["Roll forward from knees.", "Pull back using abs, not arms."], descAr: ["دحرج العجلة للأمام من الركبتين.", "اسحب للخلف باستخدام بطنك وليس ذراعيك."], focus: "Keep spine slightly rounded." }
       ]
     },
     {
       day: "Sunday",
       id: 0,
-      focus: "PULL + OBLIQUES",
+      focus: "ROTATION & ANTI-ROTATION",
       exercises: [
-        { id: "core0_1", type: "main", name: "Barbell Row", sets: "3", reps: "8-10", equip: "Barbell", targetEn: "Back", targetAr: "الظهر", descEn: ["Hinge at hips, pull barbell to stomach."], descAr: ["انحنِ من الحوض، اسحب البار نحو بطنك."], focus: "Keep core extremely tight to protect back." },
-        { id: "core0_2", type: "main", name: "Dumbbell Row", sets: "3", reps: "10-12", equip: "Dumbbells", targetEn: "Lats", targetAr: "المجنص", descEn: ["Row dumbbell to hip."], descAr: ["اسحب الدمبل نحو الحوض."], focus: "Squeeze lats." },
-        { id: "core0_3", type: "abs", name: "Russian Twists", sets: "3", reps: "20", equip: "Dumbbell", targetEn: "Obliques", targetAr: "العضلات الجانبية للبطن", descEn: ["Sit back, rotate torso holding weight."], descAr: ["اجلس بظهر مائل، در بجذعك حاملاً وزناً."], focus: "Rotate from the core, not just arms." },
-        { id: "core0_4", type: "abs", name: "Side Plank", sets: "3", reps: "45s/side", equip: "Bodyweight", targetEn: "Obliques", targetAr: "العضلات الجانبية", descEn: ["Hold side plank position."], descAr: ["حافظ على وضعية البلانك الجانبي."], focus: "Keep hips elevated." },
-        { id: "core0_5", type: "main", name: "Bicep Curls", sets: "3", reps: "10-12", equip: "Dumbbells", targetEn: "Biceps", targetAr: "البايسبس", descEn: ["Curl weights up."], descAr: ["اثنِ ذراعيك لرفع الوزن."], focus: "Don't swing." },
-        { id: "core0_6", type: "posture", name: "Reverse Flyes", sets: "3", reps: "15", equip: "Dumbbells", targetEn: "Rear Delts", targetAr: "الكتف الخلفي", descEn: ["Hinge over, raise arms out."], descAr: ["انحنِ للأمام، ارفع ذراعيك للخارج."], focus: "Squeeze shoulder blades." },
-        { id: "core0_7", type: "bonus", name: "Superman Holds", sets: "3", reps: "30s", equip: "Bodyweight", targetEn: "Lower Back", targetAr: "أسفل الظهر", descEn: ["Lie on stomach, raise arms and legs."], descAr: ["استلقِ على بطنك، ارفع ذراعيك وساقيك."], focus: "Squeeze glutes and lower back." }
+        { id: "core0_1", type: "abs", name: "Russian Twists", sets: "4", reps: "20/side", equip: "Weight/Med Ball", targetEn: "Obliques", targetAr: "العضلات الجانبية", descEn: ["Sit back, elevate feet.", "Rotate torso side to side touching weight to floor."], descAr: ["اجلس بظهر مائل وارفع قدميك.", "أدر جذعك من جانب لآخر ملامساً الأرض بالوزن."], focus: "Rotate shoulders, not just arms." },
+        { id: "core0_2", type: "main", name: "Cable/Band Woodchoppers", sets: "3", reps: "12-15/side", equip: "Band/Cable", targetEn: "Obliques", targetAr: "العضلات الجانبية", descEn: ["Pull band diagonally across body.", "Pivot back foot."], descAr: ["اسحب السير بشكل قطري عبر جسمك.", "قم بتدوير قدمك الخلفية."], focus: "Core initiates the movement." },
+        { id: "core0_3", type: "posture", name: "Pallof Press", sets: "3", reps: "12/side", equip: "Band/Cable", targetEn: "Anti-Rotation", targetAr: "مقاومة الدوران", descEn: ["Press band straight out from chest.", "Resist the pull to the side."], descAr: ["ادفع السير للأمام مباشرة من صدرك.", "قاوم الشد الجانبي."], focus: "Keep torso perfectly still." },
+        { id: "core0_4", type: "posture", name: "Bird-Dog", sets: "3", reps: "12/side", equip: "Bodyweight", targetEn: "Core Stability", targetAr: "استقرار البطن", descEn: ["On all fours, extend opposite arm and leg.", "Keep back completely flat."], descAr: ["على الأطراف الأربعة، مد ذراعاً وساقاً متعاكستين.", "حافظ على استقامة ظهرك تماماً."], focus: "No hip shifting." }
       ]
     },
     {
       day: "Monday",
       id: 1,
-      focus: "LEGS + LOWER CORE",
+      focus: "LATERAL & POSTERIOR",
       exercises: [
-        { id: "core1_1", type: "main", name: "Goblet Squat", sets: "3", reps: "10-12", equip: "Dumbbell", targetEn: "Quads & Core", targetAr: "الأرجل الأمامية والبطن", descEn: ["Hold dumbbell at chest, squat down."], descAr: ["احمل دمبل عند الصدر وانزل في سكوات."], focus: "Keep chest up and core braced." },
-        { id: "core1_2", type: "main", name: "Romanian Deadlift", sets: "3", reps: "8-10", equip: "Barbell/Dumbbells", targetEn: "Hamstrings", targetAr: "الأرجل الخلفية", descEn: ["Hinge at hips, slight knee bend."], descAr: ["انحنِ من الحوض مع ثني الركبة قليلاً."], focus: "Keep back straight." },
-        { id: "core1_3", type: "abs", name: "Hanging Leg Raises", sets: "3", reps: "10-15", equip: "Pull-up Bar", targetEn: "Lower Abs", targetAr: "عضلات البطن السفلية", descEn: ["Hang from bar, raise legs to 90 degrees."], descAr: ["تعلق بالبار وارفع ساقيك لزاوية 90."], focus: "Control the descent, don't swing." },
-        { id: "core1_4", type: "abs", name: "Mountain Climbers", sets: "3", reps: "40s", equip: "Bodyweight", targetEn: "Core", targetAr: "البطن", descEn: ["Plank position, drive knees to chest alternately."], descAr: ["وضعية البلانك، ادفع ركبتيك نحو صدرك بالتناوب."], focus: "Keep hips low." },
-        { id: "core1_5", type: "main", name: "Lunges", sets: "3", reps: "10/leg", equip: "Dumbbells", targetEn: "Legs", targetAr: "الأرجل", descEn: ["Step forward and drop back knee."], descAr: ["اخطُ للأمام وانزل بركبتك الخلفية."], focus: "Maintain balance." },
-        { id: "core1_6", type: "main", name: "Calf Raises", sets: "3", reps: "15-20", equip: "Bodyweight/Dumbbells", targetEn: "Calves", targetAr: "السمانة", descEn: ["Raise up on toes."], descAr: ["ارتفع على أصابع قدميك."], focus: "Full stretch at bottom." },
-        { id: "core1_7", type: "posture", name: "Plank", sets: "3", reps: "60s", equip: "Bodyweight", targetEn: "Total Core", targetAr: "البطن بالكامل", descEn: ["Hold forearm plank."], descAr: ["حافظ على وضعية البلانك على الساعدين."], focus: "Squeeze glutes and abs." }
+        { id: "core1_1", type: "main", name: "Side Planks", sets: "3", reps: "45-60s/side", equip: "Bodyweight", targetEn: "Obliques & QL", targetAr: "العضلات الجانبية", descEn: ["Hold body in straight line on one forearm.", "Keep hips elevated."], descAr: ["ارفع جسمك في خط مستقيم على ساعد واحد.", "حافظ على ارتفاع حوضك."], focus: "Squeeze glutes." },
+        { id: "core1_2", type: "posture", name: "Superman Holds", sets: "3", reps: "30-45s", equip: "Bodyweight", targetEn: "Lower Back", targetAr: "أسفل الظهر", descEn: ["Lie on stomach, raise arms, chest, and legs.", "Hold and squeeze."], descAr: ["استلق على بطنك وارفع ذراعيك وصدرك وساقيك.", "حافظ على الوضعية واعصر العضلات."], focus: "Look down to protect neck." },
+        { id: "core1_3", type: "abs", name: "Heel Touches", sets: "3", reps: "20/side", equip: "Bodyweight", targetEn: "Obliques", targetAr: "العضلات الجانبية", descEn: ["Lie on back, knees bent.", "Crunch up slightly and reach for heels side to side."], descAr: ["استلق وركبتاك مثنيتان.", "اطوِ بطنك قليلاً والمس كعبيك يميناً ويساراً."], focus: "Keep shoulder blades off floor." },
+        { id: "core1_4", type: "main", name: "Back Extensions", sets: "3", reps: "15", equip: "Floor/Bench", targetEn: "Erectors", targetAr: "عضلات الظهر السفلية", descEn: ["Extend spine raising torso.", "Squeeze lower back at top."], descAr: ["ارفع جذعك للأعلى.", "اعصر أسفل ظهرك في الأعلى."], focus: "Controlled movement." }
       ]
     },
     {
       day: "Tuesday",
       id: 2,
-      focus: "PUSH + UPPER CORE",
+      focus: "DYNAMIC LOWER CORE",
       exercises: [
-        { id: "core2_1", type: "main", name: "Incline Dumbbell Press", sets: "3", reps: "10-12", equip: "Dumbbells, Bench", targetEn: "Upper Chest", targetAr: "الصدر العلوي", descEn: ["Press dumbbells on incline bench."], descAr: ["ادفع الدمبلز على بنش مائل."], focus: "Control the weight." },
-        { id: "core2_2", type: "main", name: "Arnold Press", sets: "3", reps: "10-12", equip: "Dumbbells", targetEn: "Shoulders", targetAr: "الكتف", descEn: ["Rotate wrists as you press."], descAr: ["دوّر معصميك أثناء الدفع."], focus: "Full range of motion." },
-        { id: "core2_3", type: "abs", name: "Ab Wheel Rollouts", sets: "3", reps: "10-15", equip: "Ab Wheel", targetEn: "Core", targetAr: "البطن", descEn: ["Roll out from knees, keeping core tight, pull back."], descAr: ["دحرج العجلة للأمام مع شد البطن، ثم اسحب للخلف."], focus: "Do not let lower back sag." },
-        { id: "core2_4", type: "abs", name: "V-Ups", sets: "3", reps: "15", equip: "Bodyweight", targetEn: "Total Abs", targetAr: "عضلات البطن", descEn: ["Lie on back, raise arms and legs to touch."], descAr: ["استلقِ، ارفع ذراعيك وساقيك ليتلامسا."], focus: "Keep legs straight." },
-        { id: "core2_5", type: "main", name: "Skull Crushers", sets: "3", reps: "10-12", equip: "EZ Bar/Dumbbells", targetEn: "Triceps", targetAr: "الترايسبس", descEn: ["Lower weight to forehead, press up."], descAr: ["انزل بالوزن لجبهتك ثم ادفعه للأعلى."], focus: "Keep elbows tucked." },
-        { id: "core2_6", type: "posture", name: "Wall Angels", sets: "3", reps: "15", equip: "Bodyweight", targetEn: "Mid Back", targetAr: "منتصف الظهر", descEn: ["Stand against wall, slide arms up and down."], descAr: ["قف مستنداً للحائط، حرك ذراعيك للأعلى والأسفل."], focus: "Keep arms against wall." }
+        { id: "core2_1", type: "main", name: "Hanging Leg Raises", sets: "4", reps: "10-15", equip: "Pull-up Bar", targetEn: "Lower Abs", targetAr: "عضلات البطن السفلية", descEn: ["Hang from bar, raise legs to 90 degrees.", "Control the swing."], descAr: ["تعلق بالبار وارفع ساقيك لزاوية 90.", "تحكم في التأرجح."], focus: "Use abs, not momentum." },
+        { id: "core2_2", type: "abs", name: "Mountain Climbers", sets: "4", reps: "45s", equip: "Bodyweight", targetEn: "Core / Cardio", targetAr: "البطن والكارديو", descEn: ["Plank position, drive knees to chest rapidly.", "Keep hips down."], descAr: ["وضعية البلانك، ادفع ركبتيك لصدرك بسرعة.", "حافظ على انخفاض حوضك."], focus: "Speed with control." },
+        { id: "core2_3", type: "abs", name: "Flutter Kicks", sets: "3", reps: "45s", equip: "Bodyweight", targetEn: "Lower Abs", targetAr: "عضلات البطن السفلية", descEn: ["Lie on back, hands under glutes.", "Kick legs up and down slightly off floor."], descAr: ["استلق، ضع يديك تحت أردافك.", "حرك ساقيك للأعلى والأسفل بالقرب من الأرض."], focus: "Lower back glued to floor." },
+        { id: "core2_4", type: "main", name: "V-Ups", sets: "3", reps: "15", equip: "Bodyweight", targetEn: "Total Abs", targetAr: "عضلات البطن", descEn: ["Lie flat, raise torso and legs to touch toes.", "Balance on glutes."], descAr: ["استلق وارفع جذعك وساقيك لتلمس أصابعك.", "توازن على أردافك."], focus: "Straight legs." }
       ]
     },
     {
       day: "Wednesday",
       id: 3,
-      focus: "PULL + OBLIQUES",
+      focus: "POWER & INTEGRATION",
       exercises: [
-        { id: "core3_1", type: "main", name: "Pull-Ups / Lat Pulldowns", sets: "3", reps: "8-10", equip: "Bar/Machine", targetEn: "Lats", targetAr: "المجنص", descEn: ["Pull body/weight up to chest."], descAr: ["اسحب جسمك/الوزن لصدرك."], focus: "Drive elbows down." },
-        { id: "core3_2", type: "main", name: "Barbell Shrugs", sets: "3", reps: "15", equip: "Barbell", targetEn: "Traps", targetAr: "الترابيس", descEn: ["Shrug shoulders up."], descAr: ["ارفع كتفيك للأعلى."], focus: "Squeeze at top." },
-        { id: "core3_3", type: "abs", name: "Woodchoppers", sets: "3", reps: "15/side", equip: "Dumbbell/Cable", targetEn: "Obliques", targetAr: "العضلات الجانبية", descEn: ["Pull weight diagonally across body."], descAr: ["اسحب الوزن بشكل قطري عبر جسمك."], focus: "Rotate torso." },
-        { id: "core3_4", type: "abs", name: "Bicycle Crunches", sets: "3", reps: "20/side", equip: "Bodyweight", targetEn: "Obliques", targetAr: "العضلات الجانبية", descEn: ["Opposite elbow to knee."], descAr: ["المرفق لركبة الساق المعاكسة."], focus: "Controlled twist." },
-        { id: "core3_5", type: "main", name: "Hammer Curls", sets: "3", reps: "10-12", equip: "Dumbbells", targetEn: "Biceps/Brachialis", targetAr: "البايسبس", descEn: ["Curl with neutral grip."], descAr: ["اثنِ ذراعيك بقبضة محايدة."], focus: "Squeeze at top." },
-        { id: "core3_6", type: "posture", name: "Face Pulls", sets: "3", reps: "15", equip: "Cable/Band", targetEn: "Rear Delts", targetAr: "الكتف الخلفي", descEn: ["Pull band/cable to face."], descAr: ["اسحب السير نحو وجهك."], focus: "Squeeze upper back." }
+        { id: "core3_1", type: "abs", name: "Bicycle Crunches", sets: "4", reps: "20/side", equip: "Bodyweight", targetEn: "Obliques / Rectus", targetAr: "العضلات الجانبية والبطن", descEn: ["Opposite elbow to opposite knee.", "Extend other leg fully."], descAr: ["المرفق لركبة الساق المعاكسة.", "مد الساق الأخرى بالكامل."], focus: "Twist fully." },
+        { id: "core3_2", type: "main", name: "Medicine Ball Slams", sets: "3", reps: "15", equip: "Med Ball / Pillow", targetEn: "Explosive Core", targetAr: "قوة البطن الانفجارية", descEn: ["Raise ball overhead.", "Slam into floor using core power."], descAr: ["ارفع الكرة فوق رأسك.", "اضربها بقوة بالأرض باستخدام عضلات بطنك."], focus: "Violent contraction." },
+        { id: "core3_3", type: "abs", name: "Alternating Toe Touches", sets: "3", reps: "15/side", equip: "Bodyweight", targetEn: "Cross-body Flexion", targetAr: "تقاطع البطن", descEn: ["Lie on back, legs up or flat.", "Reach right hand to left foot, alternate."], descAr: ["استلق، ارفع ساقيك أو دعهما.", "المس قدمك اليسرى بيدك اليمنى، وبالعكس."], focus: "Crunch high." },
+        { id: "core3_4", type: "posture", name: "Plank to Push-Up", sets: "3", reps: "12", equip: "Bodyweight", targetEn: "Dynamic Stability", targetAr: "الاستقرار الحركي", descEn: ["Start in forearm plank.", "Push up to hands one by one, then back down."], descAr: ["ابدأ ببلانك على الساعدين.", "ادفع نفسك ليديك واحدة تلو الأخرى ثم ارجع."], focus: "Minimize hip sway." }
       ]
     },
     {
       day: "Thursday",
       id: 4,
-      focus: "LEGS + TOTAL CORE",
+      focus: "ISOMETRIC MASTERY",
       exercises: [
-        { id: "core4_1", type: "main", name: "Bulgarian Split Squat", sets: "3", reps: "8-10/leg", equip: "Dumbbells", targetEn: "Quads & Glutes", targetAr: "الأرجل الأمامية والأرداف", descEn: ["One foot on bench, squat down."], descAr: ["قدم على البنش، وانزل لأسفل."], focus: "Keep torso upright." },
-        { id: "core4_2", type: "main", name: "Hip Thrusts", sets: "3", reps: "10-12", equip: "Barbell/Dumbbell", targetEn: "Glutes", targetAr: "الأرداف", descEn: ["Bridge hips up."], descAr: ["ارفع الحوض للأعلى."], focus: "Squeeze glutes hard." },
-        { id: "core4_3", type: "abs", name: "L-Sit Holds", sets: "3", reps: "20s", equip: "Floor/Parallettes", targetEn: "Core", targetAr: "البطن", descEn: ["Hold body up with arms, legs straight out."], descAr: ["ارفع جسمك بذراعيك وساقاك مستقيمتان للأمام."], focus: "Keep legs straight." },
-        { id: "core4_4", type: "abs", name: "Dead Bugs", sets: "3", reps: "12/side", equip: "Bodyweight", targetEn: "Core", targetAr: "البطن", descEn: ["Lower opposite arm and leg."], descAr: ["انزل الذراع والساق المتعاكستين."], focus: "Lower back pressed into floor." },
-        { id: "core4_5", type: "main", name: "Calf Raises", sets: "3", reps: "15-20", equip: "Dumbbells", targetEn: "Calves", targetAr: "السمانة", descEn: ["Raise up on toes."], descAr: ["ارتفع على الأصابع."], focus: "Pause at top." },
-        { id: "core4_6", type: "posture", name: "Pallof Press", sets: "3", reps: "12/side", equip: "Band/Cable", targetEn: "Anti-Rotation Core", targetAr: "مقاومة الدوران", descEn: ["Press band straight out, resist twisting."], descAr: ["ادفع السير للأمام وقاوم الدوران."], focus: "Do not let torso twist." }
+        { id: "core4_1", type: "main", name: "Forearm Plank", sets: "3", reps: "Max Hold", equip: "Bodyweight", targetEn: "Total Core", targetAr: "البطن بالكامل", descEn: ["Hold strict plank position.", "Squeeze glutes, quads, and abs."], descAr: ["حافظ على وضعية البلانك الصارمة.", "اعصر الأرداف والأرجل الأمامية والبطن."], focus: "Breathe normally." },
+        { id: "core4_2", type: "main", name: "L-Sit Holds", sets: "3", reps: "15-20s", equip: "Floor/Parallettes", targetEn: "Deep Core / Hip Flexors", targetAr: "البطن العميقة", descEn: ["Support body on hands, extend legs forward.", "Keep legs straight, toes pointed."], descAr: ["ارفع جسمك بيديك، مد ساقيك للأمام.", "حافظ على استقامة ساقيك وتوجيه أصابعك."], focus: "Push floor away." },
+        { id: "core4_3", type: "abs", name: "Dead Bugs", sets: "3", reps: "12/side", equip: "Bodyweight", targetEn: "Transverse Abdominis", targetAr: "عضلات البطن العميقة", descEn: ["Lie on back, arms and legs up.", "Lower opposite arm and leg to floor."], descAr: ["استلق، ارفع ذراعيك وساقيك.", "انزل ذراعاً وساقاً متعاكستين للأرض."], focus: "Lower back must touch floor." },
+        { id: "core4_4", type: "posture", name: "Bear Crawl Holds", sets: "3", reps: "45s", equip: "Bodyweight", targetEn: "Anti-Extension", targetAr: "مقاومة التمدد", descEn: ["On all fours, lift knees 1 inch off floor.", "Hold position with flat back."], descAr: ["على الأطراف الأربعة، ارفع ركبتيك قليلاً.", "حافظ على وضعيتك بظهر مستقيم."], focus: "Keep shins parallel to floor." }
       ]
     },
     {
@@ -93,49 +78,7 @@ const CORE_FORTRESS_PROFILE = {
     }
   ],
   images: {
-    "core6_1": "img/db_floor_press.jpg",
-    "core6_2": "img/shoulder_press.jpg",
-    "core6_3": "img/hollow_body.jpg",
-    "core6_4": "img/weighted_crunch.jpg",
-    "core6_5": "img/pushup.jpg",
-    "core6_6": "img/lateral_raise.jpg",
-    "core6_7": "img/scapular_pushup.jpg",
-
-    "core0_1": "img/barbell_row.jpg",
-    "core0_2": "img/dumbbell_row.jpg",
-    "core0_3": "img/russian_twist.jpg",
-    "core0_4": "img/side_plank.jpg",
-    "core0_5": "img/curl.jpg",
-    "core0_6": "img/reverse_fly.jpg",
-    "core0_7": "img/superman.jpg",
-
-    "core1_1": "img/goblet_squat.jpg",
-    "core1_2": "img/deadlift.jpg",
-    "core1_3": "img/hanging_leg_raise.jpg",
-    "core1_4": "img/mountain_climber.jpg",
-    "core1_5": "img/lunge.jpg",
-    "core1_6": "img/calf_raise.jpg",
-    "core1_7": "img/plank.jpg",
-
-    "core2_1": "img/incline_db_press.jpg",
-    "core2_2": "img/arnold_press.jpg",
-    "core2_3": "img/ab_wheel.jpg",
-    "core2_4": "img/v_ups.jpg",
-    "core2_5": "img/skull_crusher.jpg",
-    "core2_6": "img/wall_angel.jpg",
-
-    "core3_1": "img/pull_up.jpg",
-    "core3_2": "img/shrug.jpg",
-    "core3_3": "img/woodchopper.jpg",
-    "core3_4": "img/bicycle_crunch.jpg",
-    "core3_5": "img/curl.jpg",
-    "core3_6": "img/face_pull.jpg",
-
-    "core4_1": "img/bulgarian_split_squat.jpg",
-    "core4_2": "img/hip_thrust.jpg",
-    "core4_3": "img/l_sit.jpg",
-    "core4_4": "img/dead_bug.jpg",
-    "core4_5": "img/calf_raise.jpg",
-    "core4_6": "img/abs.jpg"
+    // Images will be generated and mapped here
   }
 };
+
