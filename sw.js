@@ -1,4 +1,4 @@
-const CACHE_NAME = 'olympus-v13';
+const CACHE_NAME = 'olympus-v11';
 const ASSETS = [
   '/workout/',
   '/workout/index.html',
