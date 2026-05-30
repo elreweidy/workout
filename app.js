@@ -84,12 +84,16 @@ const App = (() => {
   };
 
   const AR_FILTERS = {
-    "all": "الكل", "main": "الأساسي", "posture": "القوام", "abs": "عضلات البطن", "bonus": "إضافي"
+    "all": "الكل", "main": "رئيسي", "posture": "القوام", "abs": "البطن", "bonus": "إضافي", "warmup": "إحماء"
+  };
+
+  const AR_TYPE = {
+    "main": "رئيسي", "posture": "قوام", "abs": "بطن", "bonus": "إضافي", "warmup": "إحماء"
   };
 
   const AR_FOCUS = {
-    "Cardio & Core": "القلب والبطن",
-    "Upper Body & Posture": "الجزء العلوي والاستقامة",
+    "Cardio & Core": "كارديو وبطن",
+    "Upper Body & Posture": "الجزء العلوي والقوام",
     "Lower Body & Balance": "الجزء السفلي والتوازن",
     "REST": "استراحة"
   };
@@ -101,36 +105,124 @@ const App = (() => {
     document.body.style.direction = isAr ? 'rtl' : 'ltr';
     document.body.style.fontFamily = isAr ? "'Tajawal', 'Inter', sans-serif" : "'Cormorant Garamond', serif";
 
-    if ($('btn-arena')) {
-      $('btn-arena').textContent = isAr ? "⚔️ الساحة" : "⚔️ The Arena";
-    }
-    if ($('btn-chronicles')) {
-      $('btn-chronicles').textContent = isAr ? "🏛️ سجل التميز" : "🏛️ Chronicles";
+    // Logo
+    const logoEl = document.querySelector('.logo');
+    if (logoEl) {
+      const icon = logoEl.querySelector('.logo-icon');
+      const iconHtml = icon ? icon.outerHTML : '<span class="logo-icon">⚡</span>';
+      logoEl.innerHTML = isAr
+        ? iconHtml + ' <span style="font-family:\'Tajawal\',sans-serif;letter-spacing:0.1em">نور خديجة</span>'
+        : iconHtml + ' OLYMPUS';
+      // Re-attach profiles btn
+      const existingPfBtn = $('btn-profiles');
+      if (!existingPfBtn) {
+        const pfBtn = document.createElement('button');
+        pfBtn.id = 'btn-profiles';
+        pfBtn.className = 'filter-btn';
+        pfBtn.style.cssText = 'margin-left:15px;font-size:0.8rem;padding:4px 12px;';
+        pfBtn.onclick = () => { UI.buildProfileSwitcher(); UI.openModal('profile-modal'); };
+        logoEl.appendChild(pfBtn);
+      }
     }
 
+    // Profiles button
+    if ($('btn-profiles')) {
+      const p = PROFILES[STATE.activeProfileId];
+      if (p) $('btn-profiles').innerHTML = p.icon + ' ' + p.name + ' ▾';
+    }
+
+    // Arena / Chronicles
+    if ($('btn-arena')) {
+      const arenaActive = document.body.classList.contains('arena-mode');
+      $('btn-arena').textContent = isAr ? (arenaActive ? '🚪 مغادرة الساحة' : '🌸 ابدئي التمرين') : (arenaActive ? '🚪 Exit Arena' : '⚔️ The Arena');
+    }
+    if ($('btn-chronicles')) {
+      $('btn-chronicles').textContent = isAr ? "📅 سجل إنجازاتي" : "🏛️ Chronicles";
+    }
+
+    // Date label
+    if ($('cur-date')) {
+      $('cur-date').textContent = isAr
+        ? new Date().toLocaleDateString('ar-EG', { weekday: 'long', month: 'long', day: 'numeric' })
+        : new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    }
+
+    // Session clock label
+    const clockEl = $('session-clock');
+    if (clockEl && isAr) {
+      const txt = clockEl.textContent;
+      if (txt.includes('SESSION:')) {
+        const time = txt.replace('SESSION: ', '');
+        clockEl.textContent = 'الجلسة: ' + time;
+      }
+    }
+
+    // Profile modal title
+    if ($('profile-title')) {
+      $('profile-title').textContent = isAr ? 'اختاري البرنامج' : 'Select Routine';
+    }
+
+    // Filter buttons
     const filters = document.querySelectorAll('.sec-right [data-filter]');
     filters.forEach(btn => {
       const f = btn.dataset.filter;
-      if (f && AR_FILTERS[f]) {
-        btn.textContent = isAr ? AR_FILTERS[f] : f.charAt(0).toUpperCase() + f.slice(1);
-      }
+      btn.textContent = isAr ? (AR_FILTERS[f] || f) : f.charAt(0).toUpperCase() + f.slice(1);
     });
 
+    // Add movement button
     const addBtn = document.querySelector('.add-btn');
     if (addBtn) {
       addBtn.textContent = isAr ? "+ إضافة حركة جديدة" : "+ Inscribe New Movement";
     }
 
+    // Rest day
     if ($('rest-msg')) {
+      const restIcon = $('rest-msg').querySelector('.rest-icon');
       const title = $('rest-msg').querySelector('.rest-title');
       const sub = $('rest-msg').querySelector('.rest-sub');
-      if (title && sub) {
-        title.textContent = isAr ? "راحة ونقاهة 🧘" : "Elysian Stillness";
-        sub.textContent = isAr 
-          ? "الاستشفاء هو الجسر الذي تبنين عليه قوتكِ وتألقكِ. خذي قسطاً من الراحة يا ملكة اللياقة!" 
-          : "The gods, too, rested. Recovery is the silent forge where true strength is solidified.";
-      }
+      if (restIcon) restIcon.textContent = isAr ? '🌸' : '🧘';
+      if (title) title.textContent = isAr ? 'يوم الراحة والنقاهة 🌸' : 'Elysian Stillness';
+      if (sub) sub.textContent = isAr
+        ? 'الراحة ليست كسلاً، هي جزء أساسي من رحلتكِ. جسمكِ يبني قوته الآن! ✨'
+        : "The gods, too, rested. Recovery is the silent forge where true strength is solidified.";
     }
+
+    // Calendar modal
+    if ($('cal-modal')) {
+      const calTitle = $('cal-modal').querySelector('.modal-title');
+      if (calTitle && isAr) {
+        calTitle.childNodes[0].textContent = 'سجل إنجازاتي ';
+      }
+      const rankSub = $('cal-modal').querySelector('.rank-sub');
+      if (rankSub) rankSub.textContent = isAr ? 'مستواكِ الحالي' : 'Current Status of the Vessel';
+      const stTotalLbl = $('cal-modal').querySelector('#st-total')?.nextElementSibling;
+      if (stTotalLbl) stTotalLbl.textContent = isAr ? 'إنجازاتي' : 'Total Triumphs';
+      const stStreakLbl = $('cal-modal').querySelector('#st-streak')?.nextElementSibling;
+      if (stStreakLbl) stStreakLbl.textContent = isAr ? 'أيام متتالية' : 'Current Streak';
+      const stMonthLbl = $('cal-modal').querySelector('#st-month')?.nextElementSibling;
+      if (stMonthLbl) stMonthLbl.textContent = isAr ? 'هذا الشهر' : 'This Cycle';
+    }
+
+    // Conquer buttons on existing cards
+    document.querySelectorAll('.mark-btn').forEach(btn => {
+      const isDone = btn.classList.contains('done');
+      if (isAr) {
+        btn.textContent = isDone ? '✨ تم بنجاح!' : '🌸 أنجزي التمرين';
+      } else {
+        btn.textContent = isDone ? 'Conquered' : 'Conquer';
+      }
+    });
+
+    // All metric labels
+    document.querySelectorAll('.metric-lbl').forEach(lbl => {
+      if (isAr) {
+        if (lbl.textContent === 'Sets') lbl.textContent = 'جولات';
+        if (lbl.textContent === 'Reps') lbl.textContent = 'تكرارات';
+      } else {
+        if (lbl.textContent === 'جولات') lbl.textContent = 'Sets';
+        if (lbl.textContent === 'تكرارات') lbl.textContent = 'Reps';
+      }
+    });
   };
 
   const syncUp = () => {
@@ -141,35 +233,14 @@ const App = (() => {
         doneObj[k] = localStorage.getItem(k);
       }
     }
-    fetch('https://kvdb.io/elreweidy_workout_sync_v2/done_states', {
-      method: 'POST',
-      body: JSON.stringify(doneObj)
-    }).catch(e => console.log('Sync up failed:', e));
+    // Sync disabled — no valid kvdb bucket configured
+    // To enable: create a free bucket at https://kvdb.io and replace the URL below
+    // fetch('https://kvdb.io/YOUR_BUCKET_ID/done_states', { method: 'POST', body: JSON.stringify(doneObj) }).catch(() => {});
   };
 
   const syncDown = () => {
-    fetch('https://kvdb.io/elreweidy_workout_sync_v2/done_states')
-      .then(res => {
-        if (!res.ok) throw new Error('Not found');
-        return res.json();
-      })
-      .then(data => {
-        let changed = false;
-        Object.entries(data).forEach(([k, v]) => {
-          if (localStorage.getItem(k) !== v) {
-            localStorage.setItem(k, v);
-            changed = true;
-          }
-        });
-        if (changed) {
-          App.updateProgress();
-          const day = STATE.routine.find(r => r.id === STATE.selDay);
-          if (day) {
-            App.renderExercises(day.exercises);
-          }
-        }
-      })
-      .catch(e => console.log('Sync down failed:', e));
+    // Sync disabled — no valid kvdb bucket configured
+    // To enable: create a free bucket at https://kvdb.io and replace the URL
   };
 
   const updateProgress = () => {
@@ -182,8 +253,7 @@ const App = (() => {
 
   const renderExercises = list => {
     const grid = $('ex-grid'); grid.innerHTML = '';
-    
-    // Sort based on drag-and-drop saved order
+    const isAr = STATE.activeProfileId === 'khadija';
     const savedOrder = LS.get('oly_order_' + STATE.activeProfileId + '_' + STATE.selDay);
     if (savedOrder) {
       try {
@@ -204,38 +274,59 @@ const App = (() => {
     fList.forEach((ex, i) => {
       const done = LS.get('oly_done_' + STATE.activeProfileId + '_' + td + '_' + ex.id) === 'true';
       const ytUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(ex.name + ' exercise proper form');
-      
+
+      let standardDesc;
+      if (isAr) {
+        const arDesc = ex.descAr || ex.descEn || ex.desc;
+        standardDesc = arDesc && arDesc.length > 0
+          ? '<ul class="ex-desc standard-desc" dir="rtl">' + arDesc.map(d => '<li>' + d + '</li>').join('') + '</ul>'
+          : '<div class="ex-desc standard-desc" dir="rtl">ركزي على الأداء الصحيح.</div>';
+      } else {
+        const enDesc = ex.descEn || ex.desc;
+        standardDesc = enDesc && enDesc.length > 0
+          ? '<ul class="ex-desc standard-desc">' + enDesc.map(d => '<li>' + d + '</li>').join('') + '</ul>'
+          : '<div class="ex-desc standard-desc">Focus on proper form.</div>';
+      }
+
       const descHtmlEn = ex.descEn ? ex.descEn.map(d => '<li>' + d + '</li>').join('') : (ex.desc ? ex.desc.map(d => '<li>' + d + '</li>').join('') : '');
       const descHtmlAr = ex.descAr ? ex.descAr.map(d => '<li dir="rtl">' + d + '</li>').join('') : '';
-      
-      const standardDesc = (ex.descEn || ex.desc) && (ex.descEn || ex.desc).length > 0 
-        ? '<ul class="ex-desc standard-desc">' + (ex.descEn || ex.desc).map(d => '<li>' + d + '</li>').join('') + '</ul>'
-        : '<div class="ex-desc standard-desc">Focus on proper form.</div>';
 
       const userImg = LS.get('oly_img_' + ex.id);
       const profileImages = PROFILES[STATE.activeProfileId]?.images || {};
       const defaultImg = profileImages[ex.id] || null;
       const img = userImg || defaultImg;
-      const searchUrl = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(ex.name + ' exercise male');
+      const searchUrl = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(ex.name + (isAr ? ' تمرين' : ' exercise'));
+
+      const typeLbl = isAr ? (AR_TYPE[ex.type] || ex.type) : ex.type;
+      const equipLbl = isAr ? (ex.equip === 'Bodyweight' ? 'وزن الجسم' : (ex.equip || 'وزن الجسم')) : (ex.equip || 'Bodyweight');
+      const setsLbl  = isAr ? 'جولات' : 'Sets';
+      const repsLbl  = isAr ? 'تكرارات' : 'Reps';
+      const formLbl  = isAr ? 'طريقة الأداء' : 'Form';
+      const conquerLbl = done ? (isAr ? '✨ تم بنجاح!' : 'Conquered') : (isAr ? '🌸 أنجزي التمرين' : 'Conquer');
+      const focusTxt = isAr && ex.focus ? '💡 ' + ex.focus : (ex.focus ? '💡 ' + ex.focus : '');
+      const targetTxt = isAr
+        ? (ex.targetAr ? '<div class="ex-targets"><div class="target-ar" dir="rtl">' + ex.targetAr + '</div></div>' : '')
+        : (ex.targetEn ? '<div class="ex-targets"><div class="target-en">' + ex.targetEn + '</div>' + (ex.targetAr ? '<div class="target-ar" dir="rtl">' + ex.targetAr + '</div>' : '') + '</div>' : '');
 
       const card = document.createElement('div');
       card.className = 'ex-card reveal' + (done ? ' done' : '');
       card.id = 'card-' + ex.id;
       card.draggable = true;
       card.style.transitionDelay = (i * 0.04) + 's';
+      if (isAr) card.setAttribute('dir', 'rtl');
 
       card.innerHTML =
         '<div class="card-ctrl">' +
-          '<button class="ctrl-btn" data-action="edit" data-id="' + ex.id + '" title="Modify">✎</button>' +
-          '<button class="ctrl-btn del" data-action="delete" data-id="' + ex.id + '" title="Banish">×</button>' +
+          '<button class="ctrl-btn" data-action="edit" data-id="' + ex.id + '" title="' + (isAr ? 'تعديل' : 'Modify') + '">✎</button>' +
+          '<button class="ctrl-btn del" data-action="delete" data-id="' + ex.id + '" title="' + (isAr ? 'حذف' : 'Banish') + '">×</button>' +
         '</div>' +
         '<div class="card-content">' +
           '<div class="card-header">' +
             '<div class="card-seq">' + (i + 1).toString().padStart(2, '0') + '</div>' +
             '<div class="header-titles">' +
-              '<span class="ex-type">' + ex.type + '</span>' +
+              '<span class="ex-type">' + typeLbl + '</span>' +
               '<div class="ex-name">' + ex.name + '</div>' +
-              '<div class="ex-equip">' + (ex.equip || 'Bodyweight') + '</div>' +
+              '<div class="ex-equip">' + equipLbl + '</div>' +
             '</div>' +
           '</div>' +
           standardDesc +
@@ -243,26 +334,28 @@ const App = (() => {
             '<div class="paste-zone" id="zone-' + ex.id + '" data-id="' + ex.id + '">' +
               (img
                 ? '<button class="img-del" data-action="delimg" data-id="' + ex.id + '">×</button>' +
-                  '<img src="' + img + '" data-action="lightbox" data-src="' + img + '">'
-                : '<div class="paste-hint"><span>📷</span>Click to browse · Ctrl+V paste · <a href="' + searchUrl + '" target="_blank" class="search-img-link" onclick="event.stopPropagation()">' + SEARCH_SVG + ' Find</a></div>') +
+                  '<img src="' + img + '" data-action="lightbox" data-src="' + img + '" loading="lazy">'
+                : '<div class="paste-hint"><span>📷</span>' + (isAr ? 'انقري لإضافة صورة' : 'Click to browse · Ctrl+V paste') + ' · <a href="' + searchUrl + '" target="_blank" class="search-img-link" onclick="event.stopPropagation()">' + SEARCH_SVG + ' ' + (isAr ? 'بحث' : 'Find') + '</a></div>') +
             '</div>' +
             '<div class="arena-details-panel">' +
-              (ex.targetEn ? '<div class="ex-targets"><div class="target-en">' + ex.targetEn + '</div><div class="target-ar" dir="rtl">' + ex.targetAr + '</div></div>' : '') +
+              targetTxt +
               '<div class="ex-bilingual-desc">' +
-                (descHtmlEn ? '<ul class="ex-desc">' + descHtmlEn + '</ul>' : '') +
-                (descHtmlAr ? '<ul class="ex-desc ar-desc">' + descHtmlAr + '</ul>' : '') +
+                (isAr
+                  ? (descHtmlAr ? '<ul class="ex-desc ar-desc" dir="rtl">' + descHtmlAr + '</ul>' : '')
+                  : (descHtmlEn ? '<ul class="ex-desc">' + descHtmlEn + '</ul>' : '') + (descHtmlAr ? '<ul class="ex-desc ar-desc" dir="rtl">' + descHtmlAr + '</ul>' : '')
+                ) +
               '</div>' +
-              (ex.focus ? '<div class="ex-focus">💡 ' + ex.focus + '</div>' : '') +
+              (focusTxt ? '<div class="ex-focus">' + focusTxt + '</div>' : '') +
             '</div>' +
           '</div>' +
           '<div class="card-bottom"><div class="metrics">' +
-            '<div class="metric"><div class="metric-val">' + ex.sets + '</div><div class="metric-lbl">Sets</div></div>' +
+            '<div class="metric"><div class="metric-val">' + ex.sets + '</div><div class="metric-lbl">' + setsLbl + '</div></div>' +
             '<div class="metric-sep"></div>' +
-            '<div class="metric"><div class="metric-val" style="font-size:1.6rem;">' + ex.reps + '</div><div class="metric-lbl">Reps</div></div>' +
+            '<div class="metric"><div class="metric-val" style="font-size:1.6rem;">' + ex.reps + '</div><div class="metric-lbl">' + repsLbl + '</div></div>' +
           '</div>' +
           '<div class="card-actions">' +
-            '<a href="' + ytUrl + '" target="_blank" rel="noopener" class="yt-btn">' + YT_SVG + ' Form</a>' +
-            '<button class="mark-btn' + (done ? ' done' : '') + '" data-action="toggle" data-id="' + ex.id + '">' + (done ? 'Conquered' : 'Conquer') + '</button>' +
+            '<a href="' + ytUrl + '" target="_blank" rel="noopener" class="yt-btn">' + YT_SVG + ' ' + formLbl + '</a>' +
+            '<button class="mark-btn' + (done ? ' done' : '') + '" data-action="toggle" data-id="' + ex.id + '">' + conquerLbl + '</button>' +
           '</div></div>' +
         '</div>';
       frag.appendChild(card);
@@ -337,10 +430,10 @@ const App = (() => {
     const btn = document.querySelector('[data-action="toggle"][data-id="' + id + '"]');
     const card = $('card-' + id);
     if (!was) {
-      if (btn) { btn.classList.add('done'); btn.textContent = 'Conquered'; }
+      if (btn) { btn.classList.add('done'); btn.textContent = isAr ? '✨ تم بنجاح!' : 'Conquered'; }
       if (card) card.classList.add('done');
     } else {
-      if (btn) { btn.classList.remove('done'); btn.textContent = 'Conquer'; }
+      if (btn) { btn.classList.remove('done'); btn.textContent = isAr ? '🌸 أنجزي التمرين' : 'Conquer'; }
       if (card) card.classList.remove('done');
     }
     updateProgress(); UI.buildHeatmap();
