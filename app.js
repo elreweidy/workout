@@ -78,6 +78,100 @@ const UI = (() => {
 const App = (() => {
   const observer = new IntersectionObserver(ents => ents.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); observer.unobserve(e.target); } }), { threshold: 0.1 });
 
+  const AR_DAYS = {
+    "Saturday": "السبت", "Sunday": "الأحد", "Monday": "الإثنين", "Tuesday": "الثلاثاء", "Wednesday": "الأربعاء", "Thursday": "الخميس", "Friday": "الجمعة",
+    "SAT": "السبت", "SUN": "الأحد", "MON": "الإثنين", "TUE": "الثلاثاء", "WED": "الأربعاء", "THU": "الخميس", "FRI": "الجمعة"
+  };
+
+  const AR_FILTERS = {
+    "all": "الكل", "main": "الأساسي", "posture": "القوام", "abs": "عضلات البطن", "bonus": "إضافي"
+  };
+
+  const AR_FOCUS = {
+    "Cardio & Core": "القلب والبطن",
+    "Upper Body & Posture": "الجزء العلوي والاستقامة",
+    "Lower Body & Balance": "الجزء السفلي والتوازن",
+    "REST": "استراحة"
+  };
+
+  const translateUI = () => {
+    const id = STATE.activeProfileId;
+    const isAr = id === 'khadija';
+
+    document.body.style.direction = isAr ? 'rtl' : 'ltr';
+    document.body.style.fontFamily = isAr ? "'Tajawal', 'Inter', sans-serif" : "'Cormorant Garamond', serif";
+
+    if ($('btn-arena')) {
+      $('btn-arena').textContent = isAr ? "⚔️ الساحة" : "⚔️ The Arena";
+    }
+    if ($('btn-chronicles')) {
+      $('btn-chronicles').textContent = isAr ? "🏛️ سجل التميز" : "🏛️ Chronicles";
+    }
+
+    const filters = document.querySelectorAll('.sec-right [data-filter]');
+    filters.forEach(btn => {
+      const f = btn.dataset.filter;
+      if (f && AR_FILTERS[f]) {
+        btn.textContent = isAr ? AR_FILTERS[f] : f.charAt(0).toUpperCase() + f.slice(1);
+      }
+    });
+
+    const addBtn = document.querySelector('.add-btn');
+    if (addBtn) {
+      addBtn.textContent = isAr ? "+ إضافة حركة جديدة" : "+ Inscribe New Movement";
+    }
+
+    if ($('rest-msg')) {
+      const title = $('rest-msg').querySelector('.rest-title');
+      const sub = $('rest-msg').querySelector('.rest-sub');
+      if (title && sub) {
+        title.textContent = isAr ? "راحة ونقاهة 🧘" : "Elysian Stillness";
+        sub.textContent = isAr 
+          ? "الاستشفاء هو الجسر الذي تبنين عليه قوتكِ وتألقكِ. خذي قسطاً من الراحة يا ملكة اللياقة!" 
+          : "The gods, too, rested. Recovery is the silent forge where true strength is solidified.";
+      }
+    }
+  };
+
+  const syncUp = () => {
+    const doneObj = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k.startsWith('oly_done_')) {
+        doneObj[k] = localStorage.getItem(k);
+      }
+    }
+    fetch('https://kvdb.io/elreweidy_workout_sync_v2/done_states', {
+      method: 'POST',
+      body: JSON.stringify(doneObj)
+    }).catch(e => console.log('Sync up failed:', e));
+  };
+
+  const syncDown = () => {
+    fetch('https://kvdb.io/elreweidy_workout_sync_v2/done_states')
+      .then(res => {
+        if (!res.ok) throw new Error('Not found');
+        return res.json();
+      })
+      .then(data => {
+        let changed = false;
+        Object.entries(data).forEach(([k, v]) => {
+          if (localStorage.getItem(k) !== v) {
+            localStorage.setItem(k, v);
+            changed = true;
+          }
+        });
+        if (changed) {
+          App.updateProgress();
+          const day = STATE.routine.find(r => r.id === STATE.selDay);
+          if (day) {
+            App.renderExercises(day.exercises);
+          }
+        }
+      })
+      .catch(e => console.log('Sync down failed:', e));
+  };
+
   const updateProgress = () => {
     const day = STATE.routine.find(r => r.id === STATE.selDay);
     if (!day || !day.exercises.length) return;
@@ -191,18 +285,28 @@ const App = (() => {
   const loadDay = id => {
     const day = STATE.routine.find(r => r.id === id);
     const isRest = id === 5 || !day;
+    const isAr = STATE.activeProfileId === 'khadija';
     $('rest-msg').style.display = isRest ? 'flex' : 'none';
     $('ex-grid').style.display = isRest ? 'none' : 'grid';
     $('add-container').innerHTML = '';
 
-    if (isRest) {
-      $('day-title').textContent = 'Friday';
-      $('day-focus').textContent = 'REST';
+    if (isAr) {
+      setTimeout(translateUI, 10);
     } else {
-      $('day-title').textContent = day.day;
-      $('day-focus').textContent = day.focus;
+      document.body.style.direction = 'ltr';
+      document.body.style.fontFamily = "'Cormorant Garamond', serif";
+    }
+
+    if (isRest) {
+      $('day-title').textContent = isAr ? 'الجمعة' : 'Friday';
+      $('day-focus').textContent = isAr ? 'راحة' : 'REST';
+    } else {
+      $('day-title').textContent = isAr ? AR_DAYS[day.day] : day.day;
+      $('day-focus').textContent = isAr ? (AR_FOCUS[day.focus] || day.focus) : day.focus;
       renderExercises(day.exercises);
-      $('add-container').innerHTML = '<button class="add-btn reveal" data-action="add">+ Inscribe New Movement</button>';
+      $('add-container').innerHTML = isAr 
+        ? '<button class="add-btn reveal" data-action="add">+ إضافة حركة جديدة</button>' 
+        : '<button class="add-btn reveal" data-action="add">+ Inscribe New Movement</button>';
       setTimeout(() => { const b = document.querySelector('.add-btn'); if (b) observer.observe(b); }, 50);
     }
     updateProgress();
@@ -211,11 +315,13 @@ const App = (() => {
   const buildNav = () => {
     const nav = $('day-nav'); nav.innerHTML = '';
     const frag = document.createDocumentFragment();
+    const isAr = STATE.activeProfileId === 'khadija';
     DAY_ORDER.forEach(id => {
       const day = STATE.routine.find(r => r.id === id);
       const btn = document.createElement('button');
       btn.className = 'day-btn' + (id === STATE.selDay ? ' active' : '') + (id === new Date().getDay() ? ' today-mark' : '');
-      btn.textContent = id === 5 ? 'FRI' : (day ? day.day.slice(0, 3).toUpperCase() : '');
+      const dayName = id === 5 ? 'Friday' : (day ? day.day : '');
+      btn.textContent = isAr ? AR_DAYS[dayName] : (dayName.slice(0, 3).toUpperCase());
       btn.dataset.dayId = id;
       frag.appendChild(btn);
     });
@@ -225,6 +331,7 @@ const App = (() => {
   const toggleDone = id => {
     const key = 'oly_done_' + STATE.activeProfileId + '_' + today() + '_' + id;
     const was = LS.get(key) === 'true';
+    const isAr = STATE.activeProfileId === 'khadija';
     LS.set(key, String(!was));
     was ? SFX.tick() : SFX.conquer();
     const btn = document.querySelector('[data-action="toggle"][data-id="' + id + '"]');
@@ -237,6 +344,7 @@ const App = (() => {
       if (card) card.classList.remove('done');
     }
     updateProgress(); UI.buildHeatmap();
+    syncUp();
 
     // The Arena Auto-Advance
     if (document.body.classList.contains('arena-mode') && !was) {
@@ -287,20 +395,24 @@ const App = (() => {
     if (!document.body.classList.contains('arena-mode')) return;
     document.querySelectorAll('.ex-card').forEach(c => c.classList.remove('arena-active'));
     const active = document.querySelector('.ex-card:not(.done)');
+    const isAr = STATE.activeProfileId === 'khadija';
     if (active) {
        active.classList.add('arena-active');
        active.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
-       UI.toast('THE ARENA IS CONQUERED!');
+       UI.toast(isAr ? '🌸 لقد أنجزتِ تحدي الساحة اليوم بنجاح! 🌸' : 'THE ARENA IS CONQUERED!');
        App.triggerCelebration();
        App.toggleArena();
     }
   };
 
   const triggerCelebration = () => {
+    const isAr = STATE.activeProfileId === 'khadija';
     const overlay = document.createElement('div');
     overlay.className = 'celebration-overlay';
-    overlay.innerHTML = '<div class="celeb-text">SESSION COMPLETE</div><div class="celeb-sub">Olympus Smiles Upon You</div>';
+    overlay.innerHTML = isAr 
+      ? '<div class="celeb-text">🌸 أنـتـي رائعــة! 🌸</div><div class="celeb-sub">تم إكمال الحصّة بنجاح يا ملكة اللياقة</div>' 
+      : '<div class="celeb-text">SESSION COMPLETE</div><div class="celeb-sub">Olympus Smiles Upon You</div>';
     document.body.appendChild(overlay);
     setTimeout(() => overlay.classList.add('show'), 10);
     
@@ -319,9 +431,14 @@ const App = (() => {
 
   const toggleArena = () => {
     const isArena = document.body.classList.toggle('arena-mode');
-    $('btn-arena').textContent = isArena ? '🚪 Exit Arena' : '⚔️ The Arena';
+    const isAr = STATE.activeProfileId === 'khadija';
+    if (isAr) {
+      $('btn-arena').textContent = isArena ? '🚪 مغادرة الساحة' : '⚔️ الساحة';
+    } else {
+      $('btn-arena').textContent = isArena ? '🚪 Exit Arena' : '⚔️ The Arena';
+    }
     if (isArena) {
-      UI.toast('Enter The Arena. Focus purely on the task ahead.');
+      UI.toast(isAr ? 'أهلاً بكِ في ساحة الإنجاز! ركزي على هدفكِ اليوم.' : 'Enter The Arena. Focus purely on the task ahead.');
       updateArenaState();
     }
   };
@@ -342,6 +459,7 @@ const App = (() => {
       STATE.activeProfileId = id;
       LS.set(ACTIVE_PROFILE_KEY, id);
       App.applyTheme();
+      App.syncDown();
       const s = LS.get(App.getCurSKey());
       STATE.routine = s ? JSON.parse(s) : JSON.parse(JSON.stringify(PROFILES[id].routine));
       if (!s) LS.set(App.getCurSKey(), JSON.stringify(STATE.routine));
@@ -366,6 +484,8 @@ const App = (() => {
       STATE.activeProfileId = LS.get(ACTIVE_PROFILE_KEY) || 'ppl';
       if (!PROFILES[STATE.activeProfileId]) STATE.activeProfileId = 'ppl';
       App.applyTheme();
+      App.syncDown();
+      setInterval(App.syncDown, 10000);
       
       const s = LS.get(App.getCurSKey());
       STATE.routine = s ? JSON.parse(s) : JSON.parse(JSON.stringify(PROFILES[STATE.activeProfileId].routine));

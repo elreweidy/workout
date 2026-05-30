@@ -37,13 +37,38 @@
   --glass-hl:   rgba(255, 255, 255, 0.04);
 }
 body.profile-khadija {
-  --accent:     #ffb3c6; /* Elegant Rose Pink */
-  --accent-dim: #f896b0; /* Deeper Rose */
-  --accent-glow: rgba(255, 179, 198, 0.35); /* Glowing Pink */
-  --glass-brd:  rgba(255, 179, 198, 0.15); 
-  --sage:       #e0b1cb;
-  --olive:      #be95c4;
-  --mint:       #9f86c0;
+  --accent:     #ffa3b1; /* Vibrant girly pink */
+  --accent-dim: #f78da7; /* Rose pink */
+  --accent-glow: rgba(255, 163, 177, 0.4); 
+  --glass-brd:  rgba(255, 163, 177, 0.18); 
+  --sage:       #f5d6e2; /* Light gold-pink */
+  --olive:      #e9b7ce; /* Soft lilac */
+  --mint:       #c7a3cd;
+}
+body.profile-khadija .day-btn.active {
+  background: linear-gradient(135deg, #ffa3b1, #e9b7ce) !important;
+  color: #020604 !important;
+  box-shadow: 0 0 15px rgba(255, 163, 177, 0.5) !important;
+}
+body.profile-khadija .mark-btn {
+  background: linear-gradient(135deg, #ffa3b1, #e9b7ce) !important;
+  color: #020604 !important;
+  font-weight: 700 !important;
+}
+body.profile-khadija .mark-btn:hover {
+  background: #ffffff !important;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.8) !important;
+}
+body.profile-khadija .ex-card.done {
+  border-color: rgba(255, 163, 177, 0.4) !important;
+}
+body.profile-khadija #prog-glow {
+  background: linear-gradient(90deg, #ffa3b1, #e9b7ce) !important;
+}
+body.profile-khadija .sec-head .focus-badge {
+  background: rgba(255, 163, 177, 0.15) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
 }
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 ::selection { background: var(--accent); color: var(--obsidian); }
