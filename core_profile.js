@@ -1401,6 +1401,12 @@ const HOME_GYM_PROFILE = {
     }
   ],
   "images": {
+    "home6_1": "img/press_prep.png",
+    "home0_1": "img/pull_prep.png",
+    "home1_1": "img/leg_prep.png",
+    "home2_1": "img/press_prep.png",
+    "home3_1": "img/pull_prep.png",
+    "home4_1": "img/leg_prep.png",
     "home6_2": "img/db_bench.jpg",
     "home6_3": "img/shoulder_press.jpg",
     "home6_4": "img/incline_db_press.jpg",
