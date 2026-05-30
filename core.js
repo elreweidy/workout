@@ -1255,6 +1255,10 @@ if (typeof CORE_FORTRESS_PROFILE !== 'undefined') {
   PROFILES.core = CORE_FORTRESS_PROFILE;
 }
 
+if (typeof HOME_GYM_PROFILE !== 'undefined') {
+  PROFILES.home = HOME_GYM_PROFILE;
+}
+
 // Backward compat
 const DEFAULT_ROUTINE = PROFILES.ppl.routine;
 const EX_IMG = PROFILES.ppl.images;
