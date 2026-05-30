@@ -233,26 +233,86 @@ textarea.field-input { resize: vertical; min-height: 80px; }
 /* RESPONSIVE — MOBILE */
 @media(max-width: 900px) {
   html { font-size: 14px; }
-  .wrap { padding: 0 5%; }
-  .ex-grid { grid-template-columns: 1fr; gap: 20px; }
-  header { padding: 15px 5%; flex-direction: column; gap: 15px; align-items: flex-start; }
-  .header-right { align-items: flex-start; text-align: left; }
-  .heatmap { margin-right: 0; margin-bottom: 10px; }
-  .sec-head { flex-direction: column; align-items: flex-start; gap: 15px; }
+  .wrap { padding: 0 4%; }
+  .ex-grid { grid-template-columns: 1fr; gap: 15px; }
+  
+  /* Compact and Elegant Header */
+  header { padding: 10px 4%; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; gap: 10px !important; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .logo { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+  #btn-profiles { font-size: 0.75rem !important; padding: 5px 12px !important; margin-left: 10px !important; border-radius: 8px !important; }
+  .header-right, .heatmap { display: none !important; } /* Reclaim top screen space */
+  
+  /* Hide the massive Quote on Mobile */
+  .oracle-quote { display: none !important; }
+  
+  /* Single-Row Horizontally Scrollable Day Selector */
+  .day-nav { 
+    display: flex !important; 
+    flex-wrap: nowrap !important; 
+    overflow-x: auto !important; 
+    gap: 6px !important; 
+    padding: 8px 0 !important; 
+    margin-bottom: 10px !important; 
+    width: 100% !important; 
+    -webkit-overflow-scrolling: touch; 
+  }
+  .day-nav::-webkit-scrollbar { display: none !important; }
+  .day-btn { 
+    flex: 0 0 auto !important; 
+    min-width: 68px !important; 
+    padding: 8px 10px !important; 
+    font-size: 0.75rem !important; 
+    text-align: center; 
+    border-radius: 8px !important;
+  }
+  
+  /* Compact Focus and Header row */
+  .sec-head { 
+    display: flex !important;
+    flex-direction: row !important; 
+    align-items: center !important; 
+    justify-content: space-between !important; 
+    gap: 10px !important; 
+    margin-top: 10px !important; 
+    margin-bottom: 15px !important;
+    border-bottom: none !important; 
+  }
+  .day-title { font-size: 1.4rem !important; letter-spacing: 0.05em !important; }
+  .focus-badge { font-size: 0.7rem !important; padding: 4px 10px !important; border-radius: 8px !important; }
+  
+  /* Single-Row Horizontally Scrollable Filters & Tool Bar */
+  .sec-right { 
+    display: flex !important; 
+    flex-direction: row !important; 
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important; 
+    gap: 6px !important; 
+    padding-bottom: 8px !important; 
+    width: 100% !important; 
+    -webkit-overflow-scrolling: touch; 
+  }
+  .sec-right::-webkit-scrollbar { display: none !important; }
+  .sec-right button { 
+    flex: 0 0 auto !important; 
+    padding: 6px 12px !important; 
+    font-size: 0.75rem !important; 
+    border-radius: 8px !important;
+  }
+
   .stats-row { grid-template-columns: 1fr; }
   .summary-bar { grid-template-columns: repeat(2, 1fr); }
-  .day-nav { gap: 8px; flex-wrap: wrap; }
-  .day-btn { padding: 10px 14px; font-size: 0.7rem; }
-  .day-title { font-size: 2rem; }
-  .oracle-quote { font-size: 1.2rem; margin: 30px auto 20px; }
-  .card-seq { font-size: 2rem; }
-  .ex-name { font-size: 1.3rem; }
+  
+  /* Ultra-Clean Cards */
+  .card-seq { display: none !important; } /* Hide the massive back-number to avoid busy looks */
+  .ex-card { border-radius: 12px !important; box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important; margin-bottom: 12px !important; }
+  .card-content { padding: 15px !important; }
+  .ex-name { font-size: 1.2rem !important; }
+  
   .card-bottom { flex-direction: column; gap: 15px; align-items: stretch; }
   .card-actions { justify-content: stretch; }
-  .mark-btn { width: 100%; text-align: center; }
-  .yt-btn { width: 100%; justify-content: center; }
-  .paste-zone img { max-height: 180px; }
-  .card-content { padding: 20px; }
+  .mark-btn { width: 100%; text-align: center; border-radius: 8px !important; }
+  .yt-btn { width: 100%; justify-content: center; border-radius: 8px !important; }
+  .paste-zone img { max-height: 160px; }
 
   /* ARENA MOBILE */
   body.arena-mode .sec-right { position: fixed; top: 15px; right: 15px; }

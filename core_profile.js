@@ -1550,6 +1550,44 @@ const KHADIJA_PROFILE = {
             "اثني الركبتين بزاوية 90 درجة وارفعي الحوض لتشكيل خط مستقيم."
           ],
           focus: "Keep hips high and core tight. Do not sag."
+        },
+        {
+          id: "khadija6_5",
+          type: "bonus",
+          name: "Bird-Dog Stability Hold (Optional)",
+          sets: "2-3",
+          reps: "10/side",
+          equip: "Bodyweight",
+          targetEn: "Core Stability & Alignment",
+          targetAr: "استقرار الظهر والبطن",
+          descEn: [
+            "On all fours, slowly extend opposite arm and leg.",
+            "Keep hips level and back completely flat. Hold for 2 seconds."
+          ],
+          descAr: [
+            "على أطرافك الأربعة، مدي ذراعاً وساقاً متعاكستين ببطء.",
+            "حافظي على استواء الحوض واستقامة الظهر. اثبتي لثانيتين."
+          ],
+          focus: "Do not arch your back or tilt your hips."
+        },
+        {
+          id: "khadija6_6",
+          type: "bonus",
+          name: "Glute Rainbows (Optional)",
+          sets: "2-3",
+          reps: "12/side",
+          equip: "Bodyweight",
+          targetEn: "Glutes & Core Stability",
+          targetAr: "عضلات الأرداف والبطن",
+          descEn: [
+            "On all fours, extend one leg straight back.",
+            "Draw a wide semi-circle arc in the air with your foot, side to side."
+          ],
+          descAr: [
+            "على أطرافك الأربعة، مدي ساقاً واحدة للخلف باستقامة.",
+            "ارسمي نصف دائرة واسعة في الهواء بقدمك من جانب لآخر."
+          ],
+          focus: "Move strictly from the hip without twisting the torso."
         }
       ]
     },
@@ -1633,6 +1671,44 @@ const KHADIJA_PROFILE = {
             "زلقي ذراعيكِ على الحائط للأعلى والأسفل ببطء مع استمرار التلامس."
           ],
           focus: "Ensure wrists and elbows do not pull away from wall."
+        },
+        {
+          id: "khadija0_5",
+          type: "bonus",
+          name: "Doorway Chest Stretch (Optional)",
+          sets: "2-3",
+          reps: "30s Hold",
+          equip: "Bodyweight",
+          targetEn: "Chest & Shoulder Opening",
+          targetAr: "فتح الصدر والكتفين",
+          descEn: [
+            "Place forearms on a doorway frame at 90 degrees.",
+            "Gently step forward until you feel a comfortable stretch in your chest."
+          ],
+          descAr: [
+            "ضعي الساعدين على إطار باب مفتوح بزاوية 90 درجة.",
+            "اخطوي للأمام بلطف حتى تشعري بتمدد مريح في عضلات الصدر."
+          ],
+          focus: "Keep breathing slowly. Do not bounce."
+        },
+        {
+          id: "khadija0_6",
+          type: "bonus",
+          name: "Seated Hand Pressures (Optional)",
+          sets: "3",
+          reps: "15s Press",
+          equip: "Bodyweight",
+          targetEn: "Chest & Arms Isometric Activation",
+          targetAr: "تنشيط الصدر والذراعين",
+          descEn: [
+            "Sit or stand tall, place palms together at chest level (prayer pose).",
+            "Press hands together as hard as comfortable, engaging chest and arms."
+          ],
+          descAr: [
+            "اجلسي أو قفي مستقيمة، وضعي الكفين معاً أمام الصدر.",
+            "اضغطي الكفين معاً بقوة مريحة لتنشيط الصدر والذراعين."
+          ],
+          focus: "Keep shoulders down and maintain steady pressure."
         }
       ]
     },
@@ -1716,6 +1792,44 @@ const KHADIJA_PROFILE = {
             "حافظي على الوضعية مع شد البطن للتوازن."
           ],
           focus: "Keep standing knee unlocked slightly. Look at a still point."
+        },
+        {
+          id: "khadija1_5",
+          type: "bonus",
+          name: "Standing Side Leg Raises (Optional)",
+          sets: "3",
+          reps: "12-15/leg",
+          equip: "Bodyweight",
+          targetEn: "Outer Hips & Balance",
+          targetAr: "الأرداف الجانبية والتوازن",
+          descEn: [
+            "Stand tall near a wall or chair for light balance support.",
+            "Slowly raise your outer leg to the side, then lower with control."
+          ],
+          descAr: [
+            "قفي مستقيمة بالقرب من جدار أو كرسي لدعم التوازن الخفيف.",
+            "ارفعي ساقكِ الخارجية ببطء للجانب، ثم انزليها ببطء وتحكم."
+          ],
+          focus: "Keep your torso perfectly upright. Do not lean."
+        },
+        {
+          id: "khadija1_6",
+          type: "bonus",
+          name: "Wall Sit Hold (Optional)",
+          sets: "3",
+          reps: "20-30s Hold",
+          equip: "Bodyweight",
+          targetEn: "Quadriceps Endurance",
+          targetAr: "قوة وتحمل الأفخاذ",
+          descEn: [
+            "Lean back against a flat wall, feet about 2 feet away.",
+            "Slide down until thighs are parallel to the floor, holding the sit."
+          ],
+          descAr: [
+            "اسندي ظهركِ على جدار مسطح، وقدميكِ على بعد خطوتين.",
+            "انزلقي لأسفل حتى تتوازي الأفخاذ مع الأرض، وحافظي على الجلوس."
+          ],
+          focus: "Press your lower back firmly into the wall."
         }
       ]
     },
@@ -1799,6 +1913,44 @@ const KHADIJA_PROFILE = {
             "اثني الركبتين بزاوية 90 درجة وارفعي الحوض لتشكيل خط مستقيم."
           ],
           focus: "Keep hips high and core tight."
+        },
+        {
+          id: "khadija2_5",
+          type: "bonus",
+          name: "Bird-Dog Stability Hold (Optional)",
+          sets: "2-3",
+          reps: "10/side",
+          equip: "Bodyweight",
+          targetEn: "Core Stability & Alignment",
+          targetAr: "استقرار الظهر والبطن",
+          descEn: [
+            "On all fours, slowly extend opposite arm and leg.",
+            "Keep hips level and back completely flat. Hold for 2 seconds."
+          ],
+          descAr: [
+            "على أطرافك الأربعة، مدي ذراعاً وساقاً متعاكستين ببطء.",
+            "حافظي على استواء الحوض واستقامة الظهر. اثبتي لثانيتين."
+          ],
+          focus: "Do not arch your back or tilt your hips."
+        },
+        {
+          id: "khadija2_6",
+          type: "bonus",
+          name: "Glute Rainbows (Optional)",
+          sets: "2-3",
+          reps: "12/side",
+          equip: "Bodyweight",
+          targetEn: "Glutes & Core Stability",
+          targetAr: "عضلات الأرداف والبطن",
+          descEn: [
+            "On all fours, extend one leg straight back.",
+            "Draw a wide semi-circle arc in the air with your foot, side to side."
+          ],
+          descAr: [
+            "على أطرافك الأربعة، مدي ساقاً واحدة للخلف باستقامة.",
+            "ارسمي نصف دائرة واسعة في الهواء بقدمك من جانب لآخر."
+          ],
+          focus: "Move strictly from the hip without twisting the torso."
         }
       ]
     },
@@ -1882,6 +2034,44 @@ const KHADIJA_PROFILE = {
             "زلقي ذراعيكِ على الحائط للأعلى والأسفل ببطء مع استمرار التلامس."
           ],
           focus: "Ensure wrists and elbows do not pull away from wall."
+        },
+        {
+          id: "khadija3_5",
+          type: "bonus",
+          name: "Doorway Chest Stretch (Optional)",
+          sets: "2-3",
+          reps: "30s Hold",
+          equip: "Bodyweight",
+          targetEn: "Chest & Shoulder Opening",
+          targetAr: "فتح الصدر والكتفين",
+          descEn: [
+            "Place forearms on a doorway frame at 90 degrees.",
+            "Gently step forward until you feel a comfortable stretch in your chest."
+          ],
+          descAr: [
+            "ضعي الساعدين على إطار باب مفتوح بزاوية 90 درجة.",
+            "اخطوي للأمام بلطف حتى تشعري بتمدد مريح في عضلات الصدر."
+          ],
+          focus: "Keep breathing slowly. Do not bounce."
+        },
+        {
+          id: "khadija3_6",
+          type: "bonus",
+          name: "Seated Hand Pressures (Optional)",
+          sets: "3",
+          reps: "15s Press",
+          equip: "Bodyweight",
+          targetEn: "Chest & Arms Isometric Activation",
+          targetAr: "تنشيط الصدر والذراعين",
+          descEn: [
+            "Sit or stand tall, place palms together at chest level (prayer pose).",
+            "Press hands together as hard as comfortable, engaging chest and arms."
+          ],
+          descAr: [
+            "اجلسي أو قفي مستقيمة، وضعي الكفين معاً أمام الصدر.",
+            "اضغطي الكفين معاً بقوة مريحة لتنشيط الصدر والذراعين."
+          ],
+          focus: "Keep shoulders down and maintain steady pressure."
         }
       ]
     },
@@ -1965,6 +2155,44 @@ const KHADIJA_PROFILE = {
             "حافظي على الوضعية مع شد البطن للتوازن."
           ],
           focus: "Keep standing knee unlocked slightly."
+        },
+        {
+          id: "khadija4_5",
+          type: "bonus",
+          name: "Standing Side Leg Raises (Optional)",
+          sets: "3",
+          reps: "12-15/leg",
+          equip: "Bodyweight",
+          targetEn: "Outer Hips & Balance",
+          targetAr: "الأرداف الجانبية والتوازن",
+          descEn: [
+            "Stand tall near a wall or chair for light balance support.",
+            "Slowly raise your outer leg to the side, then lower with control."
+          ],
+          descAr: [
+            "قفي مستقيمة بالقرب من جدار أو كرسي لدعم التوازن الخفيف.",
+            "ارفعي ساقكِ الخارجية ببطء للجانب، ثم انزليها ببطء وتحكم."
+          ],
+          focus: "Keep your torso perfectly upright. Do not lean."
+        },
+        {
+          id: "khadija4_6",
+          type: "bonus",
+          name: "Wall Sit Hold (Optional)",
+          sets: "3",
+          reps: "20-30s Hold",
+          equip: "Bodyweight",
+          targetEn: "Quadriceps Endurance",
+          targetAr: "قوة وتحمل الأفخاذ",
+          descEn: [
+            "Lean back against a flat wall, feet about 2 feet away.",
+            "Slide down until thighs are parallel to the floor, holding the sit."
+          ],
+          descAr: [
+            "اسندي ظهركِ على جدار مسطح، وقدميكِ على بعد خطوتين.",
+            "انزلقي لأسفل حتى تتوازي الأفخاذ مع الأرض، وحافظي على الجلوس."
+          ],
+          focus: "Press your lower back firmly into the wall."
         }
       ]
     },
@@ -1980,26 +2208,38 @@ const KHADIJA_PROFILE = {
     "khadija6_2": "img/khadija_jacks.png",
     "khadija6_3": "img/khadija_torso_twists.png",
     "khadija6_4": "img/khadija_side_plank.png",
+    "khadija6_5": "img/khadija_warmup.png",
+    "khadija6_6": "img/khadija_side_plank.png",
     "khadija0_1": "img/khadija_wall_pushup.png",
     "khadija0_2": "img/khadija_arm_circles.png",
     "khadija0_3": "img/khadija_cobra_hold.png",
     "khadija0_4": "img/khadija_wall_angels.png",
+    "khadija0_5": "img/khadija_wall_angels.png",
+    "khadija0_6": "img/khadija_wall_pushup.png",
     "khadija1_1": "img/khadija_chair_squats.png",
     "khadija1_2": "img/khadija_glute_bridges.png",
     "khadija1_3": "img/khadija_calf_raises.png",
     "khadija1_4": "img/khadija_balance_hold.png",
+    "khadija1_5": "img/khadija_balance_hold.png",
+    "khadija1_6": "img/khadija_chair_squats.png",
     "khadija2_1": "img/khadija_warmup.png",
     "khadija2_2": "img/khadija_jacks.png",
     "khadija2_3": "img/khadija_torso_twists.png",
     "khadija2_4": "img/khadija_side_plank.png",
+    "khadija2_5": "img/khadija_warmup.png",
+    "khadija2_6": "img/khadija_side_plank.png",
     "khadija3_1": "img/khadija_wall_pushup.png",
     "khadija3_2": "img/khadija_arm_circles.png",
     "khadija3_3": "img/khadija_cobra_hold.png",
     "khadija3_4": "img/khadija_wall_angels.png",
+    "khadija3_5": "img/khadija_wall_angels.png",
+    "khadija3_6": "img/khadija_wall_pushup.png",
     "khadija4_1": "img/khadija_chair_squats.png",
     "khadija4_2": "img/khadija_glute_bridges.png",
     "khadija4_3": "img/khadija_calf_raises.png",
-    "khadija4_4": "img/khadija_balance_hold.png"
+    "khadija4_4": "img/khadija_balance_hold.png",
+    "khadija4_5": "img/khadija_balance_hold.png",
+    "khadija4_6": "img/khadija_chair_squats.png"
   }
 };
 
