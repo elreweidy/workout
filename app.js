@@ -337,7 +337,10 @@ const App = (() => {
 
     fList.forEach((ex, i) => {
       const done = LS.get('oly_done_' + STATE.activeProfileId + '_' + td + '_' + ex.id) === 'true';
-      const ytUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(ex.name + ' exercise proper form');
+      const ytQuery = STATE.activeProfileId === 'khadija'
+        ? ex.name + ' female proper form shorts'
+        : ex.name + ' exercise proper form';
+      const ytUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(ytQuery);
 
       let standardDesc;
       if (isAr) {
