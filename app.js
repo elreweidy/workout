@@ -332,10 +332,16 @@ const App = (() => {
 
     getCurSKey: () => SKEY + '_' + STATE.activeProfileId,
 
+    applyTheme: () => {
+      const id = STATE.activeProfileId;
+      document.body.classList.toggle('profile-khadija', id === 'khadija');
+    },
+
     switchProfile: id => {
       if (!PROFILES[id]) return;
       STATE.activeProfileId = id;
       LS.set(ACTIVE_PROFILE_KEY, id);
+      App.applyTheme();
       const s = LS.get(App.getCurSKey());
       STATE.routine = s ? JSON.parse(s) : JSON.parse(JSON.stringify(PROFILES[id].routine));
       if (!s) LS.set(App.getCurSKey(), JSON.stringify(STATE.routine));
@@ -359,6 +365,7 @@ const App = (() => {
     init: () => {
       STATE.activeProfileId = LS.get(ACTIVE_PROFILE_KEY) || 'ppl';
       if (!PROFILES[STATE.activeProfileId]) STATE.activeProfileId = 'ppl';
+      App.applyTheme();
       
       const s = LS.get(App.getCurSKey());
       STATE.routine = s ? JSON.parse(s) : JSON.parse(JSON.stringify(PROFILES[STATE.activeProfileId].routine));

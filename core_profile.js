@@ -1463,3 +1463,543 @@ const HOME_GYM_PROFILE = {
     "home4_10": "img/prone_neck.jpg"
 }
 };
+
+const KHADIJA_PROFILE = {
+  id: 'khadija',
+  name: "🌸 Khadija's Home Glow",
+  icon: '🌸',
+  desc: 'Gentle 6-Day Bodyweight Routine',
+  routine: [
+    {
+      day: "Saturday",
+      id: 6,
+      focus: "Cardio & Core",
+      exercises: [
+        {
+          id: "khadija6_1",
+          type: "warmup",
+          name: "Gentle Full-Body Warm-up",
+          sets: "1",
+          reps: "5 mins",
+          equip: "Bodyweight",
+          targetEn: "Full Body Mobility",
+          targetAr: "حركة الجسم بالكامل",
+          descEn: [
+            "Perform light head tilts, arm swings, and shoulder rolls.",
+            "Take slow, deep breaths to activate the nervous system."
+          ],
+          descAr: [
+            "قومي بإمالة الرأس الخفيفة، أرجحة الذراعين، ودوران الكتفين.",
+            "خذي أنفاساً عميقة وبطيئة لتنشيط الجهاز العصبي."
+          ],
+          focus: "Focus on gentle breathing and starting light."
+        },
+        {
+          id: "khadija6_2",
+          type: "main",
+          name: "Modified Jumping Jacks",
+          sets: "3",
+          reps: "15-20",
+          equip: "Bodyweight",
+          targetEn: "Cardio & Coordination",
+          targetAr: "الكارديو والتنسيق الحركي",
+          descEn: [
+            "Step one foot out to the side while raising your arms overhead.",
+            "Step back to center and repeat on the other side. Low impact."
+          ],
+          descAr: [
+            "اخطوي بقدم واحدة للجانب مع رفع ذراعيك للأعلى.",
+            "عودي للمنتصف وكرري على الجانب الآخر. تأثير منخفض ومناسب للمفاصل."
+          ],
+          focus: "Keep a steady rhythm and coordinate arms and legs."
+        },
+        {
+          id: "khadija6_3",
+          type: "abs",
+          name: "Standing Torso Twists",
+          sets: "3",
+          reps: "15/side",
+          equip: "Bodyweight",
+          targetEn: "Obliques & Spine Flexibility",
+          targetAr: "العضلات الجانبية ومرونة العمود الفقري",
+          descEn: [
+            "Stand with feet shoulder-width apart, hands on hips or at chest.",
+            "Slowly rotate your torso side to side, squeezing your core."
+          ],
+          descAr: [
+            "قفي بقدمين متباعدتين بعرض الكتفين، ويديك على حوضك أو صدرك.",
+            "أديري جذعك ببطء من جانب لآخر مع عصر عضلات البطن الجانبية."
+          ],
+          focus: "Move from the core, not just shoulders."
+        },
+        {
+          id: "khadija6_4",
+          type: "abs",
+          name: "Knee-Supported Side Plank",
+          sets: "3",
+          reps: "20-30s/side",
+          equip: "Bodyweight",
+          targetEn: "Obliques & Deep Core",
+          targetAr: "العضلات الجانبية وعضلات البطن العميقة",
+          descEn: [
+            "Lie on your side, supporting yourself on your forearm.",
+            "Bend knees at 90 degrees and lift hips, forming a straight line."
+          ],
+          descAr: [
+            "استلقي على جانبكِ مع الاستناد على الساعد.",
+            "اثني الركبتين بزاوية 90 درجة وارفعي الحوض لتشكيل خط مستقيم."
+          ],
+          focus: "Keep hips high and core tight. Do not sag."
+        }
+      ]
+    },
+    {
+      day: "Sunday",
+      id: 0,
+      focus: "Upper Body & Posture",
+      exercises: [
+        {
+          id: "khadija0_1",
+          type: "main",
+          name: "Wall Push-Ups",
+          sets: "3",
+          reps: "10-12",
+          equip: "Bodyweight",
+          targetEn: "Chest, Front Shoulders & Arms",
+          targetAr: "الصدر، مقدمة الأكتاف والذراعين",
+          descEn: [
+            "Place hands on the wall at shoulder height and width.",
+            "Bend elbows to lower your chest toward the wall, then push back."
+          ],
+          descAr: [
+            "ضعي يديك على الحائط بمستوى الكتفين وبعرضهما.",
+            "اثني المرفقين لخفض الصدر نحو الحائط، ثم ادفعي للخلف."
+          ],
+          focus: "Keep body in a perfectly straight line."
+        },
+        {
+          id: "khadija0_2",
+          type: "main",
+          name: "Standing Arm Circles",
+          sets: "3",
+          reps: "20 circles",
+          equip: "Bodyweight",
+          targetEn: "Shoulders & Rotator Cuff",
+          targetAr: "الأكتاف ومفاصلها",
+          descEn: [
+            "Extend arms out to the sides at shoulder height.",
+            "Make small, controlled circles forward, then backward."
+          ],
+          descAr: [
+            "مدي ذراعيك جانباً بمستوى الكتفين.",
+            "ارسمي دوائر صغيرة ومحكومة للأمام، ثم للخلف."
+          ],
+          focus: "Keep shoulders down away from ears. Tighten your core."
+        },
+        {
+          id: "khadija0_3",
+          type: "posture",
+          name: "Prone Cobra Hold",
+          sets: "3",
+          reps: "30s",
+          equip: "Bodyweight",
+          targetEn: "Lower & Upper Back Posture",
+          targetAr: "تقويم أسفل وأعلى الظهر",
+          descEn: [
+            "Lie face down on a mat, arms at your sides.",
+            "Lift chest and hands off the floor, rotating thumbs to the ceiling."
+          ],
+          descAr: [
+            "استلقي على بطنكِ على السجادة واليدين بجانبكِ.",
+            "ارفعي الصدر واليدين عن الأرض مع تدوير الإبهامين للأعلى."
+          ],
+          focus: "Squeeze shoulder blades together and keep eyes on floor."
+        },
+        {
+          id: "khadija0_4",
+          type: "posture",
+          name: "Wall Angels",
+          sets: "3",
+          reps: "10-12",
+          equip: "Bodyweight",
+          targetEn: "Upper Back & Posture",
+          targetAr: "استقامة الظهر والكتفين",
+          descEn: [
+            "Stand with back, head, and hips against the wall.",
+            "Slide arms up and down the wall slowly, keeping contact."
+          ],
+          descAr: [
+            "قفي برأسكِ وظهركِ وحوضكِ ملاصقين للجدار.",
+            "زلقي ذراعيكِ على الحائط للأعلى والأسفل ببطء مع استمرار التلامس."
+          ],
+          focus: "Ensure wrists and elbows do not pull away from wall."
+        }
+      ]
+    },
+    {
+      day: "Monday",
+      id: 1,
+      focus: "Lower Body & Balance",
+      exercises: [
+        {
+          id: "khadija1_1",
+          type: "main",
+          name: "Chair Squats",
+          sets: "3",
+          reps: "10-12",
+          equip: "Bodyweight",
+          targetEn: "Quadriceps & Glutes",
+          targetAr: "الأفخاذ الأمامية والأرداف",
+          descEn: [
+            "Stand in front of a chair, feet shoulder-width.",
+            "Squat down until glutes gently touch the seat, then stand up."
+          ],
+          descAr: [
+            "قفي أمام الكرسي مع قدمين بعرض الكتفين.",
+            "انزلي لأسفل بالسكوات حتى تلمس الأرداف المقعد بلطف، ثم انهضي."
+          ],
+          focus: "Keep knees tracking over toes and chest high."
+        },
+        {
+          id: "khadija1_2",
+          type: "main",
+          name: "Glute Bridges",
+          sets: "3",
+          reps: "12-15",
+          equip: "Bodyweight",
+          targetEn: "Glutes & Hamstrings",
+          targetAr: "عضلات الأرداف والخلفيات",
+          descEn: [
+            "Lie on your back, knees bent, feet flat on the mat.",
+            "Squeeze glutes and lift hips toward the ceiling, then lower."
+          ],
+          descAr: [
+            "استلقي على ظهركِ، الركبتين مثنيتين، والأقدام مسطحة.",
+            "اعصري عضلات المؤخرة وارفعي الحوض للأعلى، ثم انزلي ببطء."
+          ],
+          focus: "Push through your heels. Keep ribs flat."
+        },
+        {
+          id: "khadija1_3",
+          type: "bonus",
+          name: "Standing Calf Raises",
+          sets: "3",
+          reps: "15-20",
+          equip: "Bodyweight",
+          targetEn: "Calves & Ankle Stability",
+          targetAr: "عضلة السمانة وثبات الكاحل",
+          descEn: [
+            "Stand tall, feet hip-width.",
+            "Rise up onto the balls of your feet, hold, then lower."
+          ],
+          descAr: [
+            "قفي مستقيمة مع قدمين بعرض الحوض.",
+            "ارتفعي على أطراف أصابع قدميكِ، اثبتي لحظة، ثم انزلي ببطء."
+          ],
+          focus: "Rise high on big toes. Control descent."
+        },
+        {
+          id: "khadija1_4",
+          type: "bonus",
+          name: "Single-Leg Balance Hold",
+          sets: "3",
+          reps: "30s/leg",
+          equip: "Bodyweight",
+          targetEn: "Balance, Ankles, Core Stability",
+          targetAr: "التوازن، الكاحل وثبات البطن",
+          descEn: [
+            "Stand tall, raise one knee to hip height.",
+            "Hold position, engaging core to stabilize."
+          ],
+          descAr: [
+            "قفي مستقيمة، وارفعي ركبة واحدة لمستوى الحوض.",
+            "حافظي على الوضعية مع شد البطن للتوازن."
+          ],
+          focus: "Keep standing knee unlocked slightly. Look at a still point."
+        }
+      ]
+    },
+    {
+      day: "Tuesday",
+      id: 2,
+      focus: "Cardio & Core",
+      exercises: [
+        {
+          id: "khadija2_1",
+          type: "warmup",
+          name: "Gentle Full-Body Warm-up",
+          sets: "1",
+          reps: "5 mins",
+          equip: "Bodyweight",
+          targetEn: "Full Body Mobility",
+          targetAr: "حركة الجسم بالكامل",
+          descEn: [
+            "Perform light head tilts, arm swings, and shoulder rolls.",
+            "Take slow, deep breaths to activate the nervous system."
+          ],
+          descAr: [
+            "قومي بإمالة الرأس الخفيفة، أرجحة الذراعين، ودوران الكتفين.",
+            "خذي أنفاساً عميقة وبطيئة لتنشيط الجهاز العصبي."
+          ],
+          focus: "Focus on gentle breathing and starting light."
+        },
+        {
+          id: "khadija2_2",
+          type: "main",
+          name: "Modified Jumping Jacks",
+          sets: "3",
+          reps: "15-20",
+          equip: "Bodyweight",
+          targetEn: "Cardio & Coordination",
+          targetAr: "الكارديو والتنسيق الحركي",
+          descEn: [
+            "Step one foot out to the side while raising your arms overhead.",
+            "Step back to center and repeat on the other side. Low impact."
+          ],
+          descAr: [
+            "اخطوي بقدم واحدة للجانب مع رفع ذراعيك للأعلى.",
+            "عودي للمنتصف وكرري على الجانب الآخر. تأثير منخفض ومناسب للمفاصل."
+          ],
+          focus: "Keep a steady rhythm and coordinate arms and legs."
+        },
+        {
+          id: "khadija2_3",
+          type: "abs",
+          name: "Standing Torso Twists",
+          sets: "3",
+          reps: "15/side",
+          equip: "Bodyweight",
+          targetEn: "Obliques & Spine Flexibility",
+          targetAr: "العضلات الجانبية ومرونة العمود الفقري",
+          descEn: [
+            "Stand with feet shoulder-width apart, hands on hips or at chest.",
+            "Slowly rotate your torso side to side, squeezing your core."
+          ],
+          descAr: [
+            "قفي بقدمين متباعدتين بعرض الكتفين، ويديك على حوضك أو صدرك.",
+            "أديري جذعك ببطء من جانب لآخر مع عصر عضلات البطن الجانبية."
+          ],
+          focus: "Move from the core, not just shoulders."
+        },
+        {
+          id: "khadija2_4",
+          type: "abs",
+          name: "Knee-Supported Side Plank",
+          sets: "3",
+          reps: "20-30s/side",
+          equip: "Bodyweight",
+          targetEn: "Obliques & Deep Core",
+          targetAr: "العظلاّت الجانبية وعضلات البطن العميقة",
+          descEn: [
+            "Lie on your side, supporting yourself on your forearm.",
+            "Bend knees at 90 degrees and lift hips, forming a straight line."
+          ],
+          descAr: [
+            "استلقي على جانبكِ مع الاستناد على الساعد.",
+            "اثني الركبتين بزاوية 90 درجة وارفعي الحوض لتشكيل خط مستقيم."
+          ],
+          focus: "Keep hips high and core tight."
+        }
+      ]
+    },
+    {
+      day: "Wednesday",
+      id: 3,
+      focus: "Upper Body & Posture",
+      exercises: [
+        {
+          id: "khadija3_1",
+          type: "main",
+          name: "Wall Push-Ups",
+          sets: "3",
+          reps: "10-12",
+          equip: "Bodyweight",
+          targetEn: "Chest, Front Shoulders & Arms",
+          targetAr: "الصدر، مقدمة الأكتاف والذراعين",
+          descEn: [
+            "Place hands on the wall at shoulder height and width.",
+            "Bend elbows to lower your chest toward the wall, then push back."
+          ],
+          descAr: [
+            "ضعي يديك على الحائط بمستوى الكتفين وبعرضهما.",
+            "اثني المرفقين لخفض الصدر نحو الحائط، ثم ادفعي للخلف."
+          ],
+          focus: "Keep body in a perfectly straight line."
+        },
+        {
+          id: "khadija3_2",
+          type: "main",
+          name: "Standing Arm Circles",
+          sets: "3",
+          reps: "20 circles",
+          equip: "Bodyweight",
+          targetEn: "Shoulders & Rotator Cuff",
+          targetAr: "الأكتاف ومفاصلها",
+          descEn: [
+            "Extend arms out to the sides at shoulder height.",
+            "Make small, controlled circles forward, then backward."
+          ],
+          descAr: [
+            "مدي ذراعيك جانباً بمستوى الكتفين.",
+            "ارسمي دوائر صغيرة ومحكومة للأمام، ثم للخلف."
+          ],
+          focus: "Keep shoulders down away from ears. Tighten your core."
+        },
+        {
+          id: "khadija3_3",
+          type: "posture",
+          name: "Prone Cobra Hold",
+          sets: "3",
+          reps: "30s",
+          equip: "Bodyweight",
+          targetEn: "Lower & Upper Back Posture",
+          targetAr: "تقويم أسفل وأعلى الظهر",
+          descEn: [
+            "Lie face down on a mat, arms at your sides.",
+            "Lift chest and hands off the floor, rotating thumbs to the ceiling."
+          ],
+          descAr: [
+            "استلقي على بطنكِ على السجادة واليدين بجانبكِ.",
+            "ارفعي الصدر واليدين عن الأرض مع تدوير الإبهامين للأعلى."
+          ],
+          focus: "Squeeze shoulder blades together and keep eyes on floor."
+        },
+        {
+          id: "khadija3_4",
+          type: "posture",
+          name: "Wall Angels",
+          sets: "3",
+          reps: "10-12",
+          equip: "Bodyweight",
+          targetEn: "Upper Back & Posture",
+          targetAr: "استقامة الظهر والكتفين",
+          descEn: [
+            "Stand with back, head, and hips against the wall.",
+            "Slide arms up and down the wall slowly, keeping contact."
+          ],
+          descAr: [
+            "قفي برأسكِ وظهركِ وحوضكِ ملاصقين للجدار.",
+            "زلقي ذراعيكِ على الحائط للأعلى والأسفل ببطء مع استمرار التلامس."
+          ],
+          focus: "Ensure wrists and elbows do not pull away from wall."
+        }
+      ]
+    },
+    {
+      day: "Thursday",
+      id: 4,
+      focus: "Lower Body & Balance",
+      exercises: [
+        {
+          id: "khadija4_1",
+          type: "main",
+          name: "Chair Squats",
+          sets: "3",
+          reps: "10-12",
+          equip: "Bodyweight",
+          targetEn: "Quadriceps & Glutes",
+          targetAr: "الأفخاذ الأمامية والأرداف",
+          descEn: [
+            "Stand in front of a chair, feet shoulder-width.",
+            "Squat down until glutes gently touch the seat, then stand up."
+          ],
+          descAr: [
+            "قفي أمام الكرسي مع قدمين بعرض الكتفين.",
+            "انزلي لأسفل بالسكوات حتى تلمس الأرداف المقعد بلطف، ثم انهضي."
+          ],
+          focus: "Keep knees tracking over toes and chest high."
+        },
+        {
+          id: "khadija4_2",
+          type: "main",
+          name: "Glute Bridges",
+          sets: "3",
+          reps: "12-15",
+          equip: "Bodyweight",
+          targetEn: "Glutes & Hamstrings",
+          targetAr: "عضلات الأرداف والخلفيات",
+          descEn: [
+            "Lie on your back, knees bent, feet flat on the mat.",
+            "Squeeze glutes and lift hips toward the ceiling, then lower."
+          ],
+          descAr: [
+            "استلقي على ظهركِ، الركبتين مثنيتين، والأقدام مسطحة.",
+            "اعصري عضلات المؤخرة وارفعي الحوض للأعلى، ثم انزلي ببطء."
+          ],
+          focus: "Push through your heels."
+        },
+        {
+          id: "khadija4_3",
+          type: "bonus",
+          name: "Standing Calf Raises",
+          sets: "3",
+          reps: "15-20",
+          equip: "Bodyweight",
+          targetEn: "Calves & Ankle Stability",
+          targetAr: "عضلة السمانة وثبات الكاحل",
+          descEn: [
+            "Stand tall, feet hip-width.",
+            "Rise up onto the balls of your feet, hold, then lower."
+          ],
+          descAr: [
+            "قفي مستقيمة مع قدمين بعرض الحوض.",
+            "ارتفعي على أطراف أصابع قدميكِ، اثبتي لحظة، ثم انزلي ببطء."
+          ],
+          focus: "Rise high on big toes."
+        },
+        {
+          id: "khadija4_4",
+          type: "bonus",
+          name: "Single-Leg Balance Hold",
+          sets: "3",
+          reps: "30s/leg",
+          equip: "Bodyweight",
+          targetEn: "Balance, Ankles, Core Stability",
+          targetAr: "التوازن، الكاحل وثبات البطن",
+          descEn: [
+            "Stand tall, raise one knee to hip height.",
+            "Hold position, engaging core to stabilize."
+          ],
+          descAr: [
+            "قفي مستقيمة، وارفعي ركبة واحدة لمستوى الحوض.",
+            "حافظي على الوضعية مع شد البطن للتوازن."
+          ],
+          focus: "Keep standing knee unlocked slightly."
+        }
+      ]
+    },
+    {
+      day: "Friday",
+      id: 5,
+      focus: "REST",
+      exercises: []
+    }
+  ],
+  images: {
+    "khadija6_1": "img/khadija_warmup.png",
+    "khadija6_2": "img/khadija_jacks.png",
+    "khadija6_3": "img/khadija_torso_twists.png",
+    "khadija6_4": "img/khadija_side_plank.png",
+    "khadija0_1": "img/khadija_wall_pushup.png",
+    "khadija0_2": "img/khadija_arm_circles.png",
+    "khadija0_3": "img/khadija_cobra_hold.png",
+    "khadija0_4": "img/khadija_wall_angels.png",
+    "khadija1_1": "img/khadija_chair_squats.png",
+    "khadija1_2": "img/khadija_glute_bridges.png",
+    "khadija1_3": "img/khadija_calf_raises.png",
+    "khadija1_4": "img/khadija_balance_hold.png",
+    "khadija2_1": "img/khadija_warmup.png",
+    "khadija2_2": "img/khadija_jacks.png",
+    "khadija2_3": "img/khadija_torso_twists.png",
+    "khadija2_4": "img/khadija_side_plank.png",
+    "khadija3_1": "img/khadija_wall_pushup.png",
+    "khadija3_2": "img/khadija_arm_circles.png",
+    "khadija3_3": "img/khadija_cobra_hold.png",
+    "khadija3_4": "img/khadija_wall_angels.png",
+    "khadija4_1": "img/khadija_chair_squats.png",
+    "khadija4_2": "img/khadija_glute_bridges.png",
+    "khadija4_3": "img/khadija_calf_raises.png",
+    "khadija4_4": "img/khadija_balance_hold.png"
+  }
+};
+

@@ -1259,6 +1259,11 @@ if (typeof HOME_GYM_PROFILE !== 'undefined') {
   PROFILES.home = HOME_GYM_PROFILE;
 }
 
+if (typeof KHADIJA_PROFILE !== 'undefined') {
+  PROFILES.khadija = KHADIJA_PROFILE;
+}
+
+
 // Backward compat
 const DEFAULT_ROUTINE = PROFILES.ppl.routine;
 const EX_IMG = PROFILES.ppl.images;

@@ -36,6 +36,15 @@
   --glass-brd:  rgba(92, 198, 200, 0.12);
   --glass-hl:   rgba(255, 255, 255, 0.04);
 }
+body.profile-khadija {
+  --accent:     #ffb3c6; /* Elegant Rose Pink */
+  --accent-dim: #f896b0; /* Deeper Rose */
+  --accent-glow: rgba(255, 179, 198, 0.35); /* Glowing Pink */
+  --glass-brd:  rgba(255, 179, 198, 0.15); 
+  --sage:       #e0b1cb;
+  --olive:      #be95c4;
+  --mint:       #9f86c0;
+}
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 ::selection { background: var(--accent); color: var(--obsidian); }
 header, .day-nav, .sec-head, .modal-title, .rank-badge, .stat-item, button, .toast { user-select: none; }
