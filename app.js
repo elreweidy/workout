@@ -444,7 +444,7 @@ const App = (() => {
   };
 
   return {
-    loadDay, buildNav, toggleDone, refreshZone, openEditor, saveEx, delEx, setFilter, updateProgress, toggleArena, updateArenaState, triggerCelebration,
+    loadDay, buildNav, toggleDone, refreshZone, openEditor, saveEx, delEx, setFilter, updateProgress, toggleArena, updateArenaState, triggerCelebration, syncDown, syncUp,
     cycleQuote: () => { const q = QUOTES[Math.floor(Math.random() * QUOTES.length)]; const el = $('oracle-quote'); el.style.opacity = 0; setTimeout(() => { el.innerHTML = '"' + q.t + '" <span class="oracle-author">— ' + q.a + '</span>'; el.style.opacity = 1; }, 300); },
 
     getCurSKey: () => SKEY + '_' + STATE.activeProfileId,
