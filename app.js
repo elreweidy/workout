@@ -98,6 +98,46 @@ const App = (() => {
     "REST": "استراحة"
   };
 
+  // Arabic exercise name translations for Khadija profile
+  const AR_EXERCISE_NAMES = {
+    "Gentle Full-Body Warm-up":        "إحماء خفيف لكامل الجسم",
+    "Modified Jumping Jacks":          "قفز الجاك المعدّل",
+    "Standing Torso Twists":           "تدوير الجذع وقوفاً",
+    "Knee-Supported Side Plank":       "بلانك جانبي بدعم الركبتين",
+    "Bird-Dog Stability Hold (Optional)": "تمرين الكلب والطائر (اختياري)",
+    "Glute Rainbows (Optional)":       "قوس قزح الأرداف (اختياري)",
+    "Wall Push-Ups":                   "تمرين الضغط على الجدار",
+    "Standing Arm Circles":            "دوائر الذراعين وقوفاً",
+    "Prone Cobra Hold":                "تمرين وضعية الكوبرا",
+    "Wall Angels":                     "ملاك الجدار",
+    "Doorway Chest Stretch (Optional)": "تمدد الصدر بالباب (اختياري)",
+    "Seated Hand Pressures (Optional)": "ضغط الكفين جالسةً (اختياري)",
+    "Chair Squats":                    "سكوات بالكرسي",
+    "Glute Bridges":                   "جسر الأرداف",
+    "Standing Calf Raises":            "رفع الكعبين وقوفاً",
+    "Single-Leg Balance Hold":         "توازن على ساق واحدة",
+    "Standing Side Leg Raises (Optional)": "رفع الساق جانباً (اختياري)",
+    "Wall Sit Hold (Optional)":        "جلسة الجدار (اختياري)"
+  };
+
+  // Localize reps/sets text to Arabic
+  const localizeReps = (reps, isAr) => {
+    if (!isAr) return reps;
+    return reps
+      .replace(/(\d+)\s*mins?/gi, '$1 دقيقة')
+      .replace(/(\d+)\s*s\s*Hold/gi, 'ثبات $1 ثانية')
+      .replace(/(\d+)\s*s\s*Press/gi, 'ضغط $1 ثانية')
+      .replace(/(\d+)\s*s\s*\/side/gi, '$1 ثانية/جانب')
+      .replace(/(\d+)\s*s\s*\/leg/gi, '$1 ثانية/ساق')
+      .replace(/(\d+)\s*s$/gi, '$1 ثانية')
+      .replace(/\/side/gi, '/جانب')
+      .replace(/\/leg/gi, '/ساق')
+      .replace(/(\d+)\s*circles/gi, '$1 دائرة')
+      .replace(/\bMax Hold\b/gi, 'أقصى ثبات')
+      .replace(/\bFailure\b/gi, 'حتى التعب')
+      .replace(/\bWarmup\b/gi, 'إحماء');
+  };
+
   const translateUI = () => {
     const id = STATE.activeProfileId;
     const isAr = id === 'khadija';
@@ -111,7 +151,7 @@ const App = (() => {
       const icon = logoEl.querySelector('.logo-icon');
       const iconHtml = icon ? icon.outerHTML : '<span class="logo-icon">⚡</span>';
       logoEl.innerHTML = isAr
-        ? iconHtml + ' <span style="font-family:\'Tajawal\',sans-serif;letter-spacing:0.1em">نور خديجة</span>'
+        ? iconHtml + ' <span style="font-family:\'Tajawal\',sans-serif;letter-spacing:0.1em">🌸 خديجة</span>'
         : iconHtml + ' OLYMPUS';
       // Re-attach profiles btn
       const existingPfBtn = $('btn-profiles');
@@ -225,22 +265,46 @@ const App = (() => {
     });
   };
 
+  // ═══ FIREBASE REALTIME DATABASE SYNC ═══
+  // Free, no SDK needed. Uses REST API.
+  // Setup: Firebase console -> Create project -> Realtime Database -> Start in test mode
+  // Then replace FIREBASE_URL with your database URL (e.g. https://your-app-default-rtdb.firebaseio.com)
+  const FIREBASE_URL = 'https://khadija-workout-default-rtdb.firebaseio.com';
+
   const syncUp = () => {
     const doneObj = {};
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k.startsWith('oly_done_')) {
-        doneObj[k] = localStorage.getItem(k);
-      }
+      if (k.startsWith('oly_done_')) doneObj[k] = localStorage.getItem(k);
     }
-    // Sync disabled — no valid kvdb bucket configured
-    // To enable: create a free bucket at https://kvdb.io and replace the URL below
-    // fetch('https://kvdb.io/YOUR_BUCKET_ID/done_states', { method: 'POST', body: JSON.stringify(doneObj) }).catch(() => {});
+    if (!FIREBASE_URL || FIREBASE_URL.includes('your-app')) return;
+    fetch(FIREBASE_URL + '/workout_sync.json', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(doneObj)
+    }).catch(() => {});
   };
 
   const syncDown = () => {
-    // Sync disabled — no valid kvdb bucket configured
-    // To enable: create a free bucket at https://kvdb.io and replace the URL
+    if (!FIREBASE_URL || FIREBASE_URL.includes('your-app')) return;
+    fetch(FIREBASE_URL + '/workout_sync.json')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (!data) return;
+        let changed = false;
+        Object.entries(data).forEach(([k, v]) => {
+          if (k.startsWith('oly_done_') && localStorage.getItem(k) !== v) {
+            localStorage.setItem(k, v);
+            changed = true;
+          }
+        });
+        if (changed) {
+          App.updateProgress();
+          const day = STATE.routine.find(r => r.id === STATE.selDay);
+          if (day) App.renderExercises(day.exercises);
+        }
+      })
+      .catch(() => {});
   };
 
   const updateProgress = () => {
@@ -298,9 +362,11 @@ const App = (() => {
       const searchUrl = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(ex.name + (isAr ? ' تمرين' : ' exercise'));
 
       const typeLbl = isAr ? (AR_TYPE[ex.type] || ex.type) : ex.type;
+      const nameLbl  = isAr ? (AR_EXERCISE_NAMES[ex.name] || ex.name) : ex.name;
       const equipLbl = isAr ? (ex.equip === 'Bodyweight' ? 'وزن الجسم' : (ex.equip || 'وزن الجسم')) : (ex.equip || 'Bodyweight');
       const setsLbl  = isAr ? 'جولات' : 'Sets';
       const repsLbl  = isAr ? 'تكرارات' : 'Reps';
+      const repsVal  = localizeReps(ex.reps, isAr);
       const formLbl  = isAr ? 'طريقة الأداء' : 'Form';
       const conquerLbl = done ? (isAr ? '✨ تم بنجاح!' : 'Conquered') : (isAr ? '🌸 أنجزي التمرين' : 'Conquer');
       const focusTxt = isAr && ex.focus ? '💡 ' + ex.focus : (ex.focus ? '💡 ' + ex.focus : '');
@@ -325,7 +391,7 @@ const App = (() => {
             '<div class="card-seq">' + (i + 1).toString().padStart(2, '0') + '</div>' +
             '<div class="header-titles">' +
               '<span class="ex-type">' + typeLbl + '</span>' +
-              '<div class="ex-name">' + ex.name + '</div>' +
+              '<div class="ex-name">' + nameLbl + '</div>' +
               '<div class="ex-equip">' + equipLbl + '</div>' +
             '</div>' +
           '</div>' +
@@ -351,7 +417,7 @@ const App = (() => {
           '<div class="card-bottom"><div class="metrics">' +
             '<div class="metric"><div class="metric-val">' + ex.sets + '</div><div class="metric-lbl">' + setsLbl + '</div></div>' +
             '<div class="metric-sep"></div>' +
-            '<div class="metric"><div class="metric-val" style="font-size:1.6rem;">' + ex.reps + '</div><div class="metric-lbl">' + repsLbl + '</div></div>' +
+            '<div class="metric"><div class="metric-val" style="font-size:1.6rem;">' + repsVal + '</div><div class="metric-lbl">' + repsLbl + '</div></div>' +
           '</div>' +
           '<div class="card-actions">' +
             '<a href="' + ytUrl + '" target="_blank" rel="noopener" class="yt-btn">' + YT_SVG + ' ' + formLbl + '</a>' +
