@@ -173,8 +173,14 @@ const App = (() => {
 
     // Arena / Chronicles
     if ($('btn-arena')) {
-      const arenaActive = document.body.classList.contains('arena-mode');
-      $('btn-arena').textContent = isAr ? (arenaActive ? '🚪 مغادرة الساحة' : '🌸 ابدئي التمرين') : (arenaActive ? '🚪 Exit Arena' : '⚔️ The Arena');
+      if (isAr) {
+        $('btn-arena').style.display = 'none';
+        document.body.classList.remove('arena-mode'); // Safety check
+      } else {
+        $('btn-arena').style.display = '';
+        const arenaActive = document.body.classList.contains('arena-mode');
+        $('btn-arena').textContent = arenaActive ? '🚪 Exit Arena' : '⚔️ The Arena';
+      }
     }
     if ($('btn-chronicles')) {
       $('btn-chronicles').textContent = isAr ? "📅 سجل إنجازاتي" : "🏛️ Chronicles";
@@ -189,11 +195,18 @@ const App = (() => {
 
     // Session clock label
     const clockEl = $('session-clock');
-    if (clockEl && isAr) {
+    if (clockEl) {
       const txt = clockEl.textContent;
-      if (txt.includes('SESSION:')) {
-        const time = txt.replace('SESSION: ', '');
-        clockEl.textContent = 'الجلسة: ' + time;
+      if (isAr) {
+        if (txt.includes('SESSION:')) {
+          const time = txt.replace('SESSION: ', '');
+          clockEl.textContent = 'الجلسة: ' + time;
+        }
+      } else {
+        if (txt.includes('الجلسة:')) {
+          const time = txt.replace('الجلسة: ', '');
+          clockEl.textContent = 'SESSION: ' + time;
+        }
       }
     }
 
@@ -205,8 +218,13 @@ const App = (() => {
     // Filter buttons
     const filters = document.querySelectorAll('.sec-right [data-filter]');
     filters.forEach(btn => {
-      const f = btn.dataset.filter;
-      btn.textContent = isAr ? (AR_FILTERS[f] || f) : f.charAt(0).toUpperCase() + f.slice(1);
+      if (isAr) {
+        btn.style.display = 'none';
+      } else {
+        btn.style.display = '';
+        const f = btn.dataset.filter;
+        btn.textContent = f.charAt(0).toUpperCase() + f.slice(1);
+      }
     });
 
     // Add movement button
@@ -452,12 +470,7 @@ const App = (() => {
     $('ex-grid').style.display = isRest ? 'none' : 'grid';
     $('add-container').innerHTML = '';
 
-    if (isAr) {
-      setTimeout(translateUI, 10);
-    } else {
-      document.body.style.direction = 'ltr';
-      document.body.style.fontFamily = "'Cormorant Garamond', serif";
-    }
+    setTimeout(translateUI, 10);
 
     if (isRest) {
       $('day-title').textContent = isAr ? 'الجمعة' : 'Friday';
@@ -476,8 +489,12 @@ const App = (() => {
 
   const buildNav = () => {
     const nav = $('day-nav'); nav.innerHTML = '';
-    const frag = document.createDocumentFragment();
     const isAr = STATE.activeProfileId === 'khadija';
+    
+    // --- 1. Desktop Navigation (7 buttons) ---
+    const desktopContainer = document.createElement('div');
+    desktopContainer.className = 'day-nav-desktop';
+    
     DAY_ORDER.forEach(id => {
       const day = STATE.routine.find(r => r.id === id);
       const btn = document.createElement('button');
@@ -485,9 +502,55 @@ const App = (() => {
       const dayName = id === 5 ? 'Friday' : (day ? day.day : '');
       btn.textContent = isAr ? AR_DAYS[dayName] : (dayName.slice(0, 3).toUpperCase());
       btn.dataset.dayId = id;
-      frag.appendChild(btn);
+      desktopContainer.appendChild(btn);
     });
-    nav.appendChild(frag);
+    nav.appendChild(desktopContainer);
+
+    // --- 2. Mobile Navigation (Arrow Switcher) ---
+    const mobileContainer = document.createElement('div');
+    mobileContainer.className = 'day-nav-mobile';
+
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'nav-arrow-btn';
+    prevBtn.innerHTML = '◀';
+    prevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const curIdx = DAY_ORDER.indexOf(STATE.selDay);
+      const prevIdx = (curIdx - 1 + DAY_ORDER.length) % DAY_ORDER.length;
+      STATE.selDay = DAY_ORDER[prevIdx];
+      buildNav();
+      App.loadDay(STATE.selDay);
+      SFX.tick();
+    });
+
+    const dayDisplay = document.createElement('div');
+    dayDisplay.className = 'nav-day-display';
+    const curDay = STATE.routine.find(r => r.id === STATE.selDay);
+    const curDayName = STATE.selDay === 5 ? 'Friday' : (curDay ? curDay.day : '');
+    const localizedDayName = isAr ? AR_DAYS[curDayName] : curDayName;
+    dayDisplay.textContent = localizedDayName;
+    if (STATE.selDay === new Date().getDay()) {
+      dayDisplay.classList.add('today');
+      dayDisplay.textContent += isAr ? ' (اليوم)' : ' (Today)';
+    }
+
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'nav-arrow-btn';
+    nextBtn.innerHTML = '▶';
+    nextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const curIdx = DAY_ORDER.indexOf(STATE.selDay);
+      const nextIdx = (curIdx + 1) % DAY_ORDER.length;
+      STATE.selDay = DAY_ORDER[nextIdx];
+      buildNav();
+      App.loadDay(STATE.selDay);
+      SFX.tick();
+    });
+
+    mobileContainer.appendChild(prevBtn);
+    mobileContainer.appendChild(dayDisplay);
+    mobileContainer.appendChild(nextBtn);
+    nav.appendChild(mobileContainer);
   };
 
   const toggleDone = id => {

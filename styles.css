@@ -121,8 +121,14 @@ header { position: sticky; top: 0; z-index: 50; padding: 20px 5%; background: li
 .oracle-author { display: block; font-family: 'Cinzel', serif; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; margin-top: 15px; color: var(--accent); font-style: normal; }
 
 /* NAVIGATION */
-.day-nav { display: flex; justify-content: center; gap: 15px; padding: 20px 0 30px; overflow-x: auto; scrollbar-width: none; }
-.day-nav::-webkit-scrollbar { display: none; }
+.day-nav { display: flex; justify-content: center; padding: 20px 0 30px; }
+.day-nav-desktop { display: flex; justify-content: center; gap: 15px; overflow-x: auto; scrollbar-width: none; }
+.day-nav-desktop::-webkit-scrollbar { display: none; }
+.day-nav-mobile { display: none; align-items: center; justify-content: space-between; width: 100%; max-width: 320px; margin: 0 auto; padding: 6px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-brd); border-radius: 50px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+.nav-arrow-btn { background: none; border: none; color: var(--accent); font-size: 1.1rem; cursor: pointer; padding: 8px 16px; transition: transform 0.2s; }
+.nav-arrow-btn:active { transform: scale(0.85); }
+.nav-day-display { font-family: 'Cinzel', 'Tajawal', serif; font-weight: 700; font-size: 1.1rem; color: var(--white); letter-spacing: 0.05em; text-transform: uppercase; }
+.nav-day-display.today { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
 .day-btn { font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; padding: 14px 32px; border: 1px solid var(--glass-brd); background: rgba(0,0,0,0.6); color: var(--sage); cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-radius: 6px; position: relative; overflow: hidden; }
 .day-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(92,198,200,0.08), transparent); transition: 0.5s; }
 .day-btn:hover::before { left: 100%; }
@@ -270,26 +276,16 @@ textarea.field-input { resize: vertical; min-height: 80px; }
   /* Hide the massive Quote on Mobile */
   .oracle-quote { display: none !important; }
   
-  /* Single-Row Horizontally Scrollable Day Selector */
+  /* Single-Row Horizontally Scrollable Day Selector / Mobile Arrow Switcher */
   .day-nav { 
     display: flex !important; 
-    flex-wrap: nowrap !important; 
-    overflow-x: auto !important; 
-    gap: 6px !important; 
     padding: 8px 0 !important; 
     margin-bottom: 10px !important; 
     width: 100% !important; 
-    -webkit-overflow-scrolling: touch; 
+    justify-content: center !important;
   }
-  .day-nav::-webkit-scrollbar { display: none !important; }
-  .day-btn { 
-    flex: 0 0 auto !important; 
-    min-width: 68px !important; 
-    padding: 8px 10px !important; 
-    font-size: 0.75rem !important; 
-    text-align: center; 
-    border-radius: 8px !important;
-  }
+  .day-nav-desktop { display: none !important; }
+  .day-nav-mobile { display: flex !important; }
   
   /* Compact Focus and Header row */
   .sec-head { 
