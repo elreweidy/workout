@@ -1,9 +1,11 @@
-const CACHE_NAME = 'olympus-v16';
+const CACHE_NAME = 'olympus-v17';
 const ASSETS = [
   '/workout/',
   '/workout/index.html',
   '/workout/styles.css',
+  '/workout/programs.js',
   '/workout/core.js',
+  '/workout/tracker.js',
   '/workout/core_profile.js',
   '/workout/app.js',
   '/workout/manifest.json'

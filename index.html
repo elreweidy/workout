@@ -2,13 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="theme-color" content="#5CC6C8">
 <title>OLYMPUS // Daily Ritual</title>
-<meta name="description" content="Premium workout tracker — hypertrophy & core training programs.">
+<meta name="description" content="Workout tracker — PPL programs, set logging, progressive overload and rest timer.">
 <link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Cinzel+Decorative:wght@900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;700&family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=16">
+<link rel="stylesheet" href="styles.css?v=17">
 </head>
 <body>
 
@@ -38,7 +41,7 @@
 <!-- CALENDAR MODAL -->
 <div class="modal-bg" id="cal-modal">
   <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">Chronicles &amp; Reflections<button class="modal-close" id="cal-close">×</button></div>
+    <div class="modal-title"><span id="cal-title">Chronicles &amp; Reflections</span><button class="modal-close" id="cal-close" aria-label="Close">×</button></div>
     <div class="rank-badge">
       <div class="rank-title" id="rank-title">Spartan Recruit</div>
       <div class="rank-sub">Current Status of the Vessel</div>
@@ -53,10 +56,15 @@
       <div class="cal-dow">W</div><div class="cal-dow">T</div><div class="cal-dow">F</div><div class="cal-dow">S</div>
     </div>
     <div class="cal-grid" id="cal-days"></div>
+    <div id="cal-detail" class="cal-detail"></div>
     <div class="stats-row">
       <div class="stat-item"><div class="stat-val" id="st-total">0</div><div class="stat-lbl">Total Triumphs</div></div>
-      <div class="stat-item"><div class="stat-val" id="st-streak">0</div><div class="stat-lbl">Current Streak</div></div>
-      <div class="stat-item"><div class="stat-val" id="st-month">0</div><div class="stat-lbl">This Cycle</div></div>
+      <div class="stat-item"><div class="stat-val" id="st-streak">0</div><div class="stat-lbl">Training Streak</div></div>
+      <div class="stat-item"><div class="stat-val" id="st-month">0</div><div class="stat-lbl">This Month</div></div>
+    </div>
+    <div id="records" class="records">
+      <div class="rec-title">Personal Records</div>
+      <div id="rec-list"></div>
     </div>
     <div class="sys-actions">
       <button class="sys-btn" id="btn-export">⭳ Export Scrolls</button>
@@ -69,7 +77,7 @@
 <!-- EDITOR MODAL -->
 <div class="modal-bg" id="ed-modal">
   <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title"><span id="ed-title">Add Movement</span><button class="modal-close" id="ed-close">×</button></div>
+    <div class="modal-title"><span id="ed-title">Add Movement</span><button class="modal-close" id="ed-close" aria-label="Close">×</button></div>
     <input type="hidden" id="ed-id">
     <label class="field-label">Movement Nomenclature</label>
     <input type="text" id="ed-name" class="field-input" placeholder="e.g. Atlas Stone Lift">
@@ -80,14 +88,17 @@
     <div class="field-row">
       <div><label class="field-label">Classification</label>
         <select id="ed-type" class="field-sel">
-          <option value="main">Main Core</option>
+          <option value="warmup">Warm-up</option>
+          <option value="main">Main Lift</option>
+          <option value="bonus">Accessory</option>
+          <option value="abs">Core</option>
           <option value="posture">Posture / Alignment</option>
-          <option value="abs">Core / Shield</option>
-          <option value="bonus">Bonus / Accessory</option>
         </select>
       </div>
       <div><label class="field-label">Relics (Equipment)</label><input type="text" id="ed-equip" class="field-input" placeholder="Barbell, Bench"></div>
     </div>
+    <label class="field-label">Rest between sets (seconds)</label>
+    <input type="number" id="ed-rest" class="field-input" placeholder="90" min="0" max="600" step="15" inputmode="numeric">
     <label class="field-label">Divine Directives (One step per line)</label>
     <textarea id="ed-desc" class="field-input" placeholder="Step 1...&#10;Step 2..."></textarea>
     <button class="save-btn" id="btn-save-ex">Inscribe Movement</button>
@@ -96,14 +107,14 @@
 
 <header>
   <div class="logo">
-    <span class="logo-icon">⚡</span> OLYMPUS
-    <button id="btn-profiles" class="filter-btn" style="margin-left:15px; font-size: 0.8rem; padding: 4px 12px;">Profiles ▾</button>
+    <span class="logo-icon">⚡</span> <span id="logo-text">OLYMPUS</span>
+    <button id="btn-profiles" class="filter-btn">Profiles ▾</button>
   </div>
   <div style="display:flex;align-items:center;flex-wrap:wrap;">
     <div class="heatmap" id="heatmap" title="Last 7 Days Activity"></div>
     <div class="header-right">
       <div class="session-label" id="cur-date"></div>
-      <div id="session-clock">SESSION: 00m 00s</div>
+      <div id="session-clock">READY</div>
     </div>
   </div>
 </header>
@@ -119,18 +130,17 @@
   <div class="orb orb-3"></div>
 
   <div class="sec-head">
-    <div style="display:flex;align-items:center;gap:25px;">
-      <span class="day-title" id="day-title">—</span>
-      <span class="focus-badge" id="day-focus">—</span>
+    <div class="sec-left">
+      <div class="sec-title-row">
+        <span class="day-title" id="day-title">—</span>
+        <span class="focus-badge" id="day-focus">—</span>
+      </div>
+      <div class="day-meta" id="day-meta"></div>
     </div>
     <div class="sec-right">
-      <button id="btn-arena" class="filter-btn hist-btn" style="color:var(--accent); border-color:var(--accent);">⚔️ The Arena</button>
+      <button id="btn-arena" class="filter-btn hist-btn">⚔️ The Arena</button>
       <button id="btn-chronicles" class="filter-btn hist-btn">🏛️ Chronicles</button>
-      <button data-filter="all" class="filter-btn active">All</button>
-      <button data-filter="main" class="filter-btn">Main</button>
-      <button data-filter="posture" class="filter-btn">Posture</button>
-      <button data-filter="abs" class="filter-btn">Abs</button>
-      <button data-filter="bonus" class="filter-btn">Bonus</button>
+      <span id="filters" class="filters"></span>
     </div>
   </div>
 
@@ -151,9 +161,25 @@
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title">
       <span id="profile-title">Select Routine</span>
-      <button class="modal-close" id="profile-close">×</button>
+      <button class="modal-close" id="profile-close" aria-label="Close">×</button>
     </div>
     <div id="profile-list" style="display:flex; flex-direction:column; gap:15px; margin-top:20px;"></div>
+  </div>
+</div>
+
+<!-- REST TIMER -->
+<div class="rest-timer" id="rest-timer" role="timer" aria-live="polite">
+  <div class="rt-ring">
+    <svg viewBox="0 0 60 60" aria-hidden="true"><circle class="rt-ring-bg" cx="30" cy="30" r="26"/><circle class="rt-ring-fg" cx="30" cy="30" r="26"/></svg>
+    <div class="rt-time">0:00</div>
+  </div>
+  <div class="rt-body">
+    <div class="rt-label">Rest</div>
+    <div class="rt-btns">
+      <button data-rt="-15" aria-label="Subtract 15 seconds">−15</button>
+      <button data-rt="+15" aria-label="Add 15 seconds">+15</button>
+      <button data-rt="skip" class="rt-skip">Skip</button>
+    </div>
   </div>
 </div>
 
@@ -194,9 +220,11 @@
   });
 })();
 </script>
-<script src="core_profile.js?v=16"></script>
-<script src="core.js?v=16"></script>
-<script src="app.js?v=16"></script>
+<script src="programs.js?v=17"></script>
+<script src="core_profile.js?v=17"></script>
+<script src="core.js?v=17"></script>
+<script src="tracker.js?v=17"></script>
+<script src="app.js?v=17"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
