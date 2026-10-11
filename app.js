@@ -407,7 +407,9 @@ const App = (() => {
       const n = Rx.sets(ex), got = Log.get(ex).s.filter(s => s.d).length;
       if (n <= 6) { pips = '<span class="ex-pips" aria-hidden="true">'; for (let k = 0; k < n; k++) pips += '<i' + (k < got ? ' class="on"' : '') + '></i>'; pips += '</span>'; }
     }
-    return '<span class="ex-num">' + (done ? '✓' : String(i + 1).padStart(2, '0')) + '</span>' +
+    const fk = Figures.keyFor(ex);
+    const num = '<span class="ex-num">' + (done ? '✓' : String(i + 1).padStart(2, '0')) + '</span>';
+    return (fk ? '<span class="ex-thumb">' + Figures.render(fk, { hijab: isAr }) + num + '</span>' : num) +
       '<span class="ex-head-main">' +
         '<span class="ex-kicker">' + escHtml(typeLbl + ' · ' + equipLbl) + '</span>' +
         '<span class="ex-name">' + escHtml(displayName(ex)) + '</span>' +
@@ -422,17 +424,20 @@ const App = (() => {
     const cues = isAr ? (ex.descAr || ex.descEn || ex.desc) : (ex.descEn || ex.desc);
     const cuesHtml = cues && cues.length ? '<ul class="ex-desc">' + cues.map(d => '<li>' + escHtml(d) + '</li>').join('') + '</ul>' : '';
     const target = isAr ? ex.targetAr : ex.targetEn;
-    const img = LS.get('oly_img_' + ex.id) || (PROFILES[STATE.activeProfileId]?.images || {})[ex.id] || null;
+    const img = LS.get('oly_img_' + ex.id) || null;
+    const fk = Figures.keyFor(ex);
+    const fig = fk ? '<div class="ex-fig">' + Figures.render(fk, { hijab: isAr, label: (isAr ? 'طريقة أداء ' : 'How to do ') + displayName(ex) }) + '</div>' : '';
     const searchUrl = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(ex.name + (isAr ? ' تمرين' : ' exercise'));
     const openHow = ex.type === 'warmup' || !Rx.tracked(ex) || isAr;
 
-    return '<div class="tracker-slot">' + Tracker.html(ex, done) + '</div>' +
+    return fig + '<div class="tracker-slot">' + Tracker.html(ex, done) + '</div>' +
       '<details class="howto"' + (openHow ? ' open' : '') + '><summary>' + (isAr ? 'طريقة الأداء والصورة' : 'How to · cues & image') + '</summary>' +
         '<div class="howto-body">' +
-          '<div class="paste-zone" id="zone-' + ex.id + '" data-id="' + ex.id + '">' + zoneInner(ex.id, img, searchUrl) + '</div>' +
+          (fk && !img ? '' : '<div class="paste-zone" id="zone-' + ex.id + '" data-id="' + ex.id + '">' + zoneInner(ex.id, img, searchUrl) + '</div>') +
           (target ? '<div class="ex-target">🎯 <b>' + escHtml(target.split('|')[0].trim()) + '</b>' + (target.includes('|') ? ' · ' + escHtml(target.split('|').slice(1).join('|').trim()) : '') + '</div>' : '') +
           cuesHtml +
           (ex.focus && !isAr ? '<div class="ex-cue">💡 ' + escHtml(ex.focus) + '</div>' : '') +
+          (fk && !img ? '<button class="photo-link" data-action="addphoto" data-id="' + ex.id + '">📷 ' + T('Add your own photo', 'أضيفي صورتك') + '</button>' : '') +
         '</div>' +
       '</details>' +
       '<div class="card-actions">' +
@@ -468,6 +473,7 @@ const App = (() => {
       frag.appendChild(card);
     });
     grid.appendChild(frag);
+    Figures.mount(grid.querySelector('.ex-card.open'));
     if (document.body.classList.contains('arena-mode')) updateArenaState(true);
   };
 
@@ -489,6 +495,7 @@ const App = (() => {
     const ex = findEx(id), count = $('ex-grid').children.length;
     if (!card.classList.contains('open')) card.querySelector('.ex-body').innerHTML = bodyInner(ex, +card.dataset.idx, count);
     card.classList.add('open'); card.querySelector('.ex-head').setAttribute('aria-expanded', 'true');
+    Figures.mount(card);
     if (scroll) requestAnimationFrame(() => {
       const top = card.getBoundingClientRect().top + window.scrollY - (document.querySelector('.topbar').offsetHeight + 12);
       window.scrollTo({ top, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
@@ -511,10 +518,16 @@ const App = (() => {
       (searchUrl ? '<a href="' + searchUrl + '" target="_blank" rel="noopener" class="search-img-link" onclick="event.stopPropagation()">' + SEARCH_SVG + ' ' + (isArUI() ? 'بحث' : 'Find one') + '</a>' : '') + '</div>';
 
   const refreshZone = (id, src) => {
+    const card = $('card-' + id), ex0 = findEx(id);
+    // With a figure, the photo zone only exists while a photo does: rebuild the body.
+    if (card && card.classList.contains('open') && ex0 && Figures.keyFor(ex0)) {
+      card.querySelector('.ex-body').innerHTML = bodyInner(ex0, +card.dataset.idx, $('ex-grid').children.length);
+      Figures.mount(card);
+      return;
+    }
     const z = $('zone-' + id); if (!z) return;
     const ex = findEx(id);
-    const fallback = (PROFILES[STATE.activeProfileId]?.images || {})[id] || null;
-    z.innerHTML = zoneInner(id, src || fallback, ex ? 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(ex.name + ' exercise') : '');
+    z.innerHTML = zoneInner(id, src, ex ? 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(ex.name + ' exercise') : '');
   };
 
   const findEx = id => { for (const d of STATE.routine) { const e = d.exercises.find(x => x.id === id); if (e) return e; } return null; };
@@ -959,6 +972,12 @@ const App = (() => {
           if (act === 'down') return moveEx(id, 1);
           if (act === 'delimg') { e.stopPropagation(); if (confirm(T('Remove this image?', 'حذف الصورة؟'))) { LS.del('oly_img_' + id); refreshZone(id, null); SFX.tick(); } return; }
           if (act === 'lightbox') return UI.openLB(action.dataset.src);
+          if (act === 'addphoto') {
+            const inp = document.createElement('input');
+            inp.type = 'file'; inp.accept = 'image/*';
+            inp.onchange = ev => { const file = ev.target.files[0]; if (file) ImageSys.save(id, file); };
+            return inp.click();
+          }
           if (act === 'toggle') return toggleDone(id);
           if (act === 'set') { const ex = findEx(id); if (ex) { Tracker.toggleSet(ex, parseInt(action.dataset.i, 10)); refreshHead(id); } return; }
           if (act === 'addset') { const ex = findEx(id); if (ex) { Tracker.addSet(ex); refreshHead(id); } return; }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'olympus-v18';
+const CACHE_NAME = 'olympus-v19';
 // Relative to the service worker's scope, so it works at /workout/ or any other path.
 const ASSETS = [
   './',
@@ -7,6 +7,8 @@ const ASSETS = [
   'programs.js',
   'core_profile.js',
   'core.js',
+  'figures.js',
+  'figure_specs.js',
   'tracker.js',
   'app.js',
   'manifest.json',
