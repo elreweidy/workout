@@ -77,8 +77,8 @@ const LS = {
    APPLICATION STATE
 ═══════════════════════════════════════════ */
 const STATE = {
-  routine: [], selDay: new Date().getDay(), curFilter: 'all',
-  calDate: new Date(), hovZone: null, sessionStart: new Date()
+  routine: [], selDay: new Date().getDay(), openId: null,
+  calDate: new Date(), hovZone: null
 };
 
 /* ═══════════════════════════════════════════
@@ -86,8 +86,9 @@ const STATE = {
 ═══════════════════════════════════════════ */
 const SFX = (() => {
   let ctx = null;
-  const init = () => { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === 'suspended') ctx.resume(); };
+  const init = () => { if (LS.get('oly_opt_sound') === '0') return; if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === 'suspended') ctx.resume(); };
   const tone = (freq, type, dur, vol, delay = 0) => {
+    if (LS.get('oly_opt_sound') === '0') return;
     try {
       init(); const t = ctx.currentTime + delay;
       const o = ctx.createOscillator(), g = ctx.createGain();
@@ -101,64 +102,41 @@ const SFX = (() => {
     init,
     tick: () => tone(800, 'sine', 0.1, 0.05),
     set: () => { tone(660, 'triangle', 0.25, 0.05); tone(990, 'triangle', 0.3, 0.04, 0.07); },
-    pr: () => { init(); [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, 'triangle', 0.9, 0.05, i * 0.09)); },
+    pr: () => { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, 'triangle', 0.9, 0.05, i * 0.09)); },
     restEnd: () => { [0, 0.22, 0.44].forEach((d, i) => tone(i === 2 ? 1175 : 880, 'sine', 0.18, 0.09, d)); },
-    conquer: () => { init(); [440, 554.37, 659.25, 880].forEach((f, i) => tone(f, 'triangle', 1.5, 0.03, i * 0.05)); tone(55, 'sine', 2, 0.1, 0.1); }
+    conquer: () => { [440, 554.37, 659.25, 880].forEach((f, i) => tone(f, 'triangle', 1.5, 0.03, i * 0.05)); tone(55, 'sine', 2, 0.1, 0.1); }
   };
 })();
 
 /* ═══════════════════════════════════════════
-   CANVAS PARTICLE ENGINE (OPTIMIZED)
+   CONFETTI — only animates while particles are alive (no idle battery drain)
 ═══════════════════════════════════════════ */
 const FX = (() => {
-  const cv = $('cv'), cx = cv.getContext('2d', { alpha: true });
-  let ripples = [], bugs = [], bflies = [], running = true;
-
-  class Ripple {
-    constructor(x, y, a = 0.8) { this.x = x; this.y = y; this.r = 0; this.a = a; }
-    step() {
-      cx.beginPath(); cx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-      cx.strokeStyle = `rgba(163,201,177,${this.a * 0.4})`; cx.lineWidth = 1 + this.a * 2; cx.stroke();
-      this.r += 1.2; this.a -= 0.015; return this.a > 0;
+  const cv = $('cv'), cx = cv.getContext('2d');
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let parts = [], raf = 0;
+  const size = () => { const r = window.devicePixelRatio || 1; cv.width = innerWidth * r; cv.height = innerHeight * r; cx.setTransform(r, 0, 0, r, 0, 0); };
+  const loop = () => {
+    cx.clearRect(0, 0, innerWidth, innerHeight);
+    parts = parts.filter(p => {
+      p.vy += 0.12; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life--;
+      cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot); cx.globalAlpha = Math.min(1, p.life / 40);
+      cx.fillStyle = p.c; cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); cx.restore();
+      return p.life > 0 && p.y < innerHeight + 40;
+    });
+    raf = parts.length ? requestAnimationFrame(loop) : 0;
+  };
+  const burst = (n = 140) => {
+    if (reduce) return;
+    const accent = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#5cc6c8';
+    const colors = [accent, '#ffffff', '#f2c14e', '#6fdc9b', '#a993ff'];
+    for (let i = 0; i < n; i++) {
+      parts.push({ x: innerWidth / 2 + (Math.random() - 0.5) * 80, y: innerHeight * 0.35, vx: (Math.random() - 0.5) * 14, vy: -Math.random() * 12 - 4,
+        w: 6 + Math.random() * 6, h: 3 + Math.random() * 4, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.3, life: 120 + Math.random() * 60, c: colors[i % colors.length] });
     }
-  }
-  class Bug {
-    constructor() { this.x = Math.random() * cv.width; this.y = Math.random() * cv.height; this.tx = this.x; this.ty = this.y; this.sp = 1.5 + Math.random() * 2; this.w = 0; this.ang = Math.random() * Math.PI * 2; this.lp = Math.random() * 10; }
-    step() {
-      let mv = false;
-      if (this.w > 0) { this.w--; } else {
-        const dx = this.tx - this.x, dy = this.ty - this.y, d = Math.sqrt(dx * dx + dy * dy);
-        if (d < 5) { this.tx = Math.max(50, Math.min(cv.width - 50, this.x + (Math.random() - 0.5) * 400)); this.ty = Math.max(50, Math.min(cv.height - 50, this.y + (Math.random() - 0.5) * 400)); this.w = 60 + Math.random() * 150; ripples.push(new Ripple(this.x, this.y, 0.4)); }
-        else { mv = true; this.ang = Math.atan2(dy, dx); this.x += (dx / d) * this.sp; this.y += (dy / d) * this.sp; this.lp += 0.4; if (Math.random() < 0.05) ripples.push(new Ripple(this.x, this.y, 0.15)); }
-      }
-      cx.save(); cx.translate(this.x, this.y); cx.rotate(this.ang);
-      const sw = mv ? Math.sin(this.lp) : 0;
-      cx.strokeStyle = 'rgba(10,15,10,0.7)'; cx.lineWidth = 1; cx.lineCap = 'round';
-      cx.beginPath();
-      cx.moveTo(0, 0); cx.lineTo(-3 - sw * 4, -8); cx.moveTo(0, 0); cx.lineTo(-3 - sw * 4, 8);
-      cx.moveTo(-2, 0); cx.lineTo(-8, -5); cx.lineTo(-16 + sw * 2, -8); cx.moveTo(-2, 0); cx.lineTo(-8, 5); cx.lineTo(-16 + sw * 2, 8);
-      cx.moveTo(2, 0); cx.lineTo(5, -3); cx.moveTo(2, 0); cx.lineTo(5, 3); cx.stroke();
-      cx.fillStyle = 'rgba(15,20,12,0.85)'; cx.beginPath(); cx.ellipse(0, 0, 4.5, 1.5, 0, 0, Math.PI * 2); cx.fill();
-      cx.restore();
-    }
-  }
-  class Bfly {
-    constructor() { this.reset(true); }
-    reset(init) { this.x = init ? Math.random() * cv.width : (Math.random() > 0.5 ? -40 : cv.width + 40); this.y = Math.random() * cv.height; this.vx = (this.x < 0 ? 1 : -1) * (0.8 + Math.random() * 1.5); this.vy = (Math.random() - 0.5) * 1.5; this.t = Math.random() * 100; this.h = 30 + Math.random() * 50; }
-    step() {
-      this.t += 0.25; this.x += this.vx; this.y += this.vy + Math.sin(this.t * 0.5) * 0.6;
-      if (this.x < -100 || this.x > cv.width + 100 || this.y < -100 || this.y > cv.height + 100) this.reset();
-      cx.save(); cx.translate(this.x, this.y); cx.rotate(Math.atan2(this.vy, this.vx));
-      const f = Math.abs(Math.sin(this.t)); cx.fillStyle = `hsl(${this.h},90%,60%)`; cx.globalAlpha = 0.85;
-      cx.beginPath(); cx.ellipse(0, -5 * f, 7, 5 * f, Math.PI / 6, 0, Math.PI * 2); cx.fill();
-      cx.beginPath(); cx.ellipse(0, 5 * f, 7, 5 * f, -Math.PI / 6, 0, Math.PI * 2); cx.fill();
-      cx.restore();
-    }
-  }
-  const resize = () => { cv.width = window.innerWidth; cv.height = window.innerHeight; bugs = []; bflies = []; ripples = []; for (let i = 0; i < 8; i++) bugs.push(new Bug()); for (let i = 0; i < 3; i++) bflies.push(new Bfly()); };
-  const loop = () => { if (!running) { requestAnimationFrame(loop); return; } cx.clearRect(0, 0, cv.width, cv.height); ripples = ripples.filter(r => r.step()); bugs.forEach(b => b.step()); bflies.forEach(b => b.step()); requestAnimationFrame(loop); };
-  document.addEventListener('visibilitychange', () => { running = !document.hidden; });
-  return { init: () => { window.addEventListener('resize', debounce(resize, 200)); resize(); loop(); }, addRipple: (x, y) => ripples.push(new Ripple(x, y)) };
+    if (!raf) raf = requestAnimationFrame(loop);
+  };
+  return { init: () => { window.addEventListener('resize', debounce(size, 200)); size(); }, burst };
 })();
 
 /* ═══════════════════════════════════════════

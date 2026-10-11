@@ -4,147 +4,78 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<meta name="theme-color" content="#5CC6C8">
+<meta name="theme-color" content="#080c0e">
 <title>OLYMPUS // Daily Ritual</title>
 <meta name="description" content="Workout tracker — PPL programs, set logging, progressive overload and rest timer.">
 <link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Cinzel+Decorative:wght@900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;700&family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=17">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600;700;800&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=18">
 </head>
 <body>
 
 <!-- AUTH GATE -->
-<div id="auth-gate" style="position:fixed;inset:0;z-index:99999;background:#020604;display:flex;align-items:center;justify-content:center;transition:opacity 0.6s,transform 0.6s;">
-  <div class="auth-box" style="text-align:center;padding:60px 50px;background:rgba(5,15,10,0.6);border:1px solid rgba(92,198,200,0.15);border-radius:20px;backdrop-filter:blur(40px);box-shadow:0 50px 100px rgba(0,0,0,0.8);max-width:420px;width:90%;">
-    <div class="auth-icon" style="font-size:3rem;margin-bottom:15px;">⚡</div>
-    <div class="auth-title" style="font-family:'Cinzel Decorative',serif;font-size:2.5rem;font-weight:900;color:#fff;letter-spacing:0.2em;margin-bottom:8px;text-shadow:0 0 30px rgba(92,198,200,0.3);">OLYMPUS</div>
-    <div class="auth-sub" style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.3em;text-transform:uppercase;color:rgba(92,198,200,0.6);margin-bottom:40px;">Identify yourself, warrior</div>
-    <form id="auth-form" autocomplete="on" style="display:flex;flex-direction:column;gap:16px;">
-      <input type="text" id="auth-user" name="username" placeholder="Username" autocomplete="username" required style="font-family:'Cinzel',serif;font-size:1rem;padding:16px 22px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;outline:none;">
-      <input type="password" id="auth-pass" name="password" placeholder="Password" autocomplete="current-password" required style="font-family:'Cinzel',serif;font-size:1rem;padding:16px 22px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;outline:none;">
-      <button type="submit" id="auth-btn" style="font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;padding:18px;background:linear-gradient(135deg,rgba(92,198,200,0.9),rgba(58,142,144,0.9));border:none;border-radius:10px;color:#020604;cursor:pointer;box-shadow:0 10px 30px rgba(92,198,200,0.3);margin-top:10px;">Enter the Arena</button>
-      <div id="auth-error" style="font-family:'Cinzel',serif;font-size:0.8rem;color:#ff6b6b;letter-spacing:0.15em;min-height:1.2em;"></div>
-    </form>
-  </div>
+<div id="auth-gate">
+  <form id="auth-form" class="auth-box" autocomplete="on">
+    <div class="auth-icon">⚡</div>
+    <div class="auth-title">OLYMPUS</div>
+    <div class="auth-sub">Identify yourself, warrior</div>
+    <input type="text" id="auth-user" name="username" placeholder="Username" autocomplete="username" autocapitalize="none" required>
+    <input type="password" id="auth-pass" name="password" placeholder="Password" autocomplete="current-password" required>
+    <button type="submit" id="auth-btn" class="btn btn-primary btn-block">Enter</button>
+    <div id="auth-error" role="alert"></div>
+  </form>
 </div>
 
-<!-- ENVIRONMENT -->
-<div class="god-rays"></div>
-<canvas id="cv"></canvas>
-<div id="prog-glow"></div>
-
-<div class="toast" id="toast"></div>
+<canvas id="cv" aria-hidden="true"></canvas>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="lightbox" id="lb"><img id="lb-img" src="" alt=""></div>
 
-<!-- CALENDAR MODAL -->
-<div class="modal-bg" id="cal-modal">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title"><span id="cal-title">Chronicles &amp; Reflections</span><button class="modal-close" id="cal-close" aria-label="Close">×</button></div>
-    <div class="rank-badge">
-      <div class="rank-title" id="rank-title">Spartan Recruit</div>
-      <div class="rank-sub">Current Status of the Vessel</div>
-    </div>
-    <div class="cal-nav">
-      <button class="cal-nav-btn" id="cal-prev">← Prev</button>
-      <span class="cal-month" id="cal-label"></span>
-      <button class="cal-nav-btn" id="cal-next">Next →</button>
-    </div>
-    <div class="cal-grid">
-      <div class="cal-dow">S</div><div class="cal-dow">M</div><div class="cal-dow">T</div>
-      <div class="cal-dow">W</div><div class="cal-dow">T</div><div class="cal-dow">F</div><div class="cal-dow">S</div>
-    </div>
-    <div class="cal-grid" id="cal-days"></div>
-    <div id="cal-detail" class="cal-detail"></div>
-    <div class="stats-row">
-      <div class="stat-item"><div class="stat-val" id="st-total">0</div><div class="stat-lbl">Total Triumphs</div></div>
-      <div class="stat-item"><div class="stat-val" id="st-streak">0</div><div class="stat-lbl">Training Streak</div></div>
-      <div class="stat-item"><div class="stat-val" id="st-month">0</div><div class="stat-lbl">This Month</div></div>
-    </div>
-    <div id="records" class="records">
-      <div class="rec-title">Personal Records</div>
-      <div id="rec-list"></div>
-    </div>
-    <div class="sys-actions">
-      <button class="sys-btn" id="btn-export">⭳ Export Scrolls</button>
-      <button class="sys-btn" id="btn-import-trigger">⭱ Import Scrolls</button>
-      <input type="file" id="file-import" style="display:none;" accept=".json">
-    </div>
-  </div>
-</div>
-
-<!-- EDITOR MODAL -->
-<div class="modal-bg" id="ed-modal">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title"><span id="ed-title">Add Movement</span><button class="modal-close" id="ed-close" aria-label="Close">×</button></div>
-    <input type="hidden" id="ed-id">
-    <label class="field-label">Movement Nomenclature</label>
-    <input type="text" id="ed-name" class="field-input" placeholder="e.g. Atlas Stone Lift">
-    <div class="field-row">
-      <div><label class="field-label">Sets</label><input type="text" id="ed-sets" class="field-input" placeholder="3"></div>
-      <div><label class="field-label">Reps</label><input type="text" id="ed-reps" class="field-input" placeholder="8-12"></div>
-    </div>
-    <div class="field-row">
-      <div><label class="field-label">Classification</label>
-        <select id="ed-type" class="field-sel">
-          <option value="warmup">Warm-up</option>
-          <option value="main">Main Lift</option>
-          <option value="bonus">Accessory</option>
-          <option value="abs">Core</option>
-          <option value="posture">Posture / Alignment</option>
-        </select>
-      </div>
-      <div><label class="field-label">Relics (Equipment)</label><input type="text" id="ed-equip" class="field-input" placeholder="Barbell, Bench"></div>
-    </div>
-    <label class="field-label">Rest between sets (seconds)</label>
-    <input type="number" id="ed-rest" class="field-input" placeholder="90" min="0" max="600" step="15" inputmode="numeric">
-    <label class="field-label">Divine Directives (One step per line)</label>
-    <textarea id="ed-desc" class="field-input" placeholder="Step 1...&#10;Step 2..."></textarea>
-    <button class="save-btn" id="btn-save-ex">Inscribe Movement</button>
-  </div>
-</div>
-
-<header>
-  <div class="logo">
-    <span class="logo-icon">⚡</span> <span id="logo-text">OLYMPUS</span>
-    <button id="btn-profiles" class="filter-btn">Profiles ▾</button>
-  </div>
-  <div style="display:flex;align-items:center;flex-wrap:wrap;">
-    <div class="heatmap" id="heatmap" title="Last 7 Days Activity"></div>
-    <div class="header-right">
-      <div class="session-label" id="cur-date"></div>
-      <div id="session-clock">READY</div>
-    </div>
+<!-- TOP BAR -->
+<header class="topbar">
+  <button id="btn-profiles" class="brand" aria-label="Switch program">
+    <span class="brand-icon" id="brand-icon">⚡</span>
+    <span class="brand-text">
+      <span class="brand-name" id="logo-text">OLYMPUS</span>
+      <span class="brand-sub"><span id="brand-sub">Olympus PPL</span> <span class="caret">▾</span></span>
+    </span>
+  </button>
+  <div class="topbar-right">
+    <div id="session-clock" class="clock-pill">READY</div>
+    <button id="btn-settings" class="icon-btn" aria-label="Settings">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm7.43-2.53a7.8 7.8 0 0 0 0-1.94l2.11-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1a7.3 7.3 0 0 0-1.68-.98l-.38-2.65A.49.49 0 0 0 14 2h-4a.49.49 0 0 0-.49.42l-.38 2.65c-.61.25-1.17.58-1.68.98l-2.49-1a.5.5 0 0 0-.61.22l-2 3.46a.49.49 0 0 0 .12.64l2.11 1.65a7.9 7.9 0 0 0 0 1.94l-2.11 1.65a.5.5 0 0 0-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.51.4 1.07.73 1.68.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.58 1.68-.98l2.49 1c.22.08.49 0 .61-.22l2-3.46a.5.5 0 0 0-.12-.64l-2.11-1.65Z"/></svg>
+    </button>
   </div>
 </header>
 
-<div class="wrap">
-  <div class="oracle-quote reveal" id="oracle-quote" title="Seek another truth"></div>
-  <div class="day-nav" id="day-nav"></div>
+<!-- WEEK STRIP -->
+<nav class="week" id="day-nav" aria-label="Days of the week"></nav>
 
-
-  <!-- Ambient Orbs -->
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-
-  <div class="sec-head">
-    <div class="sec-left">
-      <div class="sec-title-row">
-        <span class="day-title" id="day-title">—</span>
-        <span class="focus-badge" id="day-focus">—</span>
+<main class="wrap">
+  <section class="hero" id="hero">
+    <div class="hero-row">
+      <div class="hero-text">
+        <div class="hero-date" id="cur-date"></div>
+        <h1 class="day-title" id="day-title">—</h1>
+        <div class="focus-badge" id="day-focus">—</div>
       </div>
-      <div class="day-meta" id="day-meta"></div>
+      <div class="ring" id="prog-ring" aria-hidden="true">
+        <svg viewBox="0 0 64 64"><circle class="ring-bg" cx="32" cy="32" r="28"/><circle class="ring-fg" id="ring-fg" cx="32" cy="32" r="28"/></svg>
+        <div class="ring-txt" id="ring-txt">0%</div>
+      </div>
     </div>
-    <div class="sec-right">
-      <button id="btn-arena" class="filter-btn hist-btn">⚔️ The Arena</button>
-      <button id="btn-chronicles" class="filter-btn hist-btn">🏛️ Chronicles</button>
-      <span id="filters" class="filters"></span>
+    <div class="day-meta" id="day-meta"></div>
+    <div class="preview-note" id="preview-note" hidden></div>
+    <div class="hero-actions" id="hero-actions">
+      <button id="btn-arena" class="btn btn-primary">▶ Start focus mode</button>
     </div>
-  </div>
+  </section>
 
-  <div class="ex-grid" id="ex-grid"></div>
+  <div class="ex-list" id="ex-grid"></div>
 
   <div id="rest-msg" class="rest-day" style="display:none;">
     <div class="rest-icon">🧘</div>
@@ -153,19 +84,8 @@
   </div>
 
   <div id="add-container"></div>
-  <div class="ornament reveal">✦ ◆ ✦ ◆ ✦</div>
-</div>
-
-<!-- PROFILE MODAL -->
-<div class="modal-bg" id="profile-modal">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">
-      <span id="profile-title">Select Routine</span>
-      <button class="modal-close" id="profile-close" aria-label="Close">×</button>
-    </div>
-    <div id="profile-list" style="display:flex; flex-direction:column; gap:15px; margin-top:20px;"></div>
-  </div>
-</div>
+  <div class="oracle-quote" id="oracle-quote" title="Another quote"></div>
+</main>
 
 <!-- REST TIMER -->
 <div class="rest-timer" id="rest-timer" role="timer" aria-live="polite">
@@ -183,8 +103,125 @@
   </div>
 </div>
 
+<!-- BOTTOM TAB BAR -->
+<nav class="tabbar" aria-label="Main">
+  <button class="tab active" id="tab-today" data-tab="today"><span class="tab-ic">◉</span><span class="tab-lbl">Today</span></button>
+  <button class="tab" id="tab-focus" data-tab="focus"><span class="tab-ic">⚔</span><span class="tab-lbl">Focus</span></button>
+  <button class="tab" id="tab-history" data-tab="history"><span class="tab-ic">▦</span><span class="tab-lbl">History</span></button>
+  <button class="tab" id="tab-program" data-tab="program"><span class="tab-ic">☰</span><span class="tab-lbl">Program</span></button>
+</nav>
+
+<!-- HISTORY SHEET -->
+<div class="modal-bg" id="cal-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cal-title">
+    <div class="sheet-grip"></div>
+    <div class="modal-title"><span id="cal-title">History</span><button class="modal-close" id="cal-close" aria-label="Close">×</button></div>
+    <div class="rank-badge">
+      <div class="rank-title" id="rank-title">Spartan Recruit</div>
+      <div class="rank-sub">Current rank</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-val" id="st-total">0</div><div class="stat-lbl">Workouts</div></div>
+      <div class="stat-item"><div class="stat-val" id="st-streak">0</div><div class="stat-lbl">Streak</div></div>
+      <div class="stat-item"><div class="stat-val" id="st-month">0</div><div class="stat-lbl">This month</div></div>
+    </div>
+    <div class="cal-nav">
+      <button class="cal-nav-btn" id="cal-prev" aria-label="Previous month">‹</button>
+      <span class="cal-month" id="cal-label"></span>
+      <button class="cal-nav-btn" id="cal-next" aria-label="Next month">›</button>
+    </div>
+    <div class="cal-grid cal-head" id="cal-head"></div>
+    <div class="cal-grid" id="cal-days"></div>
+    <div id="cal-detail" class="cal-detail"></div>
+    <div id="records" class="records">
+      <div class="rec-title">Personal records</div>
+      <div id="rec-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EDITOR SHEET -->
+<div class="modal-bg" id="ed-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ed-title">
+    <div class="sheet-grip"></div>
+    <div class="modal-title"><span id="ed-title">Add movement</span><button class="modal-close" id="ed-close" aria-label="Close">×</button></div>
+    <input type="hidden" id="ed-id">
+    <label class="field-label" for="ed-name">Name</label>
+    <input type="text" id="ed-name" class="field-input" placeholder="e.g. Atlas Stone Lift">
+    <div class="field-row">
+      <div><label class="field-label" for="ed-sets">Sets</label><input type="text" id="ed-sets" class="field-input" placeholder="3" inputmode="numeric"></div>
+      <div><label class="field-label" for="ed-reps">Reps</label><input type="text" id="ed-reps" class="field-input" placeholder="8-12"></div>
+      <div><label class="field-label" for="ed-rest">Rest (s)</label><input type="number" id="ed-rest" class="field-input" placeholder="90" min="0" max="600" step="15" inputmode="numeric"></div>
+    </div>
+    <div class="field-row">
+      <div><label class="field-label" for="ed-type">Type</label>
+        <select id="ed-type" class="field-input">
+          <option value="warmup">Warm-up</option>
+          <option value="main">Main lift</option>
+          <option value="bonus">Accessory</option>
+          <option value="abs">Core</option>
+          <option value="posture">Posture</option>
+        </select>
+      </div>
+      <div><label class="field-label" for="ed-equip">Equipment</label><input type="text" id="ed-equip" class="field-input" placeholder="Barbell, Bench"></div>
+    </div>
+    <label class="field-label" for="ed-desc">Cues (one per line)</label>
+    <textarea id="ed-desc" class="field-input" rows="4" placeholder="Step 1...&#10;Step 2..."></textarea>
+    <button class="btn btn-primary btn-block" id="btn-save-ex">Save movement</button>
+  </div>
+</div>
+
+<!-- PROGRAM SHEET -->
+<div class="modal-bg" id="profile-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="profile-title">
+    <div class="sheet-grip"></div>
+    <div class="modal-title"><span id="profile-title">Select program</span><button class="modal-close" id="profile-close" aria-label="Close">×</button></div>
+    <div id="profile-list" class="profile-list"></div>
+  </div>
+</div>
+
+<!-- SETTINGS SHEET -->
+<div class="modal-bg" id="set-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="set-title">
+    <div class="sheet-grip"></div>
+    <div class="modal-title"><span id="set-title">Settings</span><button class="modal-close" id="set-close" aria-label="Close">×</button></div>
+
+    <section class="set-group">
+      <h3>Device sync</h3>
+      <p class="set-help" id="sync-status"></p>
+      <label class="field-label" for="sync-code">Private sync code</label>
+      <div class="inline-field">
+        <input type="text" id="sync-code" class="field-input" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Not set">
+        <button class="btn" id="btn-sync-gen">New</button>
+      </div>
+      <p class="set-help">Use the same code on every device you train on. Anyone with the code can see your logs, so keep it private.</p>
+      <button class="btn btn-primary btn-block" id="btn-sync-save">Save &amp; sync now</button>
+    </section>
+
+    <section class="set-group">
+      <h3>Preferences</h3>
+      <label class="switch-row"><span>Sound effects</span><input type="checkbox" id="opt-sound" class="switch"></label>
+      <label class="switch-row"><span>Vibrate when rest ends</span><input type="checkbox" id="opt-vibe" class="switch"></label>
+    </section>
+
+    <section class="set-group">
+      <h3>Backup</h3>
+      <div class="btn-row">
+        <button class="btn" id="btn-export">⭳ Export</button>
+        <button class="btn" id="btn-import-trigger">⭱ Import</button>
+      </div>
+      <input type="file" id="file-import" hidden accept=".json,application/json">
+    </section>
+
+    <section class="set-group">
+      <button class="btn btn-ghost btn-block" id="btn-lock">Lock this device</button>
+    </section>
+  </div>
+</div>
+
 <script>
 (function(){
+  // Client-side gate only: it keeps casual eyes off the screen, it is not real security.
   const HASH = 'ba54b404d280696e8037e080ac9e196a6536082658d2a3349e3f1be0f5567550';
   const AUTH_KEY = 'oly_auth';
   const gate = document.getElementById('auth-gate');
@@ -196,11 +233,11 @@
 
   function unlock() {
     gate.classList.add('auth-hidden');
-    setTimeout(() => gate.style.display = 'none', 600);
+    setTimeout(() => gate.style.display = 'none', 400);
   }
 
   if (localStorage.getItem(AUTH_KEY) === HASH) {
-    unlock();
+    gate.style.display = 'none';
   }
 
   document.getElementById('auth-form').addEventListener('submit', async function(e) {
@@ -214,23 +251,23 @@
     } else {
       const err = document.getElementById('auth-error');
       err.textContent = 'Access denied.';
-      gate.querySelector('.auth-box')?.classList.add('shake');
+      gate.querySelector('.auth-box').classList.remove('shake');
+      void gate.offsetWidth;
+      gate.querySelector('.auth-box').classList.add('shake');
       setTimeout(() => err.textContent = '', 2000);
     }
   });
 })();
 </script>
-<script src="programs.js?v=17"></script>
-<script src="core_profile.js?v=17"></script>
-<script src="core.js?v=17"></script>
-<script src="tracker.js?v=17"></script>
-<script src="app.js?v=17"></script>
+<script src="programs.js?v=18"></script>
+<script src="core_profile.js?v=18"></script>
+<script src="core.js?v=18"></script>
+<script src="tracker.js?v=18"></script>
+<script src="app.js?v=18"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').then(reg => {
-        console.log('SW registered!', reg);
-      }).catch(err => console.log('SW registration failed: ', err));
+      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed: ', err));
     });
   }
 </script>

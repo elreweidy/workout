@@ -1,13 +1,22 @@
 /* ═══════════════════════════════════════════
-   UI SYSTEM
+   UI SYSTEM — sheets, toast, history
 ═══════════════════════════════════════════ */
 const UI = (() => {
   let toastTimer;
-  const toast = msg => { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3000); };
+  const toast = msg => { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2800); };
   const openLB = src => { $('lb-img').src = src; $('lb').classList.add('open'); SFX.tick(); };
   const closeLB = () => { $('lb').classList.remove('open'); };
-  const openModal = id => { $(id).classList.add('open'); if (id === 'cal-modal') renderCal(); SFX.tick(); };
-  const closeModal = id => { $(id).classList.remove('open'); };
+  const openModal = id => {
+    if (id === 'cal-modal') renderCal();
+    if (id === 'set-modal') App.renderSettings();
+    $(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+    SFX.tick();
+  };
+  const closeModal = id => {
+    $(id).classList.remove('open');
+    if (!document.querySelector('.modal-bg.open')) { document.body.style.overflow = ''; App.syncTabs(); }
+  };
 
   const donePrefix = () => 'oly_done_' + (STATE.activeProfileId || 'ppl') + '_';
 
@@ -17,21 +26,14 @@ const UI = (() => {
       const k = localStorage.key(i);
       if (k.startsWith(prefix) && localStorage.getItem(k) === 'true') s.add(k.substring(prefix.length, prefix.length + 10));
     }
-    // A day with logged sets counts too, even if no movement was marked conquered
+    // A day with logged sets counts too, even if no movement was marked done
     const pid = STATE.activeProfileId;
     History.keys().forEach(key => (History.entries(key) || []).forEach(e => { if (e.pid === pid) s.add(e.date); }));
     return s;
   };
 
-  const buildHeatmap = () => {
-    const h = $('heatmap'); h.innerHTML = '';
-    const dates = getWorkoutDates();
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(); d.setDate(d.getDate() - i);
-      const ds = ymd(d);
-      h.innerHTML += '<div class="h-dot' + (dates.has(ds) ? ' lit' : '') + '" title="' + ds + '"></div>';
-    }
-  };
+  // The week strip carries the "trained this week" dots that the old heatmap showed.
+  const buildHeatmap = () => App.buildNav();
 
   const getRank = t => t < 10 ? "Spartan Recruit" : t < 30 ? "Proven Hoplite" : t < 60 ? "Elysian Champion" : t < 100 ? "Demigod" : "Olympian Ascendant";
   const getRankAr = t => t < 10 ? "بداية الرحلة 🌱" : t < 30 ? "مثابرة 🌸" : t < 60 ? "متألقة ✨" : t < 100 ? "بطلة 👑" : "أسطورة 💎";
@@ -55,15 +57,17 @@ const UI = (() => {
   const renderCal = () => {
     const isAr = isArUI();
     const y = STATE.calDate.getFullYear(), m = STATE.calDate.getMonth();
-    $('cal-label').textContent = new Date(y, m).toLocaleString(isAr ? 'ar-EG' : 'en-US', { month: 'long', year: 'numeric' }).toUpperCase();
-    const days = $('cal-days'); days.innerHTML = '';
+    $('cal-label').textContent = new Date(y, m).toLocaleString(isAr ? 'ar-EG' : 'en-US', { month: 'long', year: 'numeric' });
+    $('cal-head').innerHTML = (isAr ? ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'] : ['S', 'M', 'T', 'W', 'T', 'F', 'S']).map(d => '<div class="cal-dow">' + d + '</div>').join('');
     const first = new Date(y, m, 1).getDay(), total = new Date(y, m + 1, 0).getDate();
-    for (let i = 0; i < first; i++) days.innerHTML += '<div></div>';
     const td = today(), allDays = getWorkoutDates();
+    let html = '';
+    for (let i = 0; i < first; i++) html += '<div></div>';
     for (let i = 1; i <= total; i++) {
       const ds = y + '-' + String(m + 1).padStart(2, '0') + '-' + String(i).padStart(2, '0');
-      days.innerHTML += '<div class="cal-day' + (allDays.has(ds) ? ' has' : '') + (ds === td ? ' today' : '') + (ds === STATE.calSel ? ' sel' : '') + '" data-date="' + ds + '">' + i + '</div>';
+      html += '<button class="cal-day' + (allDays.has(ds) ? ' has' : '') + (ds === td ? ' today' : '') + (ds === STATE.calSel ? ' sel' : '') + '" data-date="' + ds + '">' + i + '</button>';
     }
+    $('cal-days').innerHTML = html;
     $('st-total').textContent = allDays.size;
     $('rank-title').textContent = isAr ? getRankAr(allDays.size) : getRank(allDays.size);
     const ms = y + '-' + String(m + 1).padStart(2, '0');
@@ -116,7 +120,7 @@ const UI = (() => {
     box.innerHTML = rows.map(r => {
       const w = parseFloat(r.s.w);
       return '<div class="rec-row"><span class="rec-name">' + escHtml(r.name) + '</span><span class="rec-val">' +
-        (w ? fmtKg(w) + ' kg × ' + r.s.r : r.s.r + ' reps') + '</span><span class="rec-e1rm">' + (w ? 'e1RM ' + fmtKg(r.score) : fmtShortDate(r.date)) + '</span></div>';
+        (w ? fmtKg(w) + ' kg × ' + escHtml(r.s.r) : escHtml(r.s.r) + ' reps') + '</span><span class="rec-e1rm">' + (w ? 'e1RM ' + fmtKg(r.score) + ' · ' : '') + fmtShortDate(r.date) + '</span></div>';
     }).join('');
   };
 
@@ -127,8 +131,8 @@ const UI = (() => {
       const active = p.id === STATE.activeProfileId;
       const btn = document.createElement('button');
       btn.className = 'profile-btn' + (active ? ' active' : '');
-      btn.innerHTML = `<span class="pf-icon">${p.icon}</span><div class="pf-info"><div class="pf-name">${p.name}</div><div class="pf-desc">${p.desc}</div></div>`;
-      btn.onclick = () => { if (!active) App.switchProfile(p.id); };
+      btn.innerHTML = '<span class="pf-icon">' + p.icon + '</span><span><span class="pf-name">' + escHtml(p.name.replace(/^🌸\s*/, '')) + '</span><span class="pf-desc" style="display:block">' + escHtml(p.desc) + '</span></span>';
+      btn.onclick = () => { if (!active) App.switchProfile(p.id); else closeModal('profile-modal'); };
       list.appendChild(btn);
     });
   };
@@ -142,19 +146,14 @@ const UI = (() => {
    MAIN APPLICATION
 ═══════════════════════════════════════════ */
 const App = (() => {
-  const observer = new IntersectionObserver(ents => ents.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); observer.unobserve(e.target); } }), { threshold: 0.1 });
-
+  const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const AR_DAYS = {
-    "Saturday": "السبت", "Sunday": "الأحد", "Monday": "الإثنين", "Tuesday": "الثلاثاء", "Wednesday": "الأربعاء", "Thursday": "الخميس", "Friday": "الجمعة",
-    "SAT": "السبت", "SUN": "الأحد", "MON": "الإثنين", "TUE": "الثلاثاء", "WED": "الأربعاء", "THU": "الخميس", "FRI": "الجمعة"
+    "Saturday": "السبت", "Sunday": "الأحد", "Monday": "الإثنين", "Tuesday": "الثلاثاء", "Wednesday": "الأربعاء", "Thursday": "الخميس", "Friday": "الجمعة"
   };
+  const AR_DAYS_SHORT = { "Saturday": "سبت", "Sunday": "أحد", "Monday": "إثن", "Tuesday": "ثلا", "Wednesday": "أرب", "Thursday": "خمي", "Friday": "جمع" };
 
-  const AR_TYPE = {
-    "main": "رئيسي", "posture": "قوام", "abs": "بطن", "bonus": "إضافي", "warmup": "إحماء"
-  };
-
+  const AR_TYPE = { "main": "رئيسي", "posture": "قوام", "abs": "بطن", "bonus": "إضافي", "warmup": "إحماء" };
   const TYPE_LABEL = { warmup: 'Warm-up', main: 'Main', bonus: 'Accessory', abs: 'Core', posture: 'Posture' };
-  const TYPE_ORDER = ['warmup', 'main', 'bonus', 'abs', 'posture'];
 
   const AR_FOCUS = {
     "Cardio & Core": "كارديو وبطن",
@@ -186,6 +185,7 @@ const App = (() => {
   };
 
   const displayName = ex => isArUI() ? (AR_EXERCISE_NAMES[ex.name] || ex.name) : ex.name;
+  const isCustomId = id => /^ex\d{12,}$/.test(id);
 
   // Localize reps/sets text to Arabic
   const localizeReps = (reps, isAr) => {
@@ -205,131 +205,171 @@ const App = (() => {
       .replace(/\bWarmup\b/gi, 'إحماء');
   };
 
+  const setText = (id, txt) => { const el = $(id); if (el) el.textContent = txt; };
+
   const translateUI = () => {
     const isAr = isArUI();
-
-    document.body.style.direction = isAr ? 'rtl' : 'ltr';
-    document.body.style.fontFamily = isAr ? "'Tajawal', 'Inter', sans-serif" : "'Cormorant Garamond', serif";
     document.documentElement.lang = isAr ? 'ar' : 'en';
+    document.documentElement.dir = isAr ? 'rtl' : 'ltr';
 
-    const logoText = $('logo-text');
-    if (logoText) {
-      logoText.innerHTML = isAr ? '<span style="font-family:\'Tajawal\',sans-serif;letter-spacing:0.1em">🌸 خديجة</span>' : 'OLYMPUS';
-    }
+    setText('logo-text', isAr ? '🌸 خديجة' : 'OLYMPUS');
     updateProfileIndicator();
+    $('tab-focus').hidden = isAr;
 
-    if ($('btn-arena')) {
-      if (isAr) {
-        $('btn-arena').style.display = 'none';
-        document.body.classList.remove('arena-mode');
-      } else {
-        $('btn-arena').style.display = '';
-        $('btn-arena').textContent = document.body.classList.contains('arena-mode') ? '🚪 Exit Arena' : '⚔️ The Arena';
-      }
-    }
-    if ($('btn-chronicles')) $('btn-chronicles').textContent = isAr ? "📅 سجل إنجازاتي" : "🏛️ Chronicles";
+    const tabs = isAr ? ['اليوم', 'تركيز', 'سجلّي', 'البرنامج'] : ['Today', 'Focus', 'History', 'Program'];
+    document.querySelectorAll('.tabbar .tab-lbl').forEach((el, i) => { el.textContent = tabs[i]; });
 
-    if ($('cur-date')) {
-      $('cur-date').textContent = new Date().toLocaleDateString(isAr ? 'ar-EG' : 'en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-    }
-    if ($('profile-title')) $('profile-title').textContent = isAr ? 'اختاري البرنامج' : 'Select Routine';
+    setText('profile-title', isAr ? 'اختاري البرنامج' : 'Select program');
+    setText('cal-title', isAr ? 'سجل إنجازاتي' : 'History');
+    setText('set-title', isAr ? 'الإعدادات' : 'Settings');
+    const rankSub = document.querySelector('#cal-modal .rank-sub');
+    if (rankSub) rankSub.textContent = isAr ? 'مستواكِ الحالي' : 'Current rank';
+    const lbl = (id, en, ar) => { const el = $(id)?.nextElementSibling; if (el) el.textContent = isAr ? ar : en; };
+    lbl('st-total', 'Workouts', 'إنجازاتي');
+    lbl('st-streak', 'Streak', 'أيام متتالية');
+    lbl('st-month', 'This month', 'هذا الشهر');
 
-    const addBtn = document.querySelector('.add-btn');
-    if (addBtn) addBtn.textContent = isAr ? "+ إضافة حركة جديدة" : "+ Inscribe New Movement";
-
-    if ($('rest-msg')) {
-      const restIcon = $('rest-msg').querySelector('.rest-icon');
-      const title = $('rest-msg').querySelector('.rest-title');
-      const sub = $('rest-msg').querySelector('.rest-sub');
-      if (restIcon) restIcon.textContent = isAr ? '🌸' : '🧘';
-      if (title) title.textContent = isAr ? 'يوم الراحة والنقاهة 🌸' : 'Elysian Stillness';
-      if (sub) sub.textContent = isAr
-        ? 'الراحة ليست كسلاً، هي جزء أساسي من رحلتكِ. جسمكِ يبني قوته الآن! ✨'
-        : "The gods, too, rested. Recovery is the silent forge where true strength is solidified. Walk, stretch, sleep 8 hours, eat your protein.";
-    }
-
-    if ($('cal-modal')) {
-      const calTitle = $('cal-title');
-      if (calTitle) calTitle.textContent = isAr ? 'سجل إنجازاتي' : 'Chronicles & Reflections';
-      const rankSub = $('cal-modal').querySelector('.rank-sub');
-      if (rankSub) rankSub.textContent = isAr ? 'مستواكِ الحالي' : 'Current Status of the Vessel';
-      const lbl = (id, en, ar) => { const el = $(id)?.nextElementSibling; if (el) el.textContent = isAr ? ar : en; };
-      lbl('st-total', 'Total Triumphs', 'إنجازاتي');
-      lbl('st-streak', 'Training Streak', 'أيام متتالية');
-      lbl('st-month', 'This Month', 'هذا الشهر');
-      $('cal-prev').textContent = isAr ? '→ السابق' : '← Prev';
-      $('cal-next').textContent = isAr ? 'التالي ←' : 'Next →';
-    }
+    const rm = $('rest-msg');
+    rm.querySelector('.rest-icon').textContent = isAr ? '🌸' : '🧘';
+    rm.querySelector('.rest-title').textContent = isAr ? 'يوم الراحة والنقاهة 🌸' : 'Elysian Stillness';
+    rm.querySelector('.rest-sub').textContent = isAr
+      ? 'الراحة ليست كسلاً، هي جزء أساسي من رحلتكِ. جسمكِ يبني قوته الآن! ✨'
+      : 'The gods, too, rested. Recovery is the silent forge where true strength is solidified. Walk, stretch, sleep 8 hours, eat your protein.';
 
     const rt = $('rest-timer');
-    if (rt) {
-      rt.querySelector('[data-rt="-15"]').setAttribute('aria-label', isAr ? 'إنقاص ١٥ ثانية' : 'Subtract 15 seconds');
-      rt.querySelector('[data-rt="+15"]').setAttribute('aria-label', isAr ? 'زيادة ١٥ ثانية' : 'Add 15 seconds');
-      rt.querySelector('[data-rt="skip"]').textContent = isAr ? 'تخطي' : 'Skip';
-    }
+    rt.querySelector('[data-rt="-15"]').setAttribute('aria-label', isAr ? 'إنقاص ١٥ ثانية' : 'Subtract 15 seconds');
+    rt.querySelector('[data-rt="+15"]').setAttribute('aria-label', isAr ? 'زيادة ١٥ ثانية' : 'Add 15 seconds');
+    rt.querySelector('[data-rt="skip"]').textContent = isAr ? 'تخطي' : 'Skip';
   };
 
   /* ═══ FIREBASE REALTIME DATABASE SYNC ═══
      REST API, no SDK. Only the keys that changed are PATCHed, so two devices
-     never overwrite each other's history. */
+     never overwrite each other's history. With a private sync code the data
+     lives under /sync/<code>; without one it falls back to the old shared
+     /workout_sync node (kept so existing devices don't lose sync). */
   const FIREBASE_URL = 'https://khadija-workout-default-rtdb.firebaseio.com';
   const SYNC_PREFIXES = ['oly_done_', 'oly_log_', 'oly_sess_'];
+  const SYNC_CODE_KEY = 'oly_sync_code';
+  const SYNC_CODE_RE = /^[A-Za-z0-9_-]{16,64}$/;
   const recentLocal = {};   // key -> ms of last local write (protects in-flight writes from stale pulls)
+  let lastSync = 0;
+
+  const syncCode = () => { const c = LS.get(SYNC_CODE_KEY); return c && SYNC_CODE_RE.test(c) ? c : ''; };
+  const syncUrl = () => FIREBASE_URL + (syncCode() ? '/sync/' + syncCode() : '/workout_sync') + '.json';
+  const isSyncKey = k => SYNC_PREFIXES.some(p => k.startsWith(p));
+  const allSyncKeys = () => { const out = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && isSyncKey(k)) out.push(k); } return out; };
 
   const syncUp = keys => {
-    if (!keys || !keys.length || !FIREBASE_URL) return;
+    if (!keys || !keys.length || !FIREBASE_URL) return Promise.resolve(false);
     const body = {};
     keys.forEach(k => { const v = localStorage.getItem(k); if (v != null) { body[k] = v; recentLocal[k] = Date.now(); } });
-    if (!Object.keys(body).length || !navigator.onLine) return;
-    fetch(FIREBASE_URL + '/workout_sync.json', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    }).catch(() => {});
+    if (!Object.keys(body).length || !navigator.onLine) return Promise.resolve(false);
+    return fetch(syncUrl(), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(r => { if (r.ok) lastSync = Date.now(); return r.ok; })
+      .catch(() => false);
   };
 
   const syncDown = () => {
-    if (!FIREBASE_URL || !navigator.onLine || document.hidden) return;
-    fetch(FIREBASE_URL + '/workout_sync.json')
+    if (!FIREBASE_URL || !navigator.onLine || document.hidden) return Promise.resolve(false);
+    return fetch(syncUrl())
       .then(res => res.ok ? res.json() : null)
       .then(data => {
-        if (!data) return;
+        lastSync = Date.now();
+        if (!data) return true;
         let changed = false;
         const now = Date.now();
         Object.entries(data).forEach(([k, v]) => {
-          if (!SYNC_PREFIXES.some(p => k.startsWith(p)) || typeof v !== 'string') return;
+          if (!isSyncKey(k) || typeof v !== 'string') return;
           if (recentLocal[k] && now - recentLocal[k] < 60000) return;
           if (localStorage.getItem(k) !== v) { localStorage.setItem(k, v); changed = true; }
         });
-        if (!changed) return;
+        if (!changed) return true;
         History.invalidate();
-        updateProgress(); UI.buildHeatmap();
+        updateProgress(); buildNav();
         // Don't yank the page out from under someone who's typing a weight.
         const a = document.activeElement;
-        if (a && a.classList && a.classList.contains('log-in')) return;
-        const day = STATE.routine.find(r => r.id === STATE.selDay);
+        if (a && a.classList && a.classList.contains('log-in')) return true;
+        const day = curDay();
         if (day && day.exercises.length) renderExercises(day.exercises);
+        return true;
       })
-      .catch(() => {});
+      .catch(() => false);
+  };
+
+  const setSyncCode = code => {
+    code = String(code || '').trim();
+    if (code && !SYNC_CODE_RE.test(code)) { UI.toast(T('Code must be 16+ letters, numbers, - or _', 'الرمز يجب أن يكون ١٦ حرفاً على الأقل')); return; }
+    if (code) LS.set(SYNC_CODE_KEY, code); else LS.del(SYNC_CODE_KEY);
+    // Push everything this device has, then pull what the other devices have.
+    syncUp(allSyncKeys()).then(() => syncDown()).then(ok => {
+      renderSettings();
+      UI.toast(ok ? T('Synced ✓', 'تمت المزامنة ✓') : T('Saved — will sync when online', 'تم الحفظ — ستتم المزامنة عند الاتصال'));
+    });
+  };
+
+  const genSyncCode = () => {
+    const a = new Uint8Array(15); crypto.getRandomValues(a);
+    const abc = 'abcdefghjkmnpqrstuvwxyz23456789';
+    const raw = Array.from(a, b => abc[b % abc.length]).join('');
+    return raw.slice(0, 5) + '-' + raw.slice(5, 10) + '-' + raw.slice(10);
+  };
+
+  const renderSettings = () => {
+    const code = syncCode(), st = $('sync-status');
+    $('sync-code').value = code;
+    const when = lastSync ? new Date(lastSync).toLocaleTimeString(isArUI() ? 'ar-EG' : 'en-US', { hour: '2-digit', minute: '2-digit' }) : '';
+    if (code) {
+      st.className = 'set-help good';
+      st.textContent = T('🔒 Private sync is on' + (when ? ' · last synced ' + when : ''), '🔒 المزامنة الخاصة مفعّلة' + (when ? ' · آخر مزامنة ' + when : ''));
+    } else {
+      st.className = 'set-help warn';
+      st.textContent = T('⚠ Using the old shared sync channel, which anyone can read. Tap "New", then enter the same code on your other devices.',
+        '⚠ المزامنة الحالية غير خاصة. اضغطي "New" ثم أدخلي نفس الرمز على أجهزتك الأخرى.');
+    }
+    $('opt-sound').checked = LS.get('oly_opt_sound') !== '0';
+    $('opt-vibe').checked = LS.get('oly_opt_vibe') !== '0';
   };
 
   const doneKey = id => 'oly_done_' + STATE.activeProfileId + '_' + today() + '_' + id;
   const isDone = id => LS.get(doneKey(id)) === 'true';
   const curDay = () => STATE.routine.find(r => r.id === STATE.selDay);
+  const isToday = () => STATE.selDay === new Date().getDay();
+  const dayName = id => { const d = STATE.routine.find(r => r.id === id); return d ? d.day : DAY_NAMES[id]; };
+  const dayLabel = id => isArUI() ? AR_DAYS[dayName(id)] : dayName(id);
 
+  const RING_C = 2 * Math.PI * 28;
   const updateProgress = () => {
-    const day = curDay();
-    if (!day || !day.exercises.length) { $('prog-glow').style.width = '0%'; return; }
-    const done = day.exercises.filter(e => isDone(e.id)).length;
-    $('prog-glow').style.width = (done / day.exercises.length) * 100 + '%';
+    const day = curDay(), isAr = isArUI();
+    const exs = day ? day.exercises : [];
+    const done = exs.filter(e => isDone(e.id)).length;
+    const pct = exs.length ? Math.round(done / exs.length * 100) : 0;
+    $('ring-fg').style.strokeDashoffset = String(RING_C * (1 - pct / 100));
+    $('ring-txt').textContent = exs.length ? (done === exs.length ? '✓' : pct + '%') : '—';
+
     const meta = $('day-meta');
-    if (meta) {
-      const tracked = day.exercises.filter(Rx.tracked);
-      const sets = tracked.reduce((t, e) => t + Rx.sets(e), 0);
-      const mins = Rx.estimateMin(day.exercises);
-      meta.innerHTML = isArUI()
-        ? '<span>' + day.exercises.length + ' تمارين</span><span>' + sets + ' جولة</span><span>~' + mins + ' دقيقة</span><span class="meta-done">' + done + '/' + day.exercises.length + ' ✓</span>'
-        : '<span>' + day.exercises.length + ' movements</span><span>' + sets + ' working sets</span><span>~' + mins + ' min</span><span class="meta-done">' + done + '/' + day.exercises.length + ' done</span>';
+    if (!exs.length) { meta.innerHTML = ''; }
+    else {
+      const sets = exs.filter(Rx.tracked).reduce((t, e) => t + Rx.sets(e), 0);
+      const mins = Rx.estimateMin(exs);
+      meta.innerHTML = isAr
+        ? '<span><b>' + exs.length + '</b> تمارين</span><span><b>' + sets + '</b> جولة</span><span>~<b>' + mins + '</b> دقيقة</span><span><b>' + done + '/' + exs.length + '</b> ✓</span>'
+        : '<span><b>' + exs.length + '</b> movements</span><span><b>' + sets + '</b> sets</span><span>~<b>' + mins + '</b> min</span><span><b>' + done + '/' + exs.length + '</b> done</span>';
+    }
+
+    // Logs always belong to today's date, so say so when looking at another day.
+    const note = $('preview-note');
+    if (!isToday() && exs.length) {
+      note.hidden = false;
+      note.innerHTML = '<span>' + escHtml(T('Viewing ' + dayLabel(STATE.selDay) + ' — anything you log counts for today.', 'تعرضين يوم ' + dayLabel(STATE.selDay) + ' — أي تمرين تسجلينه يُحسب لليوم.')) + '</span><button data-go="today">' + T('Today', 'اليوم') + '</button>';
+    } else note.hidden = true;
+
+    const actions = $('hero-actions'), btn = $('btn-arena');
+    actions.hidden = !exs.length;
+    actions.classList.toggle('done', !!exs.length && done === exs.length);
+    if (exs.length) {
+      if (done === exs.length) btn.textContent = T('✓ Session complete — view history', '✓ أحسنتِ! عرض سجلّي');
+      else if (isAr) btn.textContent = done ? '🌸 أكملي التمرين' : '🌸 ابدئي التمرين';
+      else btn.textContent = done ? '▶ Resume — ' + (exs.length - done) + ' to go' : '▶ Start focus mode';
     }
   };
 
@@ -346,99 +386,129 @@ const App = (() => {
     } catch (e) { return list; }
   };
 
+  /* ── Card header: everything you need at a glance ── */
+  const headInner = (ex, i) => {
+    const isAr = isArUI(), done = isDone(ex.id);
+    const typeLbl = isAr ? (AR_TYPE[ex.type] || ex.type) : (TYPE_LABEL[ex.type] || ex.type);
+    const equipLbl = isAr ? (ex.equip === 'Bodyweight' || !ex.equip ? 'وزن الجسم' : ex.equip) : (ex.equip || 'Bodyweight');
+    const parts = [];
+    if (Rx.tracked(ex)) {
+      parts.push(ex.sets + ' × ' + (isAr ? localizeReps(ex.reps, true) : ex.reps));
+      const r = Rx.rest(ex); if (r) parts.push((isAr ? 'راحة ' : 'rest ') + fmtClock(r));
+      const last = !isAr && History.last(Rx.key(ex));
+      if (last) {
+        const top = last.sets.reduce((b, s) => (History.score(s) > History.score(b) ? s : b), last.sets[0]);
+        parts.push('last ' + (parseFloat(top.w) ? fmtKg(parseFloat(top.w)) + '×' : '') + (top.r || '—'));
+      }
+    } else parts.push(isAr ? localizeReps(ex.reps, true) : (/warm/i.test(ex.reps || '') ? '~5 min' : ex.reps));
+
+    let pips = '';
+    if (Rx.tracked(ex)) {
+      const n = Rx.sets(ex), got = Log.get(ex).s.filter(s => s.d).length;
+      if (n <= 6) { pips = '<span class="ex-pips" aria-hidden="true">'; for (let k = 0; k < n; k++) pips += '<i' + (k < got ? ' class="on"' : '') + '></i>'; pips += '</span>'; }
+    }
+    return '<span class="ex-num">' + (done ? '✓' : String(i + 1).padStart(2, '0')) + '</span>' +
+      '<span class="ex-head-main">' +
+        '<span class="ex-kicker">' + escHtml(typeLbl + ' · ' + equipLbl) + '</span>' +
+        '<span class="ex-name">' + escHtml(displayName(ex)) + '</span>' +
+        '<span class="ex-sub">' + escHtml(parts.join(' · ')) + '</span>' +
+      '</span>' + pips + '<span class="ex-chev" aria-hidden="true">▼</span>';
+  };
+
+  const bodyInner = (ex, idx, count) => {
+    const isAr = isArUI(), done = isDone(ex.id);
+    const ytQuery = isAr ? ex.name + ' female proper form shorts' : ex.name + ' proper form';
+    const ytUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(ytQuery);
+    const cues = isAr ? (ex.descAr || ex.descEn || ex.desc) : (ex.descEn || ex.desc);
+    const cuesHtml = cues && cues.length ? '<ul class="ex-desc">' + cues.map(d => '<li>' + escHtml(d) + '</li>').join('') + '</ul>' : '';
+    const target = isAr ? ex.targetAr : ex.targetEn;
+    const img = LS.get('oly_img_' + ex.id) || (PROFILES[STATE.activeProfileId]?.images || {})[ex.id] || null;
+    const searchUrl = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(ex.name + (isAr ? ' تمرين' : ' exercise'));
+    const openHow = ex.type === 'warmup' || !Rx.tracked(ex) || isAr;
+
+    return '<div class="tracker-slot">' + Tracker.html(ex, done) + '</div>' +
+      '<details class="howto"' + (openHow ? ' open' : '') + '><summary>' + (isAr ? 'طريقة الأداء والصورة' : 'How to · cues & image') + '</summary>' +
+        '<div class="howto-body">' +
+          '<div class="paste-zone" id="zone-' + ex.id + '" data-id="' + ex.id + '">' + zoneInner(ex.id, img, searchUrl) + '</div>' +
+          (target ? '<div class="ex-target">🎯 <b>' + escHtml(target.split('|')[0].trim()) + '</b>' + (target.includes('|') ? ' · ' + escHtml(target.split('|').slice(1).join('|').trim()) : '') + '</div>' : '') +
+          cuesHtml +
+          (ex.focus && !isAr ? '<div class="ex-cue">💡 ' + escHtml(ex.focus) + '</div>' : '') +
+        '</div>' +
+      '</details>' +
+      '<div class="card-actions">' +
+        '<a href="' + ytUrl + '" target="_blank" rel="noopener" class="btn yt-btn">' + YT_SVG + (isAr ? 'شاهدي' : 'Form') + '</a>' +
+        '<button class="btn mark-btn' + (done ? ' done' : '') + '" data-action="toggle" data-id="' + ex.id + '">' + markLabel(done) + '</button>' +
+      '</div>' +
+      '<div class="card-tools">' +
+        '<button class="tool-btn" data-action="up" data-id="' + ex.id + '" aria-label="' + T('Move up', 'تحريك لأعلى') + '"' + (idx === 0 ? ' disabled' : '') + '>↑</button>' +
+        '<button class="tool-btn" data-action="down" data-id="' + ex.id + '" aria-label="' + T('Move down', 'تحريك لأسفل') + '"' + (idx === count - 1 ? ' disabled' : '') + '>↓</button>' +
+        '<button class="tool-btn" data-action="edit" data-id="' + ex.id + '" aria-label="' + T('Edit', 'تعديل') + '">✎</button>' +
+        '<button class="tool-btn del" data-action="delete" data-id="' + ex.id + '" aria-label="' + T('Delete', 'حذف') + '">🗑</button>' +
+      '</div>';
+  };
+
+  const markLabel = done => done ? T('✓ Done', '✨ تم بنجاح!') : T('Mark done', '🌸 أنجزي التمرين');
+
   const renderExercises = list => {
     const grid = $('ex-grid'); grid.innerHTML = '';
     const isAr = isArUI();
     const ordered = sortBySavedOrder(list);
-    const fList = STATE.curFilter === 'all' ? ordered : ordered.filter(e => e.type === STATE.curFilter);
+    if (!ordered.some(e => e.id === STATE.openId)) STATE.openId = (ordered.find(e => !isDone(e.id)) || {}).id || null;
     const frag = document.createDocumentFragment();
-
-    fList.forEach((ex, i) => {
-      const done = isDone(ex.id);
-      const ytQuery = isAr ? ex.name + ' female proper form shorts' : ex.name + ' proper form';
-      const ytUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(ytQuery);
-
-      const cuesArr = isAr ? (ex.descAr || ex.descEn || ex.desc) : (ex.descEn || ex.desc);
-      const standardDesc = cuesArr && cuesArr.length
-        ? '<ul class="ex-desc standard-desc"' + (isAr ? ' dir="rtl"' : '') + '>' + cuesArr.map(d => '<li>' + escHtml(d) + '</li>').join('') + '</ul>'
-        : '';
-
-      const descHtmlEn = (ex.descEn || ex.desc || []).map(d => '<li>' + escHtml(d) + '</li>').join('');
-      const descHtmlAr = (ex.descAr || []).map(d => '<li dir="rtl">' + escHtml(d) + '</li>').join('');
-
-      const userImg = LS.get('oly_img_' + ex.id);
-      const defaultImg = (PROFILES[STATE.activeProfileId]?.images || {})[ex.id] || null;
-      const img = userImg || defaultImg;
-      const searchUrl = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(ex.name + (isAr ? ' تمرين' : ' exercise'));
-
-      const typeLbl = isAr ? (AR_TYPE[ex.type] || ex.type) : (TYPE_LABEL[ex.type] || ex.type);
-      const nameLbl = displayName(ex);
-      const equipLbl = isAr ? (ex.equip === 'Bodyweight' ? 'وزن الجسم' : (ex.equip || 'وزن الجسم')) : (ex.equip || 'Bodyweight');
-      const formLbl = isAr ? 'طريقة الأداء' : 'Form';
-      const conquerLbl = done ? (isAr ? '✨ تم بنجاح!' : 'Conquered') : (isAr ? '🌸 أنجزي التمرين' : 'Conquer');
-      const targetLine = isAr ? ex.targetAr : ex.targetEn;
-      const targetTxt = isAr
-        ? (ex.targetAr ? '<div class="ex-targets"><div class="target-ar" dir="rtl">' + escHtml(ex.targetAr) + '</div></div>' : '')
-        : (ex.targetEn ? '<div class="ex-targets"><div class="target-en">' + escHtml(ex.targetEn) + '</div>' + (ex.targetAr ? '<div class="target-ar" dir="rtl">' + escHtml(ex.targetAr) + '</div>' : '') + '</div>' : '');
-
-      const card = document.createElement('div');
-      card.className = 'ex-card reveal' + (done ? ' done' : '') + ' t-' + ex.type;
+    ordered.forEach((ex, i) => {
+      const open = ex.id === STATE.openId;
+      const card = document.createElement('article');
+      card.className = 'ex-card t-' + ex.type + (isDone(ex.id) ? ' done' : '') + (open ? ' open' : '');
       card.id = 'card-' + ex.id;
+      card.dataset.idx = i;
       card.draggable = !('ontouchstart' in window);
-      card.style.transitionDelay = Math.min(i * 0.04, 0.3) + 's';
       if (isAr) card.setAttribute('dir', 'rtl');
-
-      card.innerHTML =
-        '<div class="card-ctrl">' +
-          '<button class="ctrl-btn" data-action="edit" data-id="' + ex.id + '" title="' + (isAr ? 'تعديل' : 'Modify') + '" aria-label="' + (isAr ? 'تعديل' : 'Edit') + '">✎</button>' +
-          '<button class="ctrl-btn del" data-action="delete" data-id="' + ex.id + '" title="' + (isAr ? 'حذف' : 'Banish') + '" aria-label="' + (isAr ? 'حذف' : 'Delete') + '">×</button>' +
-        '</div>' +
-        '<div class="card-content">' +
-          '<div class="card-header">' +
-            '<div class="card-seq">' + (i + 1).toString().padStart(2, '0') + '</div>' +
-            '<div class="header-titles">' +
-              '<span class="ex-type">' + typeLbl + '</span>' +
-              '<div class="ex-name">' + escHtml(nameLbl) + '</div>' +
-              '<div class="ex-equip">' + escHtml(equipLbl) + (targetLine ? '<span class="ex-target-inline">' + escHtml(targetLine.split('|')[0].trim()) + '</span>' : '') + '</div>' +
-            '</div>' +
-          '</div>' +
-          '<div class="tracker-slot">' + Tracker.html(ex, done) + '</div>' +
-          '<details class="howto"' + (window.innerWidth > 900 || ex.type === 'warmup' ? ' open' : '') + '><summary>' + (isAr ? 'طريقة الأداء والصورة' : 'How to · cues & image') + '</summary>' +
-            standardDesc +
-            (ex.focus && !isAr ? '<div class="ex-cue">💡 ' + escHtml(ex.focus) + '</div>' : '') +
-            '<div class="arena-split-view">' +
-              '<div class="paste-zone" id="zone-' + ex.id + '" data-id="' + ex.id + '">' + zoneInner(ex.id, img, searchUrl) + '</div>' +
-              '<div class="arena-details-panel">' +
-                targetTxt +
-                '<div class="ex-bilingual-desc">' +
-                  (isAr
-                    ? (descHtmlAr ? '<ul class="ex-desc ar-desc" dir="rtl">' + descHtmlAr + '</ul>' : '')
-                    : (descHtmlEn ? '<ul class="ex-desc">' + descHtmlEn + '</ul>' : '') + (descHtmlAr ? '<ul class="ex-desc ar-desc" dir="rtl">' + descHtmlAr + '</ul>' : '')
-                  ) +
-                '</div>' +
-                (ex.focus ? '<div class="ex-focus">💡 ' + escHtml(ex.focus) + '</div>' : '') +
-              '</div>' +
-            '</div>' +
-          '</details>' +
-          '<div class="card-bottom">' +
-            '<div class="card-actions">' +
-              '<a href="' + ytUrl + '" target="_blank" rel="noopener" class="yt-btn">' + YT_SVG + ' ' + formLbl + '</a>' +
-              '<button class="mark-btn' + (done ? ' done' : '') + '" data-action="toggle" data-id="' + ex.id + '">' + conquerLbl + '</button>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
+      card.innerHTML = '<button class="ex-head" data-action="expand" data-id="' + ex.id + '" aria-expanded="' + open + '">' + headInner(ex, i) + '</button>' +
+        '<div class="ex-body">' + (open ? bodyInner(ex, i, ordered.length) : '') + '</div>';
       frag.appendChild(card);
     });
     grid.appendChild(frag);
-    grid.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     if (document.body.classList.contains('arena-mode')) updateArenaState(true);
   };
 
+  const refreshHead = id => {
+    const card = $('card-' + id), ex = findEx(id); if (!card || !ex) return;
+    card.querySelector('.ex-head').innerHTML = headInner(ex, +card.dataset.idx);
+  };
+
+  // Accordion: one card open at a time. The body is built lazily when opened.
+  const setOpen = (id, scroll) => {
+    const prev = STATE.openId && $('card-' + STATE.openId);
+    if (prev && STATE.openId !== id) {
+      prev.classList.remove('open'); prev.querySelector('.ex-head').setAttribute('aria-expanded', 'false');
+      prev.querySelector('.ex-body').innerHTML = '';
+    }
+    STATE.openId = id;
+    const card = id && $('card-' + id);
+    if (!card) return;
+    const ex = findEx(id), count = $('ex-grid').children.length;
+    if (!card.classList.contains('open')) card.querySelector('.ex-body').innerHTML = bodyInner(ex, +card.dataset.idx, count);
+    card.classList.add('open'); card.querySelector('.ex-head').setAttribute('aria-expanded', 'true');
+    if (scroll) requestAnimationFrame(() => {
+      const top = card.getBoundingClientRect().top + window.scrollY - (document.querySelector('.topbar').offsetHeight + 12);
+      window.scrollTo({ top, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    });
+  };
+
+  const toggleOpen = id => {
+    if (STATE.openId === id) {
+      const card = $('card-' + id);
+      if (card) { card.classList.remove('open'); card.querySelector('.ex-head').setAttribute('aria-expanded', 'false'); card.querySelector('.ex-body').innerHTML = ''; }
+      STATE.openId = null;
+    } else setOpen(id, true);
+    SFX.tick();
+  };
+
   const zoneInner = (id, src, searchUrl) => src
-    ? '<button class="img-del" data-action="delimg" data-id="' + id + '" aria-label="Remove image">×</button>' +
-      '<img src="' + src + '" data-action="lightbox" data-src="' + src + '" loading="lazy" alt="">'
-    : '<div class="paste-hint"><span>📷</span>' + (isArUI() ? 'انقري لإضافة صورة' : 'Tap to add · Ctrl+V paste') +
-      (searchUrl ? ' · <a href="' + searchUrl + '" target="_blank" rel="noopener" class="search-img-link" onclick="event.stopPropagation()">' + SEARCH_SVG + ' ' + (isArUI() ? 'بحث' : 'Find') + '</a>' : '') + '</div>';
+    ? (LS.get('oly_img_' + id) ? '<button class="img-del" data-action="delimg" data-id="' + id + '" aria-label="Remove image">×</button>' : '') +
+      '<img src="' + escHtml(src) + '" data-action="lightbox" data-src="' + escHtml(src) + '" loading="lazy" alt="">'
+    : '<div class="paste-hint"><span>📷 ' + (isArUI() ? 'انقري لإضافة صورة' : ('ontouchstart' in window ? 'Tap to add a photo' : 'Click to add · Ctrl+V to paste')) + '</span>' +
+      (searchUrl ? '<a href="' + searchUrl + '" target="_blank" rel="noopener" class="search-img-link" onclick="event.stopPropagation()">' + SEARCH_SVG + ' ' + (isArUI() ? 'بحث' : 'Find one') + '</a>' : '') + '</div>';
 
   const refreshZone = (id, src) => {
     const z = $('zone-' + id); if (!z) return;
@@ -457,15 +527,6 @@ const App = (() => {
     return list.slice(idx + 1).concat(list.slice(0, Math.max(0, idx))).find(e => e.id !== id && !isDone(e.id)) || null;
   };
 
-  const renderFilters = day => {
-    const box = $('filters'); if (!box) return;
-    const types = TYPE_ORDER.filter(t => day && day.exercises.some(e => e.type === t));
-    if (isArUI() || types.length < 2) { box.innerHTML = ''; return; }
-    if (STATE.curFilter !== 'all' && !types.includes(STATE.curFilter)) STATE.curFilter = 'all';
-    box.innerHTML = ['all'].concat(types).map(t =>
-      '<button data-filter="' + t + '" class="filter-btn' + (STATE.curFilter === t ? ' active' : '') + '">' + (t === 'all' ? 'All' : TYPE_LABEL[t]) + '</button>').join('');
-  };
-
   const loadDay = id => {
     const day = STATE.routine.find(r => r.id === id);
     const isRest = !day || !day.exercises.length;
@@ -475,87 +536,90 @@ const App = (() => {
     $('add-container').innerHTML = '';
     translateUI();
 
-    const dayName = day ? day.day : (Object.keys(AR_DAYS)[(id + 1) % 7] || '');
-    $('day-title').textContent = isAr ? (AR_DAYS[dayName] || dayName) : dayName;
-    renderFilters(isRest ? null : day);
+    const now = new Date(), d = new Date(now);
+    d.setDate(now.getDate() + DAY_ORDER.indexOf(id) - DAY_ORDER.indexOf(now.getDay()));
+    const dateTxt = d.toLocaleDateString(isAr ? 'ar-EG' : 'en-US', { month: 'long', day: 'numeric' });
+    $('cur-date').textContent = id === now.getDay() ? T('Today · ', 'اليوم · ') + dateTxt : dateTxt;
+    $('day-title').textContent = dayLabel(id);
     if (isRest) {
-      $('day-focus').textContent = isAr ? 'راحة' : 'REST';
+      $('day-focus').textContent = isAr ? 'راحة' : 'Rest day';
       $('ex-grid').innerHTML = '';
-      if ($('day-meta')) $('day-meta').innerHTML = '';
     } else {
       $('day-focus').textContent = isAr ? (AR_FOCUS[day.focus] || day.focus) : day.focus;
       renderExercises(day.exercises);
-      $('add-container').innerHTML = '<button class="add-btn reveal" data-action="add">' + (isAr ? '+ إضافة حركة جديدة' : '+ Inscribe New Movement') + '</button>';
-      setTimeout(() => { const b = document.querySelector('.add-btn'); if (b) observer.observe(b); }, 50);
+      $('add-container').innerHTML = '<button class="add-btn" data-action="add">' + (isAr ? '+ إضافة حركة جديدة' : '+ Add a movement') + '</button>';
     }
     updateProgress();
   };
 
-  const selectDay = id => { STATE.selDay = id; buildNav(); loadDay(id); SFX.tick(); };
+  const selectDay = id => {
+    if (id !== STATE.selDay) STATE.openId = null;
+    STATE.selDay = id; buildNav(); loadDay(id); SFX.tick();
+  };
   const shiftDay = delta => {
     const i = DAY_ORDER.indexOf(STATE.selDay);
     selectDay(DAY_ORDER[(i + delta + DAY_ORDER.length) % DAY_ORDER.length]);
   };
 
+  /* Week strip: Saturday-first week that contains today, with trained-day dots. */
   const buildNav = () => {
-    const nav = $('day-nav'); nav.innerHTML = '';
-    const isAr = isArUI();
-    const todayId = new Date().getDay();
-    const nameOf = id => { const d = STATE.routine.find(r => r.id === id); return d ? d.day : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][id]; };
-
-    const desktopContainer = document.createElement('div');
-    desktopContainer.className = 'day-nav-desktop';
-    DAY_ORDER.forEach(id => {
-      const btn = document.createElement('button');
-      btn.className = 'day-btn' + (id === STATE.selDay ? ' active' : '') + (id === todayId ? ' today-mark' : '');
-      const dayName = nameOf(id);
-      btn.textContent = isAr ? AR_DAYS[dayName] : dayName.slice(0, 3).toUpperCase();
-      btn.dataset.dayId = id;
-      desktopContainer.appendChild(btn);
-    });
-    nav.appendChild(desktopContainer);
-
-    const mobileContainer = document.createElement('div');
-    mobileContainer.className = 'day-nav-mobile';
-    const prevBtn = document.createElement('button');
-    prevBtn.className = 'nav-arrow-btn'; prevBtn.innerHTML = isAr ? '▶' : '◀'; prevBtn.setAttribute('aria-label', 'Previous day');
-    prevBtn.addEventListener('click', e => { e.stopPropagation(); shiftDay(-1); });
-    const dayDisplay = document.createElement('div');
-    dayDisplay.className = 'nav-day-display';
-    const curName = nameOf(STATE.selDay);
-    dayDisplay.textContent = isAr ? AR_DAYS[curName] : curName;
-    if (STATE.selDay === todayId) { dayDisplay.classList.add('today'); dayDisplay.textContent += isAr ? ' (اليوم)' : ' · Today'; }
-    const nextBtn = document.createElement('button');
-    nextBtn.className = 'nav-arrow-btn'; nextBtn.innerHTML = isAr ? '◀' : '▶'; nextBtn.setAttribute('aria-label', 'Next day');
-    nextBtn.addEventListener('click', e => { e.stopPropagation(); shiftDay(1); });
-    mobileContainer.append(prevBtn, dayDisplay, nextBtn);
-    nav.appendChild(mobileContainer);
+    const nav = $('day-nav'), isAr = isArUI();
+    const now = new Date(), todayId = now.getDay(), todayIdx = DAY_ORDER.indexOf(todayId);
+    const dates = UI.getWorkoutDates();
+    nav.innerHTML = DAY_ORDER.map((id, i) => {
+      const d = new Date(now); d.setDate(now.getDate() + (i - todayIdx));
+      const day = STATE.routine.find(r => r.id === id);
+      const rest = !day || !day.exercises.length;
+      const name = dayName(id);
+      const cls = 'wk' + (id === STATE.selDay ? ' active' : '') + (id === todayId ? ' today' : '') + (rest ? ' rest' : '') + (dates.has(ymd(d)) ? ' trained' : '');
+      return '<button class="' + cls + '" data-day-id="' + id + '" aria-label="' + escHtml(dayLabel(id)) + '"' + (id === STATE.selDay ? ' aria-current="date"' : '') + '>' +
+        '<span class="wk-dow">' + (isAr ? AR_DAYS_SHORT[name] : name.slice(0, 3)) + '</span>' +
+        '<span class="wk-num">' + d.getDate() + '</span><span class="wk-dot"></span></button>';
+    }).join('');
   };
 
   const toggleDone = (id, opts = {}) => {
     const key = doneKey(id);
     const was = LS.get(key) === 'true';
-    const isAr = isArUI();
     LS.set(key, String(!was));
     if (!opts.fromSet) { was ? SFX.tick() : SFX.conquer(); }
     else if (!was) SFX.conquer();
     if (!was) Session.touch();
     const btn = document.querySelector('[data-action="toggle"][data-id="' + id + '"]');
     const card = $('card-' + id);
-    if (btn) { btn.classList.toggle('done', !was); btn.textContent = !was ? (isAr ? '✨ تم بنجاح!' : 'Conquered') : (isAr ? '🌸 أنجزي التمرين' : 'Conquer'); }
+    if (btn) { btn.classList.toggle('done', !was); btn.textContent = markLabel(!was); }
     if (card) card.classList.toggle('done', !was);
-    updateProgress(); UI.buildHeatmap();
+    refreshHead(id);
+    updateProgress(); buildNav();
     syncUp([key]);
 
     if (!was) {
-      if (document.body.classList.contains('arena-mode')) setTimeout(() => updateArenaState(), 600);
+      // Guide straight to the next movement.
+      const next = nextPending(id);
+      if (STATE.openId === id && next) setTimeout(() => {
+        if (STATE.openId !== id) return;
+        setOpen(next.id, true);
+        if (document.body.classList.contains('arena-mode')) updateArenaState(true);
+      }, opts.fromSet ? 700 : 350);
+      else if (document.body.classList.contains('arena-mode')) setTimeout(() => updateArenaState(), 600);
       maybeCelebrate();
     }
   };
 
+  const moveEx = (id, delta) => {
+    const day = curDay(); if (!day) return;
+    const ids = sortBySavedOrder(day.exercises).map(e => e.id);
+    const i = ids.indexOf(id), j = i + delta;
+    if (i < 0 || j < 0 || j >= ids.length) return;
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+    LS.set('oly_order_' + STATE.activeProfileId + '_' + STATE.selDay, JSON.stringify(ids));
+    renderExercises(day.exercises);
+    setOpen(id, true);
+    SFX.tick();
+  };
+
   const openEditor = (mode, id) => {
-    SFX.tick(); $('ed-modal').classList.add('open');
-    $('ed-title').textContent = mode === 'add' ? 'Inscribe Movement' : 'Modify Movement';
+    $('ed-title').textContent = mode === 'add' ? T('Add movement', 'إضافة حركة') : T('Edit movement', 'تعديل الحركة');
     ['id', 'name', 'sets', 'reps', 'type', 'equip', 'rest', 'desc'].forEach(f => { const el = $('ed-' + f); if (el) el.value = ''; });
     $('ed-type').value = 'main';
     if (mode === 'edit') {
@@ -567,8 +631,11 @@ const App = (() => {
         if (lines) $('ed-desc').value = lines.join('\n');
       }
     }
-    setTimeout(() => $('ed-name').focus(), 50);
+    UI.openModal('ed-modal');
+    if (!('ontouchstart' in window)) setTimeout(() => $('ed-name').focus(), 80);
   };
+
+  const saveRoutine = () => LS.set(App.getCurSKey(), JSON.stringify(STATE.routine));
 
   const saveEx = () => {
     const day = curDay(); if (!day) return;
@@ -583,36 +650,44 @@ const App = (() => {
     const lines = $('ed-desc').value.split('\n').map(s => s.trim()).filter(Boolean);
     ex.descEn = lines; delete ex.desc;
     if (prev.name && prev.name !== ex.name) { delete ex.descAr; delete ex.targetAr; }
-    if (!ex.name) return UI.toast('A Name is required.');
+    if (!ex.name) return UI.toast(T('A name is required.', 'الاسم مطلوب'));
     if (!ex.sets) ex.sets = '3';
     if (!ex.reps) ex.reps = '8-12';
-    if (idx > -1) day.exercises[idx] = ex;
-    else { if (day.exercises.length >= 15) return UI.toast('Max limits reached.'); day.exercises.push(ex); }
-    LS.set(App.getCurSKey(), JSON.stringify(STATE.routine));
-    UI.closeModal('ed-modal'); loadDay(STATE.selDay); SFX.tick(); UI.toast('Movement Inscribed');
+    if (idx > -1) { ex.edited = true; day.exercises[idx] = ex; }
+    else { if (day.exercises.length >= 15) return UI.toast(T('Max 15 movements per day.', 'الحد الأقصى ١٥ حركة')); day.exercises.push(ex); }
+    saveRoutine();
+    STATE.openId = ex.id;
+    UI.closeModal('ed-modal'); loadDay(STATE.selDay); setOpen(ex.id, true); SFX.tick(); UI.toast(T('Movement saved', 'تم الحفظ'));
   };
 
+  const removedKey = () => 'oly_removed_' + STATE.activeProfileId;
   const delEx = id => {
-    if (!confirm(isArUI() ? 'حذف هذا التمرين؟' : 'Banish this movement from the ritual?')) return;
+    if (!confirm(T('Remove this movement from the program?', 'حذف هذا التمرين؟'))) return;
     const day = curDay();
     day.exercises = day.exercises.filter(e => e.id !== id);
-    LS.set(App.getCurSKey(), JSON.stringify(STATE.routine));
-    loadDay(STATE.selDay); SFX.tick(); UI.toast(isArUI() ? 'تم الحذف' : 'Movement Banished');
+    // Remember deleted built-ins so a program upgrade doesn't bring them back.
+    if (!isCustomId(id)) {
+      let rm = []; try { rm = JSON.parse(LS.get(removedKey()) || '[]'); } catch (e) {}
+      if (!rm.includes(id)) { rm.push(id); LS.set(removedKey(), JSON.stringify(rm)); }
+    }
+    saveRoutine();
+    loadDay(STATE.selDay); SFX.tick(); UI.toast(T('Movement removed', 'تم الحذف'));
   };
 
-  const setFilter = f => {
-    STATE.curFilter = f;
-    loadDay(STATE.selDay); SFX.tick();
-  };
-
-  const updateArenaState = (quiet) => {
+  /* ── FOCUS MODE ── one movement on screen at a time */
+  const updateArenaState = quiet => {
     if (!document.body.classList.contains('arena-mode')) return;
     document.querySelectorAll('.ex-card').forEach(c => c.classList.remove('arena-active'));
-    const active = document.querySelector('.ex-card:not(.done)');
+    let active = STATE.openId && $('card-' + STATE.openId);
+    if (!active || active.classList.contains('done')) active = document.querySelector('.ex-card:not(.done)');
+    const bar = $('focus-bar');
     if (active) {
+      setOpen(active.id.replace('card-', ''), false);
       active.classList.add('arena-active');
-      const d = active.querySelector('details.howto'); if (d) d.open = true;
-      if (!quiet) active.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const cards = Array.from(document.querySelectorAll('.ex-card'));
+      const left = cards.filter(c => !c.classList.contains('done')).length;
+      bar.innerHTML = '<span><b>' + (cards.indexOf(active) + 1) + '</b> / ' + cards.length + ' · ' + left + ' ' + T('left', 'متبقي') + '</span><button class="btn" data-go="exit-focus">' + T('Exit focus', 'خروج') + '</button>';
+      if (!quiet) window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (!quiet) {
       toggleArena();
     }
@@ -621,11 +696,12 @@ const App = (() => {
   const celebratedKey = () => 'oly_celebrated_' + STATE.activeProfileId + '_' + today();
   const maybeCelebrate = () => {
     const day = curDay();
-    if (!day || !day.exercises.length || STATE.selDay !== new Date().getDay()) return;
+    if (!day || !day.exercises.length || !isToday()) return;
     if (!day.exercises.every(e => isDone(e.id))) return;
     if (LS.get(celebratedKey())) return;
     LS.set(celebratedKey(), '1');
     RestTimer.skip();
+    if (document.body.classList.contains('arena-mode')) toggleArena();
     setTimeout(triggerCelebration, 500);
   };
 
@@ -636,41 +712,72 @@ const App = (() => {
     const stats = isAr
       ? stat(sum.minutes || '—', 'دقيقة') + stat(sum.sets, 'جولة') + stat(UI.getStreak(), 'أيام متتالية')
       : stat(sum.minutes || '—', 'Minutes') + stat(sum.sets, 'Sets') +
-        (sum.volume ? stat(Math.round(sum.volume).toLocaleString(), 'kg Volume') : '') + stat(sum.prs, sum.prs === 1 ? 'PR' : 'PRs') + stat(UI.getStreak(), 'Streak');
+        (sum.volume ? stat(Math.round(sum.volume).toLocaleString(), 'kg volume') : '') + stat(sum.prs, sum.prs === 1 ? 'PR' : 'PRs') + stat(UI.getStreak(), 'Streak');
     const overlay = document.createElement('div');
     overlay.className = 'celebration-overlay';
     overlay.innerHTML = (isAr
       ? '<div class="celeb-text">🌸 أنـتـي رائعــة! 🌸</div><div class="celeb-sub">تم إكمال الحصّة بنجاح يا ملكة اللياقة</div>'
-      : '<div class="celeb-text">SESSION COMPLETE</div><div class="celeb-sub">Olympus Smiles Upon You</div>') +
-      '<div class="celeb-stats">' + stats + '</div><button class="celeb-close">' + (isAr ? 'إغلاق' : 'Continue') + '</button>';
+      : '<div class="celeb-text">SESSION COMPLETE</div><div class="celeb-sub">Olympus smiles upon you</div>') +
+      '<div class="celeb-stats">' + stats + '</div><button class="btn btn-primary celeb-close">' + (isAr ? 'إغلاق' : 'Continue') + '</button>';
     document.body.appendChild(overlay);
     setTimeout(() => overlay.classList.add('show'), 10);
-    const close = () => { overlay.classList.remove('show'); setTimeout(() => overlay.remove(), 600); };
+    const close = () => { overlay.classList.remove('show'); setTimeout(() => overlay.remove(), 400); };
     overlay.addEventListener('click', close);
-    for (let i = 0; i < 60; i++) setTimeout(() => FX.addRipple(Math.random() * window.innerWidth, Math.random() * window.innerHeight), i * 25);
+    FX.burst();
     SFX.conquer();
     setTimeout(close, 9000);
   };
 
   const toggleArena = () => {
     if (isArUI()) return;
-    const isArena = document.body.classList.toggle('arena-mode');
-    $('btn-arena').textContent = isArena ? '🚪 Exit Arena' : '⚔️ The Arena';
-    if (isArena) {
-      UI.toast('Enter The Arena. Focus purely on the task ahead.');
-      updateArenaState();
-    } else {
-      document.querySelectorAll('.ex-card').forEach(c => c.classList.remove('arena-active'));
-    }
+    const day = curDay();
+    const isArena = !document.body.classList.contains('arena-mode');
+    if (isArena && (!day || !day.exercises.length || day.exercises.every(e => isDone(e.id)))) return;
+    document.body.classList.toggle('arena-mode', isArena);
+    if (isArena) updateArenaState();
+    else document.querySelectorAll('.ex-card').forEach(c => c.classList.remove('arena-active'));
+    syncTabs();
+  };
+
+  // Highlight the tab that matches what's on screen.
+  const syncTabs = () => {
+    const sheet = document.querySelector('.modal-bg.open');
+    const cur = sheet ? ({ 'cal-modal': 'history', 'profile-modal': 'program' }[sheet.id] || '')
+      : document.body.classList.contains('arena-mode') ? 'focus' : 'today';
+    document.querySelectorAll('.tabbar .tab').forEach(t => t.classList.toggle('active', t.dataset.tab === cur));
+  };
+
+  const goToday = () => {
+    if (document.body.classList.contains('arena-mode')) toggleArena();
+    if (STATE.selDay !== new Date().getDay()) selectDay(new Date().getDay());
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    syncTabs();
+  };
+
+  const onTab = tab => {
+    document.querySelectorAll('.modal-bg.open').forEach(m => UI.closeModal(m.id));
+    if (tab === 'today') goToday();
+    else if (tab === 'focus') {
+      if (document.body.classList.contains('arena-mode')) return;
+      if (!isToday()) selectDay(new Date().getDay());
+      const day = curDay();
+      if (!day || !day.exercises.length) return UI.toast(T('Rest day — nothing to focus on 🧘', 'يوم راحة 🌸'));
+      if (day.exercises.every(e => isDone(e.id))) return UI.toast(T('All done today ✓', 'أنهيتِ تمرين اليوم ✓'));
+      toggleArena();
+    } else if (tab === 'history') { UI.openModal('cal-modal'); }
+    else if (tab === 'program') { UI.buildProfileSwitcher(); UI.openModal('profile-modal'); }
+    syncTabs();
   };
 
   const updateProfileIndicator = () => {
-    const p = PROFILES[STATE.activeProfileId];
-    if (p && $('btn-profiles')) $('btn-profiles').innerHTML = p.icon + ' ' + p.name.replace(/^🌸\s*/, '') + ' ▾';
+    const p = PROFILES[STATE.activeProfileId]; if (!p) return;
+    setText('brand-icon', p.icon);
+    setText('brand-sub', p.name.replace(/^🌸\s*/, ''));
   };
 
   /* Load a profile's routine. When the built-in program's version changes,
-     upgrade to the new defaults while keeping movements the user added. */
+     upgrade to the new defaults while keeping movements the user added or edited
+     and leaving out the ones they deleted. */
   const loadRoutine = id => {
     const P = PROFILES[id], sk = SKEY + '_' + id, vk = 'oly_rver_' + id, ver = String(P.version || 1);
     const fresh = () => JSON.parse(JSON.stringify(P.routine));
@@ -678,18 +785,22 @@ const App = (() => {
     try { stored = JSON.parse(LS.get(sk) || 'null'); } catch (e) {}
     let upgraded = false;
     if (Array.isArray(stored) && (LS.get(vk) || '1') !== ver) {
+      let removed = []; try { removed = JSON.parse(LS.get('oly_removed_' + id) || '[]'); } catch (e) {}
       const next = fresh();
+      next.forEach(d => { d.exercises = d.exercises.filter(e => !removed.includes(e.id)); });
       const nextAll = next.flatMap(d => d.exercises);
       const userImgs = [];
       stored.forEach(d => (d.exercises || []).forEach(ex => {
-        if (/^ex\d{12,}$/.test(ex.id)) { const nd = next.find(x => x.id === d.id); if (nd) nd.exercises.push(ex); }
+        const nd = next.find(x => x.id === d.id);
+        if (isCustomId(ex.id)) { if (nd) nd.exercises.push(ex); }
+        else if (ex.edited && nd) { const i = nd.exercises.findIndex(x => x.id === ex.id); if (i > -1) nd.exercises[i] = ex; }
         const im = LS.get('oly_img_' + ex.id);
         if (im) userImgs.push({ id: ex.id, name: ex.name, im });
       }));
       // Re-home pasted images by exercise name so they don't land on a different movement.
       userImgs.forEach(u => LS.del('oly_img_' + u.id));
       userImgs.forEach(u => {
-        const m = /^ex\d{12,}$/.test(u.id) ? { id: u.id } : nextAll.find(x => x.name === u.name);
+        const m = isCustomId(u.id) ? { id: u.id } : nextAll.find(x => x.name === u.name);
         LS.set(m ? 'oly_img_' + m.id : 'oly_img_orphan_' + u.id, u.im);
       });
       for (let i = localStorage.length - 1; i >= 0; i--) { const k = localStorage.key(i); if (k && k.startsWith('oly_order_' + id + '_')) localStorage.removeItem(k); }
@@ -706,7 +817,7 @@ const App = (() => {
     document.body.classList.toggle('profile-khadija', id === 'khadija');
     const { routine, upgraded } = loadRoutine(id);
     STATE.routine = routine;
-    STATE.curFilter = 'all';
+    STATE.openId = null;
     STATE.calSel = null;
     History.invalidate();
     return upgraded;
@@ -715,16 +826,19 @@ const App = (() => {
   const tickClock = () => {
     const st = Session.start(), el = $('session-clock');
     if (!el) return;
+    const live = st && Date.now() - st < 4 * 3600 * 1000;
+    el.classList.toggle('live', !!live);
     if (!st) { el.textContent = T('READY', 'جاهزة'); return; }
     const d = Math.floor((Date.now() - st) / 1000);
-    if (d > 4 * 3600) { el.textContent = T('SESSION DONE', 'انتهت الجلسة'); return; }
-    el.textContent = T('SESSION ', 'الجلسة ') + Math.floor(d / 60).toString().padStart(2, '0') + ':' + (d % 60).toString().padStart(2, '0');
+    if (!live) { el.textContent = T('DONE', 'انتهت'); return; }
+    const h = Math.floor(d / 3600), m = Math.floor(d / 60) % 60, s = d % 60;
+    el.textContent = '⏱ ' + (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0');
   };
 
   return {
-    loadDay, buildNav, toggleDone, refreshZone, openEditor, saveEx, delEx, setFilter, updateProgress, toggleArena, updateArenaState,
-    triggerCelebration, syncDown, syncUp, localizeReps, displayName, nextPending, findEx, updateProfileIndicator,
-    cycleQuote: () => { const q = QUOTES[Math.floor(Math.random() * QUOTES.length)]; const el = $('oracle-quote'); el.style.opacity = 0; setTimeout(() => { el.innerHTML = '"' + q.t + '" <span class="oracle-author">— ' + q.a + '</span>'; el.style.opacity = 1; }, 300); },
+    loadDay, buildNav, toggleDone, refreshZone, refreshHead, openEditor, saveEx, delEx, updateProgress, toggleArena, updateArenaState,
+    triggerCelebration, syncDown, syncUp, localizeReps, displayName, nextPending, findEx, updateProfileIndicator, renderSettings, syncTabs,
+    cycleQuote: () => { const q = QUOTES[Math.floor(Math.random() * QUOTES.length)]; const el = $('oracle-quote'); el.style.opacity = 0; setTimeout(() => { el.innerHTML = '“' + escHtml(q.t) + '” <span class="oracle-author">— ' + escHtml(q.a) + '</span>'; el.style.opacity = 1; }, 300); },
 
     getCurSKey: () => SKEY + '_' + STATE.activeProfileId,
 
@@ -737,8 +851,9 @@ const App = (() => {
       UI.buildProfileSwitcher();
       buildNav();
       loadDay(STATE.selDay);
-      UI.buildHeatmap(); tickClock();
+      tickClock();
       UI.closeModal('profile-modal');
+      window.scrollTo({ top: 0 });
       SFX.conquer();
       UI.toast(upgraded ? 'Program upgraded · ' + PROFILES[id].name : (isArUI() ? 'أهلاً خديجة 🌸' : 'Switched to ' + PROFILES[id].name));
     },
@@ -748,33 +863,52 @@ const App = (() => {
       if (!PROFILES[pid]) pid = 'ppl';
       const upgraded = activateProfile(pid);
       syncDown();
-      setInterval(syncDown, 15000);
+      setInterval(syncDown, 20000);
       document.addEventListener('visibilitychange', () => { if (!document.hidden) { syncDown(); tickClock(); } });
+
+      // Focus-mode status bar sits right above the list
+      const bar = document.createElement('div'); bar.className = 'focus-bar'; bar.id = 'focus-bar';
+      $('ex-grid').before(bar);
 
       App.cycleQuote();
       tickClock(); setInterval(tickClock, 1000);
 
-      buildNav(); UI.buildHeatmap(); loadDay(STATE.selDay);
+      buildNav(); loadDay(STATE.selDay);
       FX.init();
       if (upgraded) setTimeout(() => UI.toast('✨ Program upgraded — new exercise selection'), 800);
 
       // ═══ EVENT DELEGATION ═══
-      document.addEventListener('click', e => { SFX.init(); if (!e.target.closest('input, .log')) FX.addRipple(e.clientX, e.clientY); });
+      document.addEventListener('pointerdown', () => SFX.init(), { once: true });
       $('lb').addEventListener('click', () => UI.closeLB());
       $('oracle-quote').addEventListener('click', () => App.cycleQuote());
 
       $('day-nav').addEventListener('click', e => {
-        const btn = e.target.closest('.day-btn');
+        const btn = e.target.closest('.wk');
         if (btn) selectDay(parseInt(btn.dataset.dayId, 10));
       });
 
-      document.querySelector('.sec-right').addEventListener('click', e => {
-        const btn = e.target.closest('[data-filter]');
-        if (btn) setFilter(btn.dataset.filter);
+      $('btn-arena').addEventListener('click', () => {
+        const day = curDay();
+        if (day && day.exercises.length && day.exercises.every(e => isDone(e.id))) return onTab('history');
+        if (isArUI()) {
+          // No focus mode for Khadija: just jump to the next movement.
+          const n = day && sortBySavedOrder(day.exercises).find(e => !isDone(e.id));
+          if (n) setOpen(n.id, true);
+          return;
+        }
+        toggleArena();
+      });
+      document.addEventListener('click', e => {
+        const go = e.target.closest('[data-go]'); if (!go) return;
+        if (go.dataset.go === 'today') goToday();
+        if (go.dataset.go === 'exit-focus') toggleArena();
       });
 
-      $('btn-chronicles').addEventListener('click', () => UI.openModal('cal-modal'));
-      $('btn-arena').addEventListener('click', () => toggleArena());
+      document.querySelector('.tabbar').addEventListener('click', e => {
+        const t = e.target.closest('.tab'); if (t) onTab(t.dataset.tab);
+      });
+      $('btn-profiles').addEventListener('click', () => onTab('program'));
+      $('btn-settings').addEventListener('click', () => UI.openModal('set-modal'));
 
       // Rest timer controls
       $('rest-timer').addEventListener('click', e => {
@@ -783,10 +917,11 @@ const App = (() => {
         if (a === 'skip') RestTimer.skip(); else RestTimer.add(parseInt(a, 10));
       });
 
+      // Desktop drag-to-reorder (phones use the ↑ ↓ buttons)
       let draggedCard = null;
       $('ex-grid').addEventListener('dragstart', e => {
         const card = e.target.closest('.ex-card');
-        if (!card || e.target.closest('input')) return;
+        if (!card || e.target.closest('input, .ex-body')) { if (e.target.closest('.ex-body')) e.preventDefault(); return; }
         if (document.body.classList.contains('arena-mode')) { e.preventDefault(); return; }
         draggedCard = card;
         setTimeout(() => card.classList.add('dragged'), 0);
@@ -809,6 +944,7 @@ const App = (() => {
         draggedCard = null;
         const newOrder = Array.from($('ex-grid').querySelectorAll('.ex-card')).map(c => c.id.replace('card-', ''));
         LS.set('oly_order_' + STATE.activeProfileId + '_' + STATE.selDay, JSON.stringify(newOrder));
+        const day = curDay(); if (day) renderExercises(day.exercises);
         SFX.tick();
       });
 
@@ -816,14 +952,16 @@ const App = (() => {
         const action = e.target.closest('[data-action]');
         if (action) {
           const act = action.dataset.action, id = action.dataset.id;
+          if (act === 'expand') return toggleOpen(id);
           if (act === 'edit') return openEditor('edit', id);
           if (act === 'delete') return delEx(id);
-          if (act === 'delimg') { e.stopPropagation(); if (confirm('Remove this image?')) { LS.del('oly_img_' + id); refreshZone(id, null); SFX.tick(); } return; }
+          if (act === 'up') return moveEx(id, -1);
+          if (act === 'down') return moveEx(id, 1);
+          if (act === 'delimg') { e.stopPropagation(); if (confirm(T('Remove this image?', 'حذف الصورة؟'))) { LS.del('oly_img_' + id); refreshZone(id, null); SFX.tick(); } return; }
           if (act === 'lightbox') return UI.openLB(action.dataset.src);
           if (act === 'toggle') return toggleDone(id);
-          if (act === 'set') { const ex = findEx(id); if (ex) Tracker.toggleSet(ex, parseInt(action.dataset.i, 10)); return; }
-          if (act === 'addset') { const ex = findEx(id); if (ex) Tracker.addSet(ex); return; }
-          if (act === 'add') return openEditor('add');
+          if (act === 'set') { const ex = findEx(id); if (ex) { Tracker.toggleSet(ex, parseInt(action.dataset.i, 10)); refreshHead(id); } return; }
+          if (act === 'addset') { const ex = findEx(id); if (ex) { Tracker.addSet(ex); refreshHead(id); } return; }
         }
         if (e.target.closest('a, input, summary')) return;
         // Click-to-browse on empty paste zone
@@ -858,11 +996,6 @@ const App = (() => {
 
       $('add-container').addEventListener('click', e => { if (e.target.closest('[data-action="add"]')) openEditor('add'); });
 
-      // Profile Switcher Events
-      $('btn-profiles').addEventListener('click', () => { UI.buildProfileSwitcher(); UI.openModal('profile-modal'); });
-      $('profile-close').addEventListener('click', () => UI.closeModal('profile-modal'));
-      $('profile-modal').addEventListener('click', e => { if (e.target === e.currentTarget) UI.closeModal('profile-modal'); });
-
       // Ctrl+V paste into hovered zone
       document.addEventListener('paste', e => {
         if (!STATE.hovZone) return;
@@ -876,60 +1009,67 @@ const App = (() => {
         }
       });
 
-      $('cal-close').addEventListener('click', () => UI.closeModal('cal-modal'));
-      $('ed-close').addEventListener('click', () => UI.closeModal('ed-modal'));
-      $('cal-modal').addEventListener('click', e => { if (e.target === e.currentTarget) UI.closeModal('cal-modal'); });
+      // Sheets: close button, backdrop tap, Escape
+      ['cal', 'ed', 'profile', 'set'].forEach(p => {
+        $(p + '-close').addEventListener('click', () => UI.closeModal(p + '-modal'));
+        $(p + '-modal').addEventListener('click', e => { if (e.target === e.currentTarget) UI.closeModal(p + '-modal'); });
+      });
       $('cal-days').addEventListener('click', e => {
         const d = e.target.closest('.cal-day'); if (!d) return;
         STATE.calSel = d.dataset.date; UI.renderCal(); SFX.tick();
       });
-      $('ed-modal').addEventListener('click', e => { if (e.target === e.currentTarget) UI.closeModal('ed-modal'); });
-      $('cal-prev').addEventListener('click', () => UI.calShift(isArUI() ? 1 : -1));
-      $('cal-next').addEventListener('click', () => UI.calShift(isArUI() ? -1 : 1));
+      $('cal-prev').addEventListener('click', () => UI.calShift(-1));
+      $('cal-next').addEventListener('click', () => UI.calShift(1));
       $('btn-save-ex').addEventListener('click', () => saveEx());
+
+      // Settings
+      $('btn-sync-gen').addEventListener('click', () => { $('sync-code').value = genSyncCode(); SFX.tick(); });
+      $('btn-sync-save').addEventListener('click', () => setSyncCode($('sync-code').value));
+      $('opt-sound').addEventListener('change', e => { LS.set('oly_opt_sound', e.target.checked ? '1' : '0'); SFX.tick(); });
+      $('opt-vibe').addEventListener('change', e => LS.set('oly_opt_vibe', e.target.checked ? '1' : '0'));
       $('btn-export').addEventListener('click', () => DataSys.exportData());
       $('btn-import-trigger').addEventListener('click', () => $('file-import').click());
       $('file-import').addEventListener('change', e => DataSys.importData(e));
+      $('btn-lock').addEventListener('click', () => { if (confirm(T('Lock this device? You will need the password again.', 'قفل الجهاز؟'))) { LS.del('oly_auth'); location.reload(); } });
 
-      // Swipe Navigation for Arena
+      // Swipe in focus mode: left = skip to next movement, right = mark done
       let touchStartX = 0, touchStartY = 0;
       document.addEventListener('touchstart', e => { if (document.body.classList.contains('arena-mode')) { touchStartX = e.changedTouches[0].screenX; touchStartY = e.changedTouches[0].screenY; } }, { passive: true });
       document.addEventListener('touchend', e => {
-        if (!document.body.classList.contains('arena-mode') || e.target.closest('input, .log, .set-dots')) return;
+        if (!document.body.classList.contains('arena-mode') || e.target.closest('input, .log, .set-dots, .rest-timer, .tabbar, .modal-bg')) return;
         const dx = e.changedTouches[0].screenX - touchStartX, dy = e.changedTouches[0].screenY - touchStartY;
-        if (Math.abs(dx) < 100 || Math.abs(dy) > Math.abs(dx)) return;
+        if (Math.abs(dx) < 110 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
         const active = document.querySelector('.ex-card.arena-active');
         if (!active) return;
+        const id = active.id.replace('card-', '');
         if (dx < 0) {
-          // Swipe left: skip to the next unfinished card
-          const next = active.nextElementSibling;
-          document.querySelectorAll('.ex-card').forEach(c => c.classList.remove('arena-active'));
-          if (next && !next.classList.contains('done')) { next.classList.add('arena-active'); next.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-          else updateArenaState();
+          const next = nextPending(id);
+          if (next) { setOpen(next.id, false); updateArenaState(); SFX.tick(); }
         } else {
-          toggleDone(active.id.replace('card-', ''));
+          toggleDone(id);
         }
       });
 
-      // Keyboard Shortcuts
+      // Keyboard shortcuts (desktop)
       document.addEventListener('keydown', e => {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+        if (e.target.matches('input, textarea, select')) return;
         const arena = document.body.classList.contains('arena-mode');
-        if ((e.key === 'a' || e.key === 'A') && !e.ctrlKey && !e.metaKey) toggleArena();
         if (e.key === 'Escape') {
-          if (arena) toggleArena();
-          document.querySelectorAll('.modal-bg.open').forEach(m => UI.closeModal(m.id));
+          const open = document.querySelectorAll('.modal-bg.open');
+          if (open.length) open.forEach(m => UI.closeModal(m.id));
+          else if (arena) toggleArena();
           UI.closeLB(); RestTimer.skip();
+          return;
         }
+        if (document.querySelector('.modal-bg.open')) return;
+        if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey) toggleArena();
         if (!arena && e.key === 'ArrowRight') shiftDay(isArUI() ? -1 : 1);
         if (!arena && e.key === 'ArrowLeft') shiftDay(isArUI() ? 1 : -1);
-        if (arena && (e.key === ' ' || e.key === 'Enter')) {
+        if (arena && e.key === 'Enter') {
           const active = document.querySelector('.ex-card.arena-active');
-          if (active) { e.preventDefault(); toggleDone(active.id.replace('card-', '')); }
+          if (active && !e.target.closest('button')) { e.preventDefault(); toggleDone(active.id.replace('card-', '')); }
         }
       });
-
-      document.querySelectorAll('.wrap > .reveal').forEach(el => observer.observe(el));
     }
   };
 })();
@@ -938,25 +1078,35 @@ const App = (() => {
    DATA PORTABILITY
 ═══════════════════════════════════════════ */
 const DataSys = {
+  // Never exported/imported: the device unlock flag and the private sync code.
+  skip: k => k === 'oly_auth' || k === 'oly_sync_code',
   exportData: () => {
     SFX.tick();
     const backup = {};
-    for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith('oly_') || k.startsWith('olympus_')) backup[k] = localStorage.getItem(k); }
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if ((k.startsWith('oly_') || k.startsWith('olympus_')) && !DataSys.skip(k)) backup[k] = localStorage.getItem(k);
+    }
     const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = 'olympus_scrolls_' + today() + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    UI.toast('Scrolls Exported');
+    a.download = 'olympus_backup_' + today() + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    UI.toast('Backup exported');
   },
   importData: e => {
     const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = ev => {
-      try {
-        const data = JSON.parse(ev.target.result);
-        if (!confirm('This will overwrite current data. Proceed?')) return;
-        Object.keys(data).forEach(k => localStorage.setItem(k, data[k]));
-        UI.toast('Scrolls Restored! Reloading...'); setTimeout(() => location.reload(), 1500);
-      } catch (err) { UI.toast('Invalid Scroll format.'); }
+      let data;
+      try { data = JSON.parse(ev.target.result); } catch (err) { return UI.toast('Not a valid backup file.'); }
+      if (!data || typeof data !== 'object' || Array.isArray(data)) return UI.toast('Not a valid backup file.');
+      const keys = Object.keys(data).filter(k => (k.startsWith('oly_') || k.startsWith('olympus_')) && !DataSys.skip(k) && typeof data[k] === 'string');
+      if (!keys.length) return UI.toast('No workout data found in that file.');
+      if (!confirm('Import ' + keys.length + ' entries? Matching entries on this device will be replaced.')) return;
+      try { keys.forEach(k => localStorage.setItem(k, data[k])); } catch (err) { return UI.toast('Storage full — import incomplete.'); }
+      // Share the imported history with the other devices before reloading.
+      App.syncUp(keys.filter(k => /^oly_(done|log|sess)_/.test(k))).finally(() => {
+        UI.toast('Backup restored — reloading…'); setTimeout(() => location.reload(), 1200);
+      });
     };
     reader.readAsText(file); e.target.value = '';
   }

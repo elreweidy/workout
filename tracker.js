@@ -137,7 +137,7 @@ const RestTimer = (() => {
   const finish = () => {
     clearInterval(iv); iv = null;
     SFX.restEnd();
-    try { if (navigator.vibrate) navigator.vibrate([220, 120, 220]); } catch (e) {}
+    try { if (navigator.vibrate && LS.get('oly_opt_vibe') !== '0') navigator.vibrate([220, 120, 220]); } catch (e) {}
     const e = el(); if (!e) return;
     e.classList.add('go');
     e.querySelector('.rt-time').textContent = T('GO', 'يلا!');

@@ -1,0 +1,16 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "sync": {
+      "$code": {
+        ".read": "$code.length >= 16",
+        ".write": "$code.length >= 16"
+      }
+    },
+    "workout_sync": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}
